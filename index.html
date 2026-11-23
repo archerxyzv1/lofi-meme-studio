@@ -1815,9 +1815,14 @@ function dbErrorText(err){
 
 /* ---------- Sign-in UI (landing header + studio top bar) ---------- */
 var pendingAfterSignIn=null;
+/* Stays false until Firebase reports the real auth state. While it is false
+   the header auth slot renders nothing, so a signed-in visitor never sees a
+   brief "Sign in" flash on reload before their avatar appears. */
+var authResolved=false;
 function renderAuth(){
   document.querySelectorAll('[data-auth-slot]').forEach(function(slot){
     slot.innerHTML="";
+    if(!authResolved) return;
     if(!fbUser){
       var b=document.createElement('button'); b.type="button"; b.className="btn ghost auth-btn"; b.textContent="Sign in";
       b.addEventListener('click',function(){ openAuth(); });
@@ -1911,7 +1916,12 @@ function renderProfile(){
   else { ms.textContent=mine.length+(mine.length===1?" meme published":" memes published"); mine.forEach(function(m){ mg.appendChild(memeCard(m,-1)); }); }
   var lg=document.getElementById('pfLiked'), ls=document.getElementById('pfLikedStatus');
   lg.innerHTML="";
-  if(!galLoaded&&!liked.length){ ls.textContent="Loading liked memes…"; }
+  /* Liked memes come from the already-fetched public + own memes, filtered
+     client-side by voterUids — no extra query, no composite index. The state
+     always resolves: a failed gallery load shows a clear message instead of
+     leaving "Loading…" on screen forever. */
+  if(galFailed&&!liked.length){ ls.textContent="Liked memes could not be loaded because the gallery failed to load. Check your connection and reopen your profile to try again."; }
+  else if(!galLoaded&&!liked.length){ ls.textContent="Loading liked memes…"; }
   else if(!liked.length){ ls.textContent=""; var em2=document.createElement('div'); em2.className="empty g-empty"; em2.textContent="You have not liked any memes yet. Tap the heart on a gallery meme to like it."; lg.appendChild(em2); }
   else { ls.textContent=liked.length+(liked.length===1?" meme liked":" memes liked"); liked.forEach(function(m){ lg.appendChild(memeCard(m,-1)); }); }
 }
@@ -1998,7 +2008,12 @@ function loadGallery(){
   /* The read rule only allows memes with hidden == false (or your own), and
      Firestore rejects a list query if ANY document it could return is denied.
      The where() filter guarantees every returned document passes the rule. */
-  fbDb.collection('memes').where('hidden','==',false).orderBy('createdAt','desc').limit(200).get()
+  /* No orderBy here on purpose: where() on one field plus orderBy() on a
+     different field needs a composite index, which this project does not
+     have. A where() alone only needs a single-field index. Sorting is done
+     client-side in currentList() (createdAt for Newest, votes for the Top
+     tabs), and the limit keeps the fetch bounded. */
+  fbDb.collection('memes').where('hidden','==',false).limit(200).get()
     .then(function(snap){
       pubMemes=[];
       snap.forEach(function(doc){ pubMemes.push(normMeme(doc)); });
@@ -2237,6 +2252,7 @@ pubGo.addEventListener('click',function(){
 /* ---------- Auth state ---------- */
 if(fbAuth){
   fbAuth.onAuthStateChanged(function(u){
+    authResolved=true;
     fbUser=u||null;
     myMemes=[]; myLoaded=false; myErr="";
     if(fbUser){ loadMyMemes(); } else { closeProfile(); }
@@ -2248,6 +2264,7 @@ if(fbAuth){
     }
   });
 }
+if(!fbAuth) authResolved=true; /* no auth service to wait for: show Sign in */
 renderAuth();
 loadGallery();
 </script>
