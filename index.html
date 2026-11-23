@@ -221,6 +221,13 @@ footer{margin-top:32px;padding-top:16px;border-top:var(--bd);color:var(--ink);fo
 .cf-card{background:#fff;border:var(--bd);box-shadow:var(--sh-lg);width:min(92vw,440px);padding:22px}
 .cf-card p{font-weight:700;font-size:16px;line-height:1.5;margin:0 0 18px}
 .cf-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+/* Templates tab: compact 2-column grid, matching the Library grids */
+#pane-templates #tplList{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tpl{flex-direction:column;align-items:stretch;text-align:center;margin-bottom:0;padding:8px 6px 7px;gap:6px}
+.tpl .tpl-art.sm{width:100%;height:auto;aspect-ratio:1/1}
+.tpl .tpl-txt{display:block}
+.tpl b{font-size:12.5px;line-height:1.25;text-transform:uppercase}
+.tpl .fmt{align-self:center}
 @media(max-width:1080px){.inspector{position:static;max-height:none}.inspector .insp-body{overflow:visible}}
 @media(max-width:760px){.library{position:static;max-height:74vh}.stage-scroll{max-height:none}}
 
@@ -1388,13 +1395,17 @@ document.getElementById('downloadBtn').onclick=async function(){
 };
 document.getElementById('shareBtn').addEventListener('click',async function(){
   if(!layers.length){ toast('Add a sticker first.'); return; }
-  var win=null; try{ win=window.open('','_blank'); }catch(e){}
   var cv=await renderPNG(1080);
   var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
   var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://lofi-meme-studio.vercel.app/#/studio');
-  if(win){ try{ win.location.href=postUrl; }catch(e){ win=null; } }
-  if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
-  toast('PNG downloaded — attach it to your X post.');
+  /* Download first, then hold the instruction toast on screen (~10s) and only
+     open the X intent tab after a short delay, so the user reads it before
+     the browser switches tabs. */
+  toast('PNG downloaded — attach it to your X post.',10000);
+  setTimeout(function(){
+    var win=null; try{ win=window.open(postUrl,'_blank','noopener'); }catch(e){}
+    if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
+  },1500);
 });
 
 /* ============ DEFERRED STUDIO BUILD: library grids and their images are created
@@ -1422,7 +1433,7 @@ document.getElementById('statStickers').textContent=STICKERS.length.toLocaleStri
 document.getElementById('statOriginals').textContent=ORIGINALS.length.toLocaleString();
 document.getElementById('statElements').textContent=EL_COUNT.toLocaleString();
 document.getElementById('statTemplates').textContent=TEMPLATES.length.toLocaleString();
-function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show')},2600); }
+function toast(msg,dur){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show')},dur||2600); }
 var editorInited=false;
 function initEditor(){
   if(editorInited) return; editorInited=true;
