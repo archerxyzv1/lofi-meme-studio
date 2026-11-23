@@ -68,18 +68,18 @@ h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transfo
 .pack-head h3{font-size:15px}
 .pack-head span{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.grid.orig{grid-template-columns:repeat(2,1fr)}
+.grid.orig{grid-template-columns:repeat(3,1fr)}
 .card{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 6px 7px;text-align:center;cursor:pointer;color:var(--ink);transition:transform .1s,box-shadow .1s}
 .card:hover{transform:translate(-2px,-2px);box-shadow:var(--sh-sm)}
 .card:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 .card img{display:block;width:100%;height:76px;object-fit:contain}
-.grid.orig .card img{height:96px}
+.grid.orig .card img{height:76px}
 .card span{display:block;font-size:11px;font-weight:800;line-height:1.25;margin-top:4px;text-transform:uppercase}
 .countline{font-size:12.5px;color:var(--muted);margin:8px 2px 0;font-weight:700}
 .seg{display:flex;background:#fff;border:var(--bd2);border-radius:3px;padding:3px;gap:3px}
 .seg button{border:0;background:transparent;border-radius:2px;padding:7px 11px;font-weight:800;font-size:13px;min-height:36px;color:var(--ink);flex:1;text-transform:uppercase}
 .seg button.on{background:var(--ink);color:#fff}
-#elScroll{max-height:min(66vh,620px);overflow-y:auto;padding:4px 3px 6px;margin:0 -3px;scrollbar-width:thin}
+#elScroll{max-height:none;overflow:visible;padding:4px 3px 6px;margin:0 -3px;scrollbar-width:thin}
 .cat-block{margin-bottom:18px}
 .cat-head{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--yellow);color:var(--ink);border:var(--bd2);border-radius:3px;padding:8px 11px;margin-bottom:10px;box-shadow:var(--sh-xs)}
 .cat-head h3{font-size:14px}
@@ -134,7 +134,7 @@ h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transfo
 .tpl b{display:block;font-size:14px}
 .tpl .fmt{font-size:10.5px;font-weight:900;text-transform:uppercase;color:var(--ink);background:var(--yellow);border:var(--bd2);border-radius:2px;padding:3px 8px;flex:none}
 .canvas-area{background:var(--surface);border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh);padding:14px;min-width:0}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;position:sticky;top:8px;z-index:30;background:#fff;border:var(--bd2);border-radius:3px;padding:8px;box-shadow:var(--sh-xs)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;position:sticky;top:86px;z-index:30;background:#fff;border:var(--bd2);border-radius:3px;padding:8px;box-shadow:var(--sh-xs)}
 .toolbar .spacer{flex:1}
 .tool-btn{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:6px;text-transform:uppercase;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
 .tool-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
@@ -209,6 +209,20 @@ h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transfo
 .sui .btn:active{box-shadow:0 0 0 var(--accent)}
 .badge{display:inline-block;background:var(--accent);color:#fff;border:var(--bd2);font-weight:900;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border-radius:2px;padding:4px 10px;margin-bottom:8px;box-shadow:2px 2px 0 var(--ink)}
 footer{margin-top:32px;padding-top:16px;border-top:var(--bd);color:var(--ink);font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ===== Studio layout fixes: compact scrollable library, balanced columns, canvas always fits ===== */
+.library{display:flex;flex-direction:column;position:sticky;top:12px;max-height:max(340px,calc(100vh - 130px))}
+.library .tabpane.active{overflow-y:auto;flex:1 1 auto;min-height:0}
+.inspector{display:flex;flex-direction:column;position:sticky;top:12px;max-height:max(340px,calc(100vh - 130px))}
+.inspector .insp-body{overflow-y:auto;flex:1 1 auto;min-height:0}
+.stage-scroll{max-height:calc(100vh - 245px)}
+.session-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.session-grid img{width:100%;display:block;border:var(--bd2);background:#fff}
+.cf-card{background:#fff;border:var(--bd);box-shadow:var(--sh-lg);width:min(92vw,440px);padding:22px}
+.cf-card p{font-weight:700;font-size:16px;line-height:1.5;margin:0 0 18px}
+.cf-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+@media(max-width:1080px){.inspector{position:static;max-height:none}.inspector .insp-body{overflow:visible}}
+@media(max-width:760px){.library{position:static;max-height:74vh}.stage-scroll{max-height:none}}
 
 /* ===== LANDING - Neo-Brutalism ===== */
 #view-studio{display:none}
@@ -394,8 +408,7 @@ input[type=range]{cursor:pointer}
 <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.3 22h-6.3l-4.9-6.4L6.5 22H3.4l7.3-8.3L1 2h6.5l4.4 5.9zm-1.1 18h1.7L7.6 3.9H5.8z"/></symbol>
 </defs></svg>
-<div id="view-landing">
-  <header class="lp-header">
+<header class="lp-header">
     <div class="lp-header-in">
       <a class="lp-brand" href="#/"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" decoding="async"><span>Lofi <em>Meme</em> Studio</span></a>
       <nav class="lp-nav" aria-label="Sections">
@@ -409,6 +422,7 @@ input[type=range]{cursor:pointer}
     </div>
   </header>
 
+<div id="view-landing">
   <section class="lp-hero">
     <div class="lp-hero-in">
       <div>
@@ -503,34 +517,6 @@ input[type=range]{cursor:pointer}
     <div style="text-align:center;margin-top:20px"><a class="btn" href="#/studio">Open Studio</a></div>
   </section>
 
-  <div class="lp-footer">
-    <div class="lp-footer-in">
-      <div class="lp-fcol">
-        <div class="lp-fbrand"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"><span>Lofi Meme Studio</span></div>
-        <p>The meme maker for Lofi the Yeti. Stickers, elements and templates, free to use.</p>
-      </div>
-      <div class="lp-fcol">
-        <h3>Studio</h3>
-        <a href="#showcase">Showcase</a>
-        <a href="#details">Details</a>
-        <a href="#templates">Templates</a>
-        <a href="#how">How it works</a>
-        <a href="#gallery">Gallery</a>
-        <a href="#/studio">Open Studio</a>
-      </div>
-      <div class="lp-fcol">
-        <h3>Lofi Games</h3>
-        <a href="https://winterplay.online/lofigame/" target="_blank" rel="noopener">Play Lofi Games</a>
-        <a href="https://winterplay.online/lofigame/" target="_blank" rel="noopener">winterplay.online/lofigame</a>
-      </div>
-      <div class="lp-fcol">
-        <h3>Follow</h3>
-        <a href="https://x.com/lofitheyeti" target="_blank" rel="noopener">Lofi on X</a>
-        <a href="https://x.com/lofigamexyz" target="_blank" rel="noopener">Lofi Games on X</a>
-      </div>
-    </div>
-    <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
-  </div>
 </div>
 
 <div id="view-studio">
@@ -547,7 +533,10 @@ input[type=range]{cursor:pointer}
       <div class="stat"><b id="statElements">…</b><span>Elements</span></div>
       <div class="stat"><b id="statTemplates">…</b><span>Templates</span></div>
     </div>
-    <a class="btn ghost" href="#/">Home</a>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn" href="#/" aria-label="Back to landing page">&larr; Back</a>
+      <a class="btn ghost" href="#/">Home</a>
+    </div>
   </div>
 
   <main class="studio">
@@ -618,10 +607,11 @@ input[type=range]{cursor:pointer}
         <div class="spacer"></div>
         <button class="tool-btn icon" id="undoBtn" title="Undo" aria-label="Undo"><svg class="ic"><use href="#i-undo"/></svg></button>
         <button class="tool-btn icon" id="redoBtn" title="Redo" aria-label="Redo"><svg class="ic"><use href="#i-redo"/></svg></button>
+        <button class="tool-btn" id="newBtn" title="Start a new blank meme">New</button>
         <button class="tool-btn icon" id="clearBtn" title="Clear canvas" aria-label="Clear canvas"><svg class="ic"><use href="#i-trash"/></svg></button>
         <button class="tool-btn" id="toGalleryBtn"><svg class="ic"><use href="#i-image"/></svg>Gallery</button>
         <button class="btn primary" id="downloadBtn"><svg class="ic"><use href="#i-download"/></svg>PNG</button>
-        <a class="btn dark" id="shareBtn" href="#" target="_blank" rel="noopener"><svg class="ic"><use href="#i-x"/></svg>Post</a>
+        <button class="btn dark" id="shareBtn" type="button"><svg class="ic"><use href="#i-x"/></svg>Post</button>
       </div>
       <div class="stage-scroll" id="stageScroll"><div id="stage"><div class="frame-ol" id="frameOl"></div></div></div>
       <p class="hint">Drag to move · corner resizes · top rotates · Del deletes</p>
@@ -686,33 +676,57 @@ input[type=range]{cursor:pointer}
       <div class="layer-list"><label style="margin-top:0">Layers</label><div id="layerList"></div>
         <div class="empty" id="emptyLayers">Canvas empty.</div>
       </div>
+      <div class="layer-list"><label style="margin-top:0">Your memes · this session</label>
+        <div class="session-grid" id="studioGallery"></div>
+        <div class="empty" id="emptySession">Nothing saved yet. The Gallery button adds your current meme here.</div>
+      </div>
       </div>
     </aside>
   </main>
 
-  <!-- GALLERY -->
-  <section class="section">
-    <div class="section-head"><div><h2>Gallery</h2></div></div>
-    <div class="gallery" id="studioGallery"></div>
-  </section>
-
-  <!-- SYSTEM -->
-  <section class="section">
-    <div class="section-head"><div><h2>The library</h2></div></div>
-    <div class="formula">
-      <div class="f-card"><h3>Stickers</h3><div class="f-eq" id="eqStickers">…</div></div>
-      <div class="f-card"><h3>Elements</h3><div class="f-eq" id="eqElements">…</div></div>
-      <div class="f-card"><h3>Canvas</h3><div class="f-eq">20 backgrounds · 3 sizes · 1080px PNG</div></div>
-    </div>
-    <div class="f-card" style="margin-top:14px"><span class="badge">Planned</span><h3>Accounts &amp; public gallery</h3><p style="margin:6px 0 0;font-size:14.5px">Google sign-in, saved memes, public gallery. Needs a server — not in this version.</p></div>
-    <div class="sui">
-      <div><span class="badge">Planned</span><h3>Mint on Sui</h3><p>Mint a finished meme as an NFT on Sui. Not built yet.</p></div>
-      <button class="btn" onclick="toast('Planned for the next phase. PNG download works now.')">Notify me</button>
-    </div>
-  </section>
 
 </div>
 </div>
+
+<div class="lp-footer">
+  <div class="lp-footer-in">
+    <div class="lp-fcol">
+      <div class="lp-fbrand"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"><span>Lofi Meme Studio</span></div>
+      <p>The meme maker for Lofi the Yeti. Stickers, elements and templates, free to use.</p>
+    </div>
+    <div class="lp-fcol">
+      <h3>Studio</h3>
+      <a href="#showcase">Showcase</a>
+      <a href="#details">Details</a>
+      <a href="#templates">Templates</a>
+      <a href="#how">How it works</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#/studio">Open Studio</a>
+    </div>
+    <div class="lp-fcol">
+      <h3>Lofi Games</h3>
+      <a href="https://winterplay.online/lofigame/" target="_blank" rel="noopener">Play Lofi Games</a>
+      <a href="https://winterplay.online/lofigame/" target="_blank" rel="noopener">winterplay.online/lofigame</a>
+    </div>
+    <div class="lp-fcol">
+      <h3>Follow</h3>
+      <a href="https://x.com/lofitheyeti" target="_blank" rel="noopener">Lofi on X</a>
+      <a href="https://x.com/lofigamexyz" target="_blank" rel="noopener">Lofi Games on X</a>
+    </div>
+  </div>
+  <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
+</div>
+
+<div class="lb" id="confirmModal" hidden role="dialog" aria-modal="true" aria-label="Confirm">
+  <div class="cf-card">
+    <p id="confirmMsg"></p>
+    <div class="cf-btns">
+      <button class="btn ghost" type="button" id="confirmNo">Cancel</button>
+      <button class="btn" type="button" id="confirmYes">Continue</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status"></div>
 
 <div class="lb" id="featLightbox" hidden role="dialog" aria-modal="true" aria-label="Featured design, enlarged view">
@@ -828,6 +842,7 @@ function restoreState(s){
   var o=JSON.parse(s); layers=o.layers; currentBg=o.bg; currentFrame=o.frame; stageSize=o.size||"r11"; selId=null;
   uid=layers.reduce(function(m,l){return Math.max(m,l.id)},uid);
   document.querySelectorAll('#sizeSeg button').forEach(function(b){ b.classList.toggle('on',b.dataset.size===stageSize); });
+  stage.className=stageSize==='r11'?'':stageSize; applyZoom();
   document.querySelectorAll('#frameGrid .frame-btn').forEach(function(b){ b.classList.toggle('on',b.textContent===currentFrame); });
   syncBgUI();
   applyBg(); render();
@@ -920,16 +935,16 @@ var gesture=null;
 function onLayerPointer(e){
   var el=e.currentTarget, id=+el.dataset.id, l=layers.find(function(x){return x.id===id});
   if(!l) return;
+  var handleEl=(e.target&&e.target.closest)?e.target.closest('[data-h]'):null;
+  var handle=handleEl?handleEl.getAttribute('data-h'):null;
   if(selId!==id){ selId=id; render(); el=stage.querySelector('.layer[data-id="'+id+'"]'); if(!el) return; }
-  var handle=e.target.dataset?e.target.dataset.h:null;
-  var sr=stage.getBoundingClientRect(), lr=el.getBoundingClientRect();
+  var lr=el.getBoundingClientRect();
   var cx=lr.left+lr.width/2, cy=lr.top+lr.height/2;
   var preSnap=curState();
   if(handle==='rot'){ gesture={mode:'rot',id:id,cx:cx,cy:cy,a0:Math.atan2(e.clientY-cy,e.clientX-cx),r0:l.rot,snap:preSnap}; }
   else if(handle==='br'){ gesture={mode:'size',id:id,cx:cx,cy:cy,d0:Math.max(8,Math.hypot(e.clientX-cx,e.clientY-cy)),w0:l.w,s0:l.size,snap:preSnap}; }
   else { gesture={mode:'move',id:id,dx:e.clientX-cx,dy:e.clientY-cy,snap:preSnap}; }
-  try{ el.setPointerCapture(e.pointerId); }catch(err){}
-  el.onpointermove=function(ev){
+  function mv(ev){
     if(!gesture) return;
     var ll=layers.find(function(x){return x.id===gesture.id}); if(!ll) return;
     var r2=stage.getBoundingClientRect();
@@ -942,19 +957,28 @@ function onLayerPointer(e){
       deg=((deg+180)%360+360)%360-180;
       [0,90,-90,180,-180,45,-45].forEach(function(s){ if(Math.abs(deg-s)<5) deg=s; });
       ll.rot=Math.round(deg);
+      var rr=document.getElementById('rotRange'); if(rr) rr.value=ll.rot;
     } else if(gesture.mode==='size'){
       var d=Math.max(8,Math.hypot(ev.clientX-gesture.cx,ev.clientY-gesture.cy));
       ll.w=Math.min(118,Math.max(6,gesture.w0*d/gesture.d0));
       if(ll.type==='text'&&gesture.s0) ll.size=Math.min(18,Math.max(2.5,gesture.s0*d/gesture.d0));
+      var sr2=document.getElementById('scaleRange'); if(sr2) sr2.value=Math.round(ll.w);
     }
     var elx=stage.querySelector('.layer[data-id="'+ll.id+'"]');
     if(elx){ elx.style.left=ll.x+'%'; elx.style.top=ll.y+'%'; elx.style.width=ll.w+'%';
       elx.style.transform='translate(-50%,-50%) rotate('+ll.rot+'deg) scaleX('+(ll.flip?-1:1)+')';
       if(ll.type==='text'){ var tx=elx.querySelector('.txt'); if(tx) tx.style.fontSize=(ll.size/100*stage.clientWidth)+'px'; } }
-  };
-  el.onpointerup=el.onpointercancel=function(){
+  }
+  function up(){
+    window.removeEventListener('pointermove',mv);
+    window.removeEventListener('pointerup',up);
+    window.removeEventListener('pointercancel',up);
     if(gesture&&gesture.snap&&gesture.snap!==curState()){ undoStack.push(gesture.snap); if(undoStack.length>40)undoStack.shift(); redoStack.length=0; }
-    gesture=null; el.onpointermove=null; el.onpointerup=null; render(); syncHistBtns(); };
+    gesture=null; render(); syncHistBtns();
+  }
+  window.addEventListener('pointermove',mv);
+  window.addEventListener('pointerup',up);
+  window.addEventListener('pointercancel',up);
   e.preventDefault(); e.stopPropagation();
 }
 
@@ -962,7 +986,8 @@ function onLayerPointer(e){
 var snapStash=null;
 function stashSnap(){ snapStash=curState(); }
 function commitSnap(){ if(snapStash&&snapStash!==curState()){ undoStack.push(snapStash); if(undoStack.length>40)undoStack.shift(); redoStack.length=0; } snapStash=null; syncHistBtns(); }
-function bindSnap(el){ if(!el) return; el.addEventListener('pointerdown',stashSnap); el.addEventListener('focus',stashSnap); el.addEventListener('change',commitSnap); el.addEventListener('blur',commitSnap); }
+function bindSnap(el){ if(!el) return; el.addEventListener('pointerdown',stashSnap); el.addEventListener('focus',stashSnap); el.addEventListener('change',commitSnap); el.addEventListener('blur',commitSnap);
+  el.addEventListener('input',function(){ if(snapStash&&snapStash!==curState()){ undoStack.push(snapStash); if(undoStack.length>40)undoStack.shift(); redoStack.length=0; snapStash=null; syncHistBtns(); } }); }
 function syncInspector(){
   var l=getSel(), c=document.getElementById('controls'), info=document.getElementById('selInfo');
   if(!l){ c.style.display='none'; info.textContent='Nothing selected.'; return; }
@@ -1013,14 +1038,61 @@ document.getElementById('flipBtn').onclick=function(){ var l=getSel(); if(l){ pu
 document.getElementById('centerBtn').onclick=function(){ var l=getSel(); if(l){ pushUndo(); l.x=50; l.y=50; render(); }};
 document.getElementById('fwdBtn').onclick=function(){ var l=getSel(); if(!l)return; var i=layers.indexOf(l); if(i<layers.length-1){ pushUndo(); layers.splice(i,1); layers.splice(i+1,0,l); render(); }};
 document.getElementById('backBtn').onclick=function(){ var l=getSel(); if(!l)return; var i=layers.indexOf(l); if(i>0){ pushUndo(); layers.splice(i,1); layers.splice(i-1,0,l); render(); }};
-document.getElementById('clearBtn').onclick=function(){ if(!layers.length)return; pushUndo(); layers=[]; selId=null; render(); toast('Canvas cleared.'); };
+document.getElementById('clearBtn').onclick=function(){
+  var bgIsDefault=!isSceneBg(currentBg)&&currentBg[0]===BGS[0][0];
+  if(!layers.length&&bgIsDefault&&currentFrame==='None'){ toast('Canvas is already empty.'); return; }
+  pushUndo(); layers=[]; selId=null; currentBg=BGS[0]; currentFrame='None';
+  document.querySelectorAll('#frameGrid .frame-btn').forEach(function(b,i){ b.classList.toggle('on',FRAMES[i]==='None'); });
+  syncBgUI(); applyBg(); render(); toast('Canvas cleared.');
+};
 document.getElementById('sizeSeg').addEventListener('click',function(e){ if(e.target.tagName!=='BUTTON')return;
+  if(e.target.dataset.size===stageSize) return;
   this.querySelectorAll('button').forEach(function(b){b.classList.remove('on')}); e.target.classList.add('on');
   pushUndo(); stageSize=e.target.dataset.size; stage.className=stageSize==='r11'?'':stageSize; applyZoom(); render(); });
 
+/* ============ CONFIRM DIALOG (in-page UI; native browser dialogs are blocked in the frame) ============ */
+var confirmCb=null;
+function askConfirm(msg,cb){
+  confirmCb=cb;
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('confirmModal').hidden=false;
+  document.body.style.overflow='hidden';
+  document.getElementById('confirmYes').focus();
+}
+function closeConfirm(){ document.getElementById('confirmModal').hidden=true; document.body.style.overflow=''; confirmCb=null; }
+document.getElementById('confirmYes').addEventListener('click',function(){ var cb=confirmCb; closeConfirm(); if(cb) cb(); });
+document.getElementById('confirmNo').addEventListener('click',closeConfirm);
+document.getElementById('confirmModal').addEventListener('click',function(e){ if(e.target===this) closeConfirm(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!document.getElementById('confirmModal').hidden) closeConfirm(); });
+
+/* ============ FRESH BLANK STUDIO (landing entry + NEW button) ============ */
+function resetStudio(){
+  layers=[]; selId=null; currentBg=BGS[0]; currentFrame='None'; stageSize='r11'; stage.className=''; zoom=1;
+  undoStack=[]; redoStack=[]; syncHistBtns();
+  document.querySelectorAll('#sizeSeg button').forEach(function(b,i){ b.classList.toggle('on',i===0); });
+  document.querySelectorAll('#frameGrid .frame-btn').forEach(function(b,i){ b.classList.toggle('on',FRAMES[i]==='None'); });
+  var ss=document.getElementById('stickerSearch'); if(ss) ss.value='';
+  if(typeof stickerQ!=='undefined') stickerQ='';
+  var es=document.getElementById('elSearch'); if(es) es.value='';
+  if(typeof elQ!=='undefined') elQ='';
+  if(typeof libraryBuilt!=='undefined'&&libraryBuilt&&typeof drawStickers==='function') drawStickers();
+  if(typeof elementsBuilt!=='undefined'&&elementsBuilt&&typeof drawElements==='function') drawElements();
+  syncBgUI(); applyBg(); applyZoom(); render();
+}
+document.getElementById('newBtn').onclick=function(){
+  if(layers.length){ askConfirm('Start a new meme? This will clear your current canvas.',function(){ resetStudio(); toast('New blank canvas.'); }); }
+  else { resetStudio(); toast('New blank canvas.'); }
+};
+
 /* Zoom */
 function fitW(){ return Math.max(240,stageScroll.clientWidth-32); }
-function applyZoom(){ stage.style.width=Math.round(fitW()*zoom)+'px'; document.getElementById('zoomVal').textContent=Math.round(zoom*100)+'%'; }
+function applyZoom(){
+  var ratio=stageSize==='r916'?16/9:(stageSize==='r45'?5/4:1);
+  var maxH=Math.max(300,window.innerHeight-300);
+  var base=Math.min(fitW(),maxH/ratio);
+  stage.style.width=Math.round(base*zoom)+'px';
+  document.getElementById('zoomVal').textContent=Math.round(zoom*100)+'%';
+}
 document.getElementById('zoomIn').onclick=function(){ zoom=Math.min(2,+(zoom+0.15).toFixed(2)); applyZoom(); render(); };
 document.getElementById('zoomOut').onclick=function(){ zoom=Math.max(0.4,+(zoom-0.15).toFixed(2)); applyZoom(); render(); };
 document.getElementById('zoomVal').onclick=function(){ zoom=1; applyZoom(); render(); };
@@ -1050,7 +1122,7 @@ function stickerCard(s,pack){
   var d=document.createElement('div'); d.className='card'; d.setAttribute('role','button'); d.setAttribute('tabindex','0');
   var im=document.createElement('img'); im.src='assets/thumbs/'+s.file; im.alt=(pack==='original'?'Original Lofi · ':'Lofi · ')+s.label+' sticker'; im.loading='lazy'; im.decoding='async';
   d.appendChild(im); var sp=document.createElement('span'); sp.textContent=s.label; d.appendChild(sp);
-  function add(){ addLayer(baseLayer({type:pack,name:(pack==='original'?'Original · ':'Sticker · ')+s.label,file:s.file,x:50,y:52,w:52})); toast('Added: '+s.label+(pack==='original'?' (Original pack)':'')); }
+  function add(){ addLayer(baseLayer({type:(pack==='original'?'original':'sticker'),name:(pack==='original'?'Original · ':'Sticker · ')+s.label,file:s.file,x:50,y:52,w:52})); toast('Added: '+s.label+(pack==='original'?' (Original pack)':'')); }
   d.onclick=add; d.onkeydown=function(e){ if(e.key==='Enter')add(); };
   return d;
 }
@@ -1205,6 +1277,14 @@ function appendTplLayers(t,box,cls,z){
     im.style.zIndex=z||2; box.appendChild(im);
   });
 }
+function loadTemplate(t){
+  pushUndo();
+  currentBg=t.scene?sceneBgEntry({name:t.name,file:t.scene}):BGS[t.bg]; stageSize='r11'; stage.className='';
+  document.querySelectorAll('#sizeSeg button').forEach(function(x,i){ x.classList.toggle('on',i===0); });
+  layers=t.build(); layers.forEach(function(l){ l.id=++uid; }); selId=null; applyBg();
+  syncBgUI(); applyZoom();
+  render(); toast('Template loaded: '+t.name);
+}
 var tplEl=document.getElementById('tplList');
 function buildTplList(){
 TEMPLATES.forEach(function(t){
@@ -1212,42 +1292,21 @@ TEMPLATES.forEach(function(t){
   b.appendChild(tplArt(t));
   var mid=document.createElement('span'); mid.className='tpl-txt'; var bb=document.createElement('b'); bb.textContent=t.name; mid.appendChild(bb); b.appendChild(mid);
   var fm=document.createElement('span'); fm.className='fmt'; fm.textContent=t.fmt; b.appendChild(fm);
-  b.onclick=function(){ pushUndo(); currentBg=t.scene?sceneBgEntry({name:t.name,file:t.scene}):BGS[t.bg]; stageSize='r11'; stage.className='';
-    document.querySelectorAll('#sizeSeg button').forEach(function(x,i){ x.classList.toggle('on',i===0); });
-    layers=t.build(); layers.forEach(function(l){ l.id=++uid; }); selId=null; applyBg();
-    syncBgUI();
-    render(); toast('Template loaded: '+t.name); };
+  b.onclick=function(){
+    if(layers.length){ askConfirm('Loading this template will replace your current meme — continue?',function(){ loadTemplate(t); }); }
+    else loadTemplate(t);
+  };
   tplEl.appendChild(b); });
 }
 
-/* ============ GALLERY (this session) ============ */
-var gal=document.getElementById('studioGallery'), votes={};
-function buildStudioGallery(){
-TEMPLATES.slice(0,6).forEach(function(t,i){
-  var card=document.createElement('div'); card.className='g-card';
-  var art=t.scene
-    ? '<div class="g-art"><img class="shot" src="assets/thumbs/'+t.scene+'" alt="'+t.name+' example" loading="lazy" decoding="async"><div class="g-cap"></div></div>'
-    : '<div class="g-art" style="background:linear-gradient(160deg,'+BGS[t.bg][1]+','+BGS[t.bg][2]+')"><img class="stk" src="assets/thumbs/'+t.thumb+'" alt="'+t.name+' example" loading="lazy" decoding="async"><div class="g-cap"></div></div>';
-  card.innerHTML=art
-   +'<div class="g-meta"><div><b></b><span>Template</span></div><button class="vote" data-i="t'+i+'"><svg class="ic"><use href="#i-heart"/></svg><span>0</span></button></div>';
-  if(t.scene) appendTplLayers(t,card.querySelector('.g-art'),'',1);
-  card.querySelector('.g-cap').textContent=t.build().filter(function(l){return l.type==='text'})[0].text;
-  card.querySelector('.g-meta b').textContent=t.name;
-  gal.appendChild(card); });
-}
-gal.addEventListener('click',function(e){ var b=e.target.closest('.vote'); if(!b)return; var i=b.dataset.i;
-  if(votes[i]){ votes[i]=0; b.classList.remove('voted'); } else { votes[i]=1; b.classList.add('voted'); }
-  b.querySelector('span').textContent=votes[i]; });
+/* ============ SESSION GALLERY (in the Layer panel) ============ */
 document.getElementById('toGalleryBtn').onclick=async function(){
   if(!layers.length){ toast('Add a sticker first.'); return; }
   var cv=await renderPNG(540);
-  var card=document.createElement('div'); card.className='g-card';
-  var idx='u'+Date.now(); votes[idx]=0;
-  card.innerHTML='<div class="g-art"><img class="shot" src="'+cv.toDataURL('image/png')+'" alt="Your Lofi meme"></div>'
-   +'<div class="g-meta"><div><b>Your meme</b><span>Yours · this session</span></div><button class="vote" data-i="'+idx+'"><svg class="ic"><use href="#i-heart"/></svg><span>0</span></button></div>';
-  gal.insertBefore(card,gal.firstChild);
+  var im=document.createElement('img'); im.src=cv.toDataURL('image/png'); im.alt='Your Lofi meme, saved this session';
+  var gal=document.getElementById('studioGallery'); gal.insertBefore(im,gal.firstChild);
+  var es=document.getElementById('emptySession'); if(es) es.style.display='none';
   toast('Added to gallery.');
-  card.scrollIntoView({behavior:'smooth',block:'center'});
 };
 
 /* ============ EXPORT PNG (1080px) ============ */
@@ -1327,8 +1386,15 @@ document.getElementById('downloadBtn').onclick=async function(){
   var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
   toast('PNG downloaded · 1080px.');
 };
-document.getElementById('shareBtn').addEventListener('click',function(){
-  this.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Play like a yeti.');
+document.getElementById('shareBtn').addEventListener('click',async function(){
+  if(!layers.length){ toast('Add a sticker first.'); return; }
+  var win=null; try{ win=window.open('','_blank'); }catch(e){}
+  var cv=await renderPNG(1080);
+  var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
+  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://lofi-meme-studio.vercel.app/#/studio');
+  if(win){ try{ win.location.href=postUrl; }catch(e){ win=null; } }
+  if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
+  toast('PNG downloaded — attach it to your X post.');
 });
 
 /* ============ DEFERRED STUDIO BUILD: library grids and their images are created
@@ -1346,7 +1412,6 @@ function ensureStudio(){
     try{ drawStickers(); }catch(e){}
     try{ buildScenes(); }catch(e){}
     try{ buildTplList(); }catch(e){}
-    try{ buildStudioGallery(); }catch(e){}
   }
   try{ initEditor(); }catch(e){}
 }
@@ -1357,17 +1422,11 @@ document.getElementById('statStickers').textContent=STICKERS.length.toLocaleStri
 document.getElementById('statOriginals').textContent=ORIGINALS.length.toLocaleString();
 document.getElementById('statElements').textContent=EL_COUNT.toLocaleString();
 document.getElementById('statTemplates').textContent=TEMPLATES.length.toLocaleString();
-document.getElementById('eqStickers').textContent=STICKERS.length+' character + '+ORIGINALS.length+' original';
-document.getElementById('eqElements').textContent=EL_COUNT+' PNG images · '+elCatCount('funny')+' funny · '+elCatCount('general')+' general · '+elCatCount('winter')+' winter';
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show')},2600); }
 var editorInited=false;
 function initEditor(){
   if(editorInited) return; editorInited=true;
   stage.className=''; applyBg(); applyZoom();
-  layers.push(baseLayer({type:'sticker',name:'Sticker · Cute',file:'lofi-sticker-cute.webp',x:50,y:48,w:56}));
-  layers.push(baseLayer({type:'text',name:'Text · GM',text:'GM',font:"'Baloo 2'",color:'#ffffff',size:8,tOutline:16,tOutlineColor:'#12242E',tShadow:true,bgC:'',x:50,y:88,w:70}));
-  layers.forEach(function(l){ l.id=++uid; });
-  selId=layers[0].id;
   undoStack=[]; redoStack=[]; syncHistBtns(); render();
 }
 </script>
@@ -1385,6 +1444,7 @@ function initEditor(){
     document.documentElement.dataset.view='studio';
     setHash('#/studio');
     ensureStudio();
+    resetStudio();
     requestAnimationFrame(function(){ try{ applyZoom(); render(); }catch(e){} window.scrollTo(0,0); });
   }
   function showLanding(){
@@ -1398,6 +1458,17 @@ function initEditor(){
   });
   document.querySelectorAll('a[href="#/"]').forEach(function(a){
     a.addEventListener('click',function(e){ e.preventDefault(); showLanding(); });
+  });
+  /* Section links in the shared header/footer: from the studio they return to the landing section */
+  document.querySelectorAll('.lp-nav a[href^="#"], .lp-fcol a[href^="#"]').forEach(function(a){
+    var h=a.getAttribute('href');
+    if(h==='#/'||h==='#/studio') return;
+    a.addEventListener('click',function(e){
+      if(document.documentElement.dataset.view!=='studio') return;
+      e.preventDefault(); showLanding();
+      var t=document.querySelector(h);
+      if(t) setTimeout(function(){ t.scrollIntoView(); },40);
+    });
   });
 
   /* Details: real counts from the libraries, no image grids on the landing page */
@@ -1440,7 +1511,7 @@ function initEditor(){
     var bb=document.createElement('b'); bb.textContent=t.name; meta.appendChild(bb);
     var fm=document.createElement('span'); fm.className='sc-tag classic'; fm.textContent=t.fmt; meta.appendChild(fm);
     b.appendChild(meta);
-    b.onclick=function(){ ensureStudio(); document.getElementById('tplList').children[i].click(); goStudio(); };
+    b.onclick=function(){ goStudio(); document.getElementById('tplList').children[i].click(); };
     tg.appendChild(b);
   });
 
