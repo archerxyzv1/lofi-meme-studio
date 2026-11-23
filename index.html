@@ -1,0 +1,1474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="light"/>
+<link rel="icon" href="data:,"/>
+<title>Lofi Meme Studio</title>
+<script>document.documentElement.dataset.view=(window.location.hash==='#/studio')?'studio':'landing';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Archivo+Black&family=Anton&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/thumbs/hero-meme-winter.webp" fetchpriority="high">
+<style>
+:root{
+  --bg:#D8F0FA; --surface:#FFFFFF; --surface2:#BFE6F5; --ink:#111111; --muted:#41525C;
+  --ice:#0EA5C6; --ice-dark:#06748E; --ice-light:#DFF5FB; --snow:#FFFFFF;
+  --accent:#FF2E7E; --yellow:#FFC400; --coral:#E63E21; --gold:#E9A426; --pink:#E86A92; --mint:#1FA37A;
+  --line:#111111; --line2:#111111;
+  --bd:3px solid var(--ink); --bd2:2px solid var(--ink);
+  --sh:7px 7px 0 var(--ink); --sh-sm:4px 4px 0 var(--ink); --sh-xs:3px 3px 0 var(--ink); --sh-lg:10px 10px 0 var(--ink);
+  --radius:0px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+html,body{margin:0;padding:0}
+body{font-family:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-color:var(--bg);background-image:radial-gradient(rgba(17,17,17,.16) 1.6px, transparent 1.7px);background-size:22px 22px}
+button,input,select,textarea{font:inherit}
+button{min-height:44px;cursor:pointer}
+a{color:var(--ice-dark)}
+h1,h2{font-family:"Archivo Black","Archivo",sans-serif;line-height:1;text-transform:uppercase;margin:0;letter-spacing:0}
+h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transform:uppercase;margin:0;letter-spacing:.01em}
+::selection{background:var(--yellow);color:var(--ink)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ic{width:18px;height:18px;flex:none}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 48px;width:100%}
+
+/* Studio intro */
+.intro{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 0 18px}
+.intro h1{font-size:clamp(28px,4vw,42px)}
+.intro h1 em{font-style:normal;color:var(--accent)}
+.stats{display:flex;gap:12px;flex-wrap:wrap}
+.stat{background:var(--surface);border:var(--bd2);border-radius:3px;box-shadow:var(--sh-xs);padding:10px 14px;min-width:92px}
+.stat b{font-family:"Archivo Black";font-size:24px;display:block;line-height:1}
+.stat span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:800}
+
+/* Studio layout - fully responsive */
+.studio{display:grid;grid-template-columns:340px minmax(0,1fr) 280px;gap:18px;align-items:start}
+@media(max-width:1080px){.studio{grid-template-columns:320px minmax(0,1fr)}.inspector{grid-column:1/-1}}
+@media(max-width:760px){.studio{display:flex;flex-direction:column}.canvas-area{order:-1;width:100%}.library,.inspector{width:100%}#stage{width:100%!important;max-width:520px}}
+.panel{background:var(--surface);border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh);overflow:hidden}
+.panel-head{padding:13px 16px;border-bottom:var(--bd);display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--yellow)}
+.panel-head h2{font-size:16px;display:flex;align-items:center;gap:8px}
+.tabs{display:flex;gap:8px;padding:12px;flex-wrap:wrap}
+.tab{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
+.tab .ic{width:16px;height:16px}
+.tab:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.tab:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff}
+.tabpane{display:none;padding:0 12px 14px}
+.tabpane.active{display:block}
+.searchbox{position:relative;margin-bottom:10px}
+.searchbox .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
+.search{width:100%;padding:11px 12px 11px 38px;border-radius:3px;border:var(--bd2);background:#fff;color:var(--ink);font-weight:600}
+.pack-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:14px 0 8px}
+.pack-head h3{font-size:15px}
+.pack-head span{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid.orig{grid-template-columns:repeat(2,1fr)}
+.card{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 6px 7px;text-align:center;cursor:pointer;color:var(--ink);transition:transform .1s,box-shadow .1s}
+.card:hover{transform:translate(-2px,-2px);box-shadow:var(--sh-sm)}
+.card:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.card img{display:block;width:100%;height:76px;object-fit:contain}
+.grid.orig .card img{height:96px}
+.card span{display:block;font-size:11px;font-weight:800;line-height:1.25;margin-top:4px;text-transform:uppercase}
+.countline{font-size:12.5px;color:var(--muted);margin:8px 2px 0;font-weight:700}
+.seg{display:flex;background:#fff;border:var(--bd2);border-radius:3px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;border-radius:2px;padding:7px 11px;font-weight:800;font-size:13px;min-height:36px;color:var(--ink);flex:1;text-transform:uppercase}
+.seg button.on{background:var(--ink);color:#fff}
+#elScroll{max-height:min(66vh,620px);overflow-y:auto;padding:4px 3px 6px;margin:0 -3px;scrollbar-width:thin}
+.cat-block{margin-bottom:18px}
+.cat-head{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--yellow);color:var(--ink);border:var(--bd2);border-radius:3px;padding:8px 11px;margin-bottom:10px;box-shadow:var(--sh-xs)}
+.cat-head h3{font-size:14px}
+.cat-head span{font-size:11.5px;font-weight:800;text-transform:uppercase}
+.el-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.el-btn{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 6px 7px;font-size:11px;font-weight:800;text-align:center;cursor:pointer;color:var(--ink);line-height:1.25;text-transform:uppercase;transition:transform .1s,box-shadow .1s}
+.el-btn:hover{transform:translate(-2px,-2px);box-shadow:var(--sh-sm)}
+.el-btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.el-btn img{display:block;width:100%;height:62px;object-fit:contain}
+.el-btn span{display:block;margin-top:4px}
+.mini-label{font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin:12px 0 5px}
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.swatch{height:42px;border-radius:3px;border:var(--bd2);cursor:pointer;min-height:42px;padding:0;transition:transform .1s,box-shadow .1s}
+.swatch:hover{transform:translate(-1px,-1px);box-shadow:var(--sh-xs)}
+.swatch.on{box-shadow:var(--sh-sm);transform:translate(-2px,-2px)}
+.scene-swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.scene-swatch{position:relative;border:var(--bd2);border-radius:3px;padding:0;cursor:pointer;overflow:hidden;aspect-ratio:4/3;background:#fff;text-align:left;transition:transform .1s,box-shadow .1s}
+.scene-swatch img{width:100%;height:100%;object-fit:cover;display:block}
+.scene-swatch span{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:var(--bd2);font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.03em;padding:3px 7px;color:var(--ink)}
+.scene-swatch:hover{transform:translate(-1px,-1px);box-shadow:var(--sh-xs)}
+.scene-swatch.on{box-shadow:var(--sh-sm);transform:translate(-2px,-2px)}
+.scene-swatch.on span{background:var(--yellow)}
+.frame-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.frame-btn{border:var(--bd2);background:#fff;border-radius:3px;padding:9px 4px;font-size:12px;font-weight:800;cursor:pointer;color:var(--ink);text-transform:uppercase;transition:transform .1s,box-shadow .1s}
+.frame-btn:hover{transform:translate(-1px,-1px);box-shadow:var(--sh-xs)}
+.frame-btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.frame-btn.on{background:var(--yellow)}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:var(--bd2);border-radius:3px;background:#fff;color:var(--ink);font-weight:600}
+.field input[type=color]{height:42px;padding:4px}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.btn{border:var(--bd);border-radius:3px;padding:11px 18px;font-weight:900;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;text-transform:uppercase;letter-spacing:.02em;box-shadow:var(--sh-sm);transition:transform .1s,box-shadow .1s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn.primary{background:var(--yellow);color:var(--ink)}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.ghost{background:#fff;color:var(--ink)}
+.presets{display:flex;flex-wrap:wrap;gap:7px}
+.preset{border:var(--bd2);border-radius:3px;background:#fff;padding:8px 12px;font-weight:700;font-size:13px;color:var(--ink);transition:transform .1s,box-shadow .1s}
+.preset:hover{transform:translate(-1px,-1px);box-shadow:var(--sh-xs)}
+.preset:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.tpl{display:flex;gap:10px;width:100%;text-align:left;border:var(--bd2);background:#fff;border-radius:3px;padding:10px;margin-bottom:10px;cursor:pointer;align-items:center;color:var(--ink);transition:transform .1s,box-shadow .1s}
+.tpl:hover{transform:translate(-2px,-2px);box-shadow:var(--sh-sm)}
+.tpl:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.tpl>img{width:52px;height:52px;object-fit:contain;flex:none}
+.tpl-art{position:relative;overflow:hidden;container-type:inline-size}
+.tpl-art.sm{width:54px;height:54px;flex:none;border:var(--bd2);border-radius:2px;background:#DFF5FB}
+.ta-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ta-el{position:absolute;z-index:1;display:block}
+.ta-cap{position:absolute;z-index:2;transform:translate(-50%,-50%);text-align:center;line-height:1.12;font-size:5px;font-size:calc(var(--fs,7)*1cqw);-webkit-text-stroke:calc(var(--fs,7)*var(--ol,0)*.01cqw) var(--olc,#111111);paint-order:stroke fill}
+.tpl b{display:block;font-size:14px}
+.tpl .fmt{font-size:10.5px;font-weight:900;text-transform:uppercase;color:var(--ink);background:var(--yellow);border:var(--bd2);border-radius:2px;padding:3px 8px;flex:none}
+.canvas-area{background:var(--surface);border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh);padding:14px;min-width:0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;position:sticky;top:8px;z-index:30;background:#fff;border:var(--bd2);border-radius:3px;padding:8px;box-shadow:var(--sh-xs)}
+.toolbar .spacer{flex:1}
+.tool-btn{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:6px;text-transform:uppercase;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
+.tool-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.tool-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.tool-btn.icon{width:42px;padding:8px 0}
+.tool-btn:disabled{opacity:.35;cursor:default;transform:none;box-shadow:var(--sh-xs)}
+.zoombox{display:flex;align-items:center;gap:4px;background:#fff;border:var(--bd2);border-radius:3px;padding:3px}
+.zoombox button{border:0;background:transparent;border-radius:2px;min-height:32px;min-width:34px;font-weight:800;font-size:14px;color:var(--ink);padding:4px 6px;display:inline-flex;align-items:center;justify-content:center}
+.zoombox .zv{min-width:52px;text-align:center;font-size:13px}
+.stage-scroll{overflow:auto;background-color:var(--surface2);background-image:radial-gradient(rgba(17,17,17,.18) 1.5px, transparent 1.6px);background-size:20px 20px;border:var(--bd2);border-radius:3px;padding:14px}
+#stage{position:relative;width:min(520px,100%);aspect-ratio:1/1;background:#BFE8F2;border:var(--bd);border-radius:3px;overflow:hidden;touch-action:none;box-shadow:8px 8px 0 var(--ink);margin:0 auto;flex:none}
+#stage.r45{aspect-ratio:4/5}#stage.r916{aspect-ratio:9/16}
+#stage .frame-ol{position:absolute;inset:0;pointer-events:none;z-index:60}
+.layer{position:absolute;transform-origin:center;cursor:grab;user-select:none;-webkit-user-select:none}
+.layer.selected{outline:3px solid var(--accent);outline-offset:3px}
+.layer svg,.layer img{display:block;width:100%;height:100%;pointer-events:none}
+.layer img{object-fit:contain}
+.layer .txt{font-weight:800;text-align:center;line-height:1.12;white-space:pre-wrap;word-break:break-word;pointer-events:none;width:100%}
+.handles{position:absolute;inset:0;pointer-events:none;display:none}
+.layer.selected .handles{display:block}
+.h-br{position:absolute;right:-13px;bottom:-13px;width:26px;height:26px;border-radius:2px;background:var(--yellow);border:3px solid var(--ink);pointer-events:auto;cursor:nwse-resize;touch-action:none}
+.h-rot{position:absolute;left:50%;top:-40px;transform:translateX(-50%);width:26px;height:26px;border-radius:2px;background:var(--accent);border:3px solid var(--ink);pointer-events:auto;cursor:grab;touch-action:none}
+.h-rot::before{content:"";position:absolute;left:50%;top:23px;transform:translateX(-50%);width:3px;height:14px;background:var(--ink)}
+.hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.inspector{padding:0}
+.insp-body{padding:14px}
+.inspector p.sub{color:var(--muted);font-size:13px;margin:0 0 6px;font-weight:700}
+.inspector label{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--ink);display:block;margin:12px 0 5px}
+.inspector input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.inspector input[type=color]{width:100%;height:40px;border:var(--bd2);border-radius:3px;background:#fff;padding:4px}
+.inspector input[type=text],.inspector textarea,.inspector select{width:100%;padding:9px 10px;border:var(--bd2);border-radius:3px;background:#fff;color:var(--ink);font-weight:600}
+.insp-sec{border:var(--bd2);border-radius:3px;padding:2px 12px 12px;margin-top:12px;background:#fff}
+.insp-sec>h3{font-size:13px;margin:10px 0 2px}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btn-grid button{border:var(--bd2);background:#fff;border-radius:3px;font-weight:800;font-size:13px;padding:9px 6px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:6px;text-transform:uppercase;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
+.btn-grid button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn-grid button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn-grid button.danger{color:var(--coral)}
+.checkline{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ink);margin:10px 0 2px}
+.checkline input{width:18px;height:18px;accent-color:var(--accent)}
+.layer-list{margin-top:14px;border-top:var(--bd2);padding-top:12px}
+.layer-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:var(--bd2);background:#fff;border-radius:3px;padding:8px 10px;margin-bottom:7px;font-size:13px;font-weight:700;color:var(--ink);transition:transform .1s,box-shadow .1s}
+.layer-item:hover{transform:translate(-1px,-1px);box-shadow:var(--sh-xs)}
+.layer-item:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.layer-item.on{background:var(--yellow)}
+.layer-item .tag{margin-left:auto;font-size:10.5px;font-weight:900;text-transform:uppercase;color:var(--muted)}
+.empty{border:2px dashed var(--ink);border-radius:3px;padding:16px;text-align:center;color:var(--muted);font-size:13.5px;font-weight:700;background:#fff}
+.section{margin-top:30px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.section-head h2{font-size:27px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:760px){.gallery{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.gallery{grid-template-columns:1fr}}
+.g-card{background:var(--surface);border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh-sm);overflow:hidden}
+.g-art{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;position:relative;padding:18px;overflow:hidden;border-bottom:var(--bd2)}
+.g-art img.shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.g-art img.stk{width:64%;position:relative}
+.g-cap{position:absolute;left:10px;right:10px;bottom:10px;text-align:center;font-family:"Archivo Black",sans-serif;font-size:19px;color:#fff;text-transform:uppercase;text-shadow:0 3px 0 #111111;z-index:2}
+.g-meta{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;gap:8px}
+.g-meta b{font-size:14px}.g-meta span{display:block;font-size:12px;color:var(--muted);font-weight:700}
+.vote{border:var(--bd2);background:#fff;border-radius:3px;padding:8px 12px;font-weight:800;font-size:13px;color:var(--ink);flex:none;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
+.vote:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.vote.voted{background:var(--yellow)}
+.formula{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.formula{grid-template-columns:1fr}}
+.f-card{background:var(--surface);border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh-sm);padding:20px}
+.f-card h3{font-size:18px;margin-bottom:8px}
+.f-eq{font-family:"Archivo Black";font-size:15px;text-transform:uppercase;background:var(--yellow);color:var(--ink);border:var(--bd2);border-radius:3px;padding:10px 12px;text-align:center}
+.sui{background:var(--ink);color:#fff;border:var(--bd);border-radius:var(--radius);box-shadow:7px 7px 0 var(--accent);padding:22px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:16px}
+.sui h3{font-size:21px}.sui p{opacity:.85;margin:6px 0 0;max-width:560px;font-size:14.5px}
+.sui .btn{background:var(--yellow);color:var(--ink);box-shadow:4px 4px 0 var(--accent)}
+.sui .btn:active{box-shadow:0 0 0 var(--accent)}
+.badge{display:inline-block;background:var(--accent);color:#fff;border:var(--bd2);font-weight:900;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border-radius:2px;padding:4px 10px;margin-bottom:8px;box-shadow:2px 2px 0 var(--ink)}
+footer{margin-top:32px;padding-top:16px;border-top:var(--bd);color:var(--ink);font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ===== LANDING - Neo-Brutalism ===== */
+#view-studio{display:none}
+html[data-view="studio"] #view-studio{display:block}
+html[data-view="studio"] #view-landing{display:none}
+section[id]{scroll-margin-top:88px}
+.brandline{display:flex;align-items:center;gap:12px;min-width:0}
+.logo-face{width:48px;height:48px;object-fit:cover;border-radius:3px;background:#fff;display:block;border:var(--bd2);box-shadow:var(--sh-xs)}
+.lp-header{position:sticky;top:0;z-index:60;background:#fff;border-bottom:var(--bd)}
+.lp-header-in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
+.lp-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:"Archivo Black",sans-serif;font-size:19px;line-height:1;text-transform:uppercase;white-space:nowrap}
+.lp-brand img{width:42px;height:42px;object-fit:cover;border-radius:3px;background:#fff;border:var(--bd2);flex:none}
+.lp-brand em{font-style:normal;color:var(--accent)}
+.lp-nav{display:flex;gap:4px;margin-left:auto;align-items:center}
+.lp-nav a{color:var(--ink);text-decoration:none;font-weight:800;font-size:13px;letter-spacing:.03em;text-transform:uppercase;padding:8px 11px;border-radius:3px;white-space:nowrap;border:2px solid transparent}
+.lp-nav a:hover{background:var(--yellow);border-color:var(--ink)}
+.lp-cta{flex:none;padding:10px 16px;font-size:14px}
+.lp-hero{position:relative;padding:30px 0 10px;overflow:hidden}
+.lp-hero-in{position:relative;max-width:1200px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:1.02fr .98fr;gap:34px;align-items:center}
+.lp-hero h1{font-size:clamp(44px,6.4vw,72px);line-height:.98}
+.lp-hero h1 em{font-style:normal;color:var(--ice-dark);position:relative;z-index:0}
+.lp-hero h1 em::after{content:"";position:absolute;left:-2px;right:-2px;bottom:5px;height:14px;background:var(--yellow);z-index:-1}
+.lp-hero p{font-size:17.5px;line-height:1.6;font-weight:600;color:var(--muted);max-width:520px;margin:16px 0 0}
+.lp-hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.lp-hero-btns .btn{font-size:15px;padding:13px 20px}
+.lp-meme{background:#fff;border:var(--bd);box-shadow:10px 10px 0 var(--ink);border-radius:var(--radius);padding:10px;max-width:520px;width:100%;justify-self:center;transform:rotate(.6deg)}
+.lp-meme-bg{position:relative;aspect-ratio:1/1;background:#DFF5FB;border:var(--bd2);border-radius:2px;overflow:hidden}
+.lp-meme-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.lp-meme-cap{position:absolute;left:10px;right:10px;text-align:center;font-family:"Anton","Archivo Black",sans-serif;color:#fff;font-size:clamp(24px,3.4vw,34px);letter-spacing:.02em;text-transform:uppercase;-webkit-text-stroke:2px #111111;paint-order:stroke fill;text-shadow:0 3px 0 #111111,3px 0 0 #111111,-3px 0 0 #111111,0 -3px 0 #111111,3px 3px 0 #111111,-3px 3px 0 #111111,3px -3px 0 #111111,-3px -3px 0 #111111,0 6px 14px rgba(17,17,17,.35);line-height:1.05;z-index:3}
+.lp-meme-cap.top{top:14px}.lp-meme-cap.bot{bottom:14px}
+.lp-sec{max-width:1200px;margin:0 auto;padding:38px 16px 4px}
+#details{margin-top:30px;background:#fff;border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh);padding-top:24px;padding-bottom:22px}
+#how{margin-top:30px}
+#showcase{padding-top:24px}
+.lp-sec-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.lp-sec-head h2{font-size:clamp(26px,3.4vw,36px)}
+.lp-count{background:var(--yellow);color:var(--ink);border:var(--bd2);box-shadow:var(--sh-xs);font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.05em;border-radius:2px;padding:6px 11px}
+.lp-stats{display:grid;grid-template-columns:repeat(4,auto);gap:12px;margin-top:26px;max-width:560px}
+.lp-stat{background:#fff;border:var(--bd2);border-radius:3px;box-shadow:var(--sh-xs);padding:10px 12px;font-weight:800;font-size:12.5px;color:var(--muted);line-height:1.2;text-transform:uppercase}
+.lp-stat b{font-family:"Archivo Black";font-size:21px;display:block;color:var(--ink);line-height:1}
+.show-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.sc-card{background:#fff;border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh-sm);overflow:hidden;cursor:pointer;text-align:left;padding:0;color:var(--ink);width:100%;transition:transform .12s,box-shadow .12s}
+.sc-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.sc-card:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.sc-art{position:relative;aspect-ratio:1/1;overflow:hidden;border-bottom:var(--bd2);background:#DFF5FB}
+.sc-art .main{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);width:62%}
+.sc-art .el{position:absolute;z-index:2}
+.sc-art .scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.sc-cap{position:absolute;left:8px;right:8px;bottom:12px;text-align:center;font-family:"Anton","Archivo Black",sans-serif;color:#fff;font-size:19px;letter-spacing:.02em;text-transform:uppercase;-webkit-text-stroke:1.6px #111111;paint-order:stroke fill;text-shadow:0 3px 0 #111111,2px 0 0 #111111,-2px 0 0 #111111,0 -2px 0 #111111,2px 2px 0 #111111,-2px 2px 0 #111111,2px -2px 0 #111111,-2px -2px 0 #111111,0 5px 12px rgba(17,17,17,.4);line-height:1.12;z-index:3;padding:0 4px}
+.sc-tag.classic{background:var(--yellow);color:var(--ink)}
+.sc-meta{display:flex;justify-content:space-between;align-items:center;padding:12px 13px;gap:8px}
+.sc-meta b{font-size:14.5px;text-transform:uppercase}
+.sc-tag{background:var(--accent);color:#fff;border:var(--bd2);font-weight:900;font-size:11px;text-transform:uppercase;border-radius:2px;padding:4px 8px;flex:none}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.d-card{background:#fff;border:var(--bd);border-radius:var(--radius);box-shadow:var(--sh-sm);padding:20px}
+.d-card .ic{width:30px;height:30px;color:var(--ink);background:var(--yellow);border:var(--bd2);border-radius:2px;padding:5px;box-shadow:var(--sh-xs)}
+.d-card b{font-family:"Archivo Black";font-size:32px;display:block;line-height:1;margin:12px 0 2px}
+.d-card h3{font-size:16px}
+.d-card p{margin:5px 0 0;font-size:14px;color:var(--muted);font-weight:600;line-height:1.55}
+.lp-more{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;background:#fff;border:var(--bd2);border-radius:3px;box-shadow:var(--sh-xs);padding:14px}
+.lp-more span{font-weight:600;color:var(--muted);font-size:14.5px;flex:1;min-width:200px}
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:var(--accent);color:#fff;border:var(--bd2);border-radius:2px;box-shadow:var(--sh-xs);font-family:"Archivo Black";font-size:18px;margin-bottom:12px}
+.f-card p{margin:6px 0 0;font-size:14.5px;color:var(--muted);font-weight:600}
+.lp-tpls .tpl{border-radius:3px}
+.lp-footer{margin-top:56px;background:var(--ink);color:#fff;overflow:hidden}
+.lp-footer-in{max-width:1200px;margin:0 auto;padding:38px 16px 26px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:28px}
+.lp-fbrand{display:flex;align-items:center;gap:10px;font-family:"Archivo Black";font-size:18px;text-transform:uppercase}
+.lp-fbrand img{width:44px;height:44px;object-fit:cover;border-radius:3px;background:#fff;border:2px solid #fff}
+.lp-fcol p{font-size:13.5px;opacity:.8;margin:10px 0 0;max-width:300px;font-weight:600;line-height:1.6}
+.lp-fcol h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--yellow);margin-bottom:12px;font-family:"Archivo"}
+.lp-fcol a{display:block;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:5px 0;opacity:.92}
+.lp-fcol a:hover{opacity:1;text-decoration:underline}
+.lp-fbar{background:#000;color:#C7D8DF}
+.lp-fbar-in{max-width:1200px;margin:0 auto;padding:13px 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:700}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--yellow);color:var(--ink);border:var(--bd2);padding:12px 18px;border-radius:3px;box-shadow:var(--sh-sm);font-weight:900;font-size:14px;text-transform:uppercase;transition:transform .25s,opacity .25s;z-index:99;max-width:92vw;text-align:center;opacity:0;visibility:hidden;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
+
+/* Featured design lightbox (view-only) */
+.lb{position:fixed;inset:0;z-index:120;background:rgba(17,17,17,.72);display:flex;align-items:center;justify-content:center;padding:18px}
+.lb[hidden]{display:none}
+.lb-card{position:relative;background:#fff;border:var(--bd);border-radius:var(--radius);box-shadow:10px 10px 0 var(--ink);overflow:hidden;width:min(92vw,560px)}
+.lb-card .sc-cap{font-size:clamp(22px,5.4vw,32px)}
+.lb-close{position:absolute;top:10px;right:10px;z-index:5;width:42px;height:42px;background:var(--yellow);color:var(--ink);border:var(--bd2);border-radius:2px;box-shadow:var(--sh-xs);font-family:"Archivo Black",sans-serif;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.lb-close:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+
+/* Mobile - header, hero, grids */
+@media(max-width:1000px){.show-grid{grid-template-columns:1fr 1fr}.detail-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:880px){
+ .lp-hero-in{grid-template-columns:1fr;gap:24px}
+ .lp-hero{padding-top:22px}
+ .lp-hero h1{font-size:clamp(40px,11vw,56px)}
+ .lp-hero p{font-size:16.5px}
+ .lp-meme{max-width:480px}
+ .lp-footer-in{grid-template-columns:1fr 1fr}
+ .lp-nav{display:none}
+ .lp-cta{margin-left:auto}
+}
+@media(max-width:640px){
+ .wrap{padding:14px 12px 36px}
+ .lp-sec{padding:30px 12px 2px}
+ .lp-hero-in{padding:0 12px}
+ .lp-header-in{padding:8px 12px}
+ .lp-brand{font-size:17px}.lp-brand img{width:38px;height:38px}
+ .lp-cta{padding:9px 13px;font-size:13.5px}
+ .lp-stats{grid-template-columns:1fr 1fr;max-width:none}
+ .lp-hero-btns .btn{flex:1;justify-content:center}
+ .show-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .sc-cap{font-size:13.5px}
+ .sc-meta{padding:10px}
+ .detail-grid{grid-template-columns:1fr}
+ .gallery{grid-template-columns:1fr 1fr;gap:12px}
+ .toolbar{position:static}
+ .tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+ .tab{flex:none}
+ .grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:480px){
+ .show-grid{grid-template-columns:1fr}
+ .lp-footer-in{grid-template-columns:1fr;gap:20px;padding:28px 16px 20px}
+ .lp-fbar-in{flex-direction:column;gap:2px}
+ .gallery{grid-template-columns:1fr}
+ .stats{width:100%}.stat{flex:1;min-width:0;text-align:center}
+ .intro .btn{width:100%}
+}
+/* Landing gallery preview grid: 3 across on desktop (6 items = 2 full rows), 2 on phones */
+#lpGallery{grid-template-columns:repeat(3,1fr)}
+@media(max-width:640px){#lpGallery{grid-template-columns:repeat(2,1fr);gap:12px}#lpGallery .g-cap{font-size:14px}}
+/* ===== Tightened Neo-Brutalism system: one border scale, hard shadows, square corners ===== */
+h1,h2{letter-spacing:-.01em}
+.lp-header{border-top:6px solid var(--yellow)}
+.lp-footer{border-top:6px solid var(--yellow)}
+.lp-fbar{border-top:2px solid rgba(255,255,255,.28)}
+.lp-sec{padding-top:44px;padding-bottom:10px}
+.section{margin-top:36px}
+.lp-sec-head{margin-bottom:20px}
+.lp-sec-head h2::before,.section-head h2::before{content:"";display:inline-block;width:13px;height:13px;background:var(--accent);border:2px solid var(--ink);margin-right:12px}
+.panel,.canvas-area,.g-card,.sc-card,.d-card,.f-card,.sui,.lp-meme,.lp-meme-bg,.btn,.tab,.card,.el-btn,.tpl,.tool-btn,.vote,.preset,.frame-btn,.seg,.search,.stat,.lp-stat,.lp-count,.badge,.f-eq,.step-n,.swatch,.scene-swatch,.zoombox,.toolbar,.insp-sec,.layer-item,.empty,.toast,.lb-close,.tpl-art.sm,.cat-head,.logo-face,#stage,#details,.field input,.field select,.field textarea,.inspector input[type=text],.inspector textarea,.inspector select,.inspector input[type=color],.field input[type=color],.btn-grid button,.lp-brand img,.lp-fbrand img{border-radius:0}
+.g-card,.d-card,.f-card{transition:transform .12s,box-shadow .12s}
+.g-card:hover,.d-card:hover,.f-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.g-card:active,.d-card:active,.f-card:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.stat{transition:transform .1s,box-shadow .1s}
+.stat:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.vote:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.seg button:not(.on):hover{background:var(--yellow)}
+.swatch:active,.scene-swatch:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.lb-close{transition:transform .1s,box-shadow .1s}
+.lb-close:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.lp-nav a:active{background:var(--accent);color:#fff;border-color:var(--ink)}
+input[type=range]{cursor:pointer}
+#elScroll{scrollbar-color:var(--ink) #fff}
+#elScroll::-webkit-scrollbar{width:10px}
+#elScroll::-webkit-scrollbar-track{background:#fff;border-left:2px solid var(--ink)}
+#elScroll::-webkit-scrollbar-thumb{background:var(--ink)}
+.stage-scroll::-webkit-scrollbar{width:10px;height:10px}
+.stage-scroll::-webkit-scrollbar-thumb{background:var(--ink)}
+.stage-scroll::-webkit-scrollbar-track{background:var(--surface2)}
+.tabs{scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><circle cx="12" cy="12" r="9"/><path d="M8.2 14.2c1 1.3 2.3 2 3.8 2s2.8-.7 3.8-2"/><path d="M9 9.2h.01M15 9.2h.01" stroke-width="3.4"/></symbol>
+<symbol id="i-shapes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l5.2 9.4H6.8z"/><rect x="3" y="15" width="7" height="7"/><circle cx="17.2" cy="18.2" r="3.6"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M4.5 5h15M12 5v14M9 19h6"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16"/><circle cx="9" cy="10" r="1.7"/><path d="M4 19l5.2-5.2 3 3L15.4 13.6 20 18.2"/></symbol>
+<symbol id="i-layout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16"/><path d="M3 9.5h18M9.5 9.5V20"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3l9.2 5.1L12 13.2 2.8 8.1z"/><path d="M3.4 13.4L12 18.2l8.6-4.8"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.4"/><circle cx="9" cy="17" r="2.4"/></symbol>
+<symbol id="i-undo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+<symbol id="i-redo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><path d="M4 7h16M9.5 7V4h5v3M6.5 7l.9 13h9.2l.9-13M10 11v5.5M14 11v5.5"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" stroke-linejoin="round"><path d="M12 3v11.5M6.2 9.8L12 15.6l5.8-5.8M4 20.5h16"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.6 16.6"/></symbol>
+<symbol id="i-chev-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5.5 13.5L12 7l6.5 6.5M5.5 19.5L12 13l6.5 6.5"/></symbol>
+<symbol id="i-chev-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5.5 4.5L12 11l6.5-6.5M5.5 10.5L12 17l6.5-6.5"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="11.5" height="11.5"/><path d="M5.5 15h-2V3.5H15v2"/></symbol>
+<symbol id="i-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3v18" stroke-dasharray="3.5 3"/><path d="M7.5 7.5L3.5 12l4 4.5zM16.5 7.5l4 4.5-4 4.5z"/></symbol>
+<symbol id="i-center" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.3 22h-6.3l-4.9-6.4L6.5 22H3.4l7.3-8.3L1 2h6.5l4.4 5.9zm-1.1 18h1.7L7.6 3.9H5.8z"/></symbol>
+</defs></svg>
+<div id="view-landing">
+  <header class="lp-header">
+    <div class="lp-header-in">
+      <a class="lp-brand" href="#/"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" decoding="async"><span>Lofi <em>Meme</em> Studio</span></a>
+      <nav class="lp-nav" aria-label="Sections">
+        <a href="#showcase">Showcase</a>
+        <a href="#details">Details</a>
+        <a href="#templates">Templates</a>
+        <a href="#how">How it works</a>
+        <a href="#gallery">Gallery</a>
+      </nav>
+      <a class="btn lp-cta" href="#/studio">Open Studio</a>
+    </div>
+  </header>
+
+  <section class="lp-hero">
+    <div class="lp-hero-in">
+      <div>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:#FFC400;border:2px solid #111111;border-radius:3px;padding:6px 11px;font-size:12.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#111111;box-shadow:3px 3px 0 #111111;margin-bottom:16px">● Free meme maker for Lofi</span>
+        <h1>Make Lofi memes. <em>Fast.</em></h1>
+        <p>Real Lofi stickers, a library of PNG elements and classic meme formats. Pick one, add your caption, download and post.</p>
+        <div class="lp-hero-btns">
+          <a class="btn" href="#/studio">Start making</a>
+          <a class="btn ghost" href="#showcase">See featured designs</a>
+        </div>
+        <div class="lp-stats">
+          <span class="lp-stat"><b>20</b>Stickers</span>
+          <span class="lp-stat"><b>20</b>Original faces</span>
+          <span class="lp-stat"><b>123</b>PNG elements</span>
+          <span class="lp-stat"><b>9</b>Templates</span>
+        </div>
+      </div>
+      <div class="lp-meme">
+        <div class="lp-meme-bg">
+          <img class="lp-meme-img" src="assets/thumbs/hero-meme-winter.webp" alt="Lofi the Yeti celebrating in a snowy winter scene with pine trees, mountains, snowflakes and confetti" fetchpriority="high" decoding="async">
+          <div class="lp-meme-cap top">When the meme</div>
+          <div class="lp-meme-cap bot">Writes itself</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="showcase">
+    <div class="lp-sec-head"><h2>Featured designs</h2><span class="lp-count">Made in the studio</span></div>
+    <div class="show-grid">
+      <button class="sc-card" type="button">
+        <div class="sc-art">
+          <img class="scene" src="assets/thumbs/featured-funny.webp" data-full="assets/featured-funny.webp" alt="Funny meme: laughing Lofi in a cozy cabin party scene with balloons and confetti" loading="lazy" decoding="async">
+          <div class="sc-cap">The group chat at 3am</div>
+        </div>
+        <div class="sc-meta"><b>Laughing Lofi</b><span class="sc-tag">Funny</span></div>
+      </button>
+      <button class="sc-card" type="button">
+        <div class="sc-art">
+          <img class="scene" src="assets/thumbs/featured-cute.webp" data-full="assets/featured-cute.webp" alt="Cute meme: cute Lofi in a pastel snowy scene with a snowman" loading="lazy" decoding="async">
+          <div class="sc-cap">GM. Be kind today.</div>
+        </div>
+        <div class="sc-meta"><b>Cute Lofi</b><span class="sc-tag">Cute</span></div>
+      </button>
+      <button class="sc-card" type="button">
+        <div class="sc-art">
+          <img class="scene" src="assets/thumbs/featured-winter.webp" data-full="assets/featured-winter.webp" alt="Winter meme: Lofi throwing a snowball in bright snowy mountains" loading="lazy" decoding="async">
+          <div class="sc-cap">First snowball of the season</div>
+        </div>
+        <div class="sc-meta"><b>Snowball Lofi</b><span class="sc-tag">Winter</span></div>
+      </button>
+      <button class="sc-card" type="button">
+        <div class="sc-art">
+          <img class="scene" src="assets/thumbs/featured-reaction.webp" data-full="assets/featured-reaction.webp" alt="Reaction meme: shocked Lofi under an aurora night sky" loading="lazy" decoding="async">
+          <div class="sc-cap">Wait. It worked?</div>
+        </div>
+        <div class="sc-meta"><b>Shocked Lofi</b><span class="sc-tag">Reaction</span></div>
+      </button>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="details">
+    <div class="lp-sec-head"><h2>Inside the studio</h2></div>
+    <div class="detail-grid">
+      <div class="d-card"><svg class="ic"><use href="#i-smile"/></svg><b id="dStickers">…</b><h3>Character stickers</h3><p>Full-body Lofi in every mood, from angry to ski-ready. Drag, resize, rotate, flip.</p></div>
+      <div class="d-card"><svg class="ic"><use href="#i-heart"/></svg><b id="dOriginals">…</b><h3>Original faces</h3><p>The classic Lofi face as its own pack of expressions, kept separate from the character set.</p></div>
+      <div class="d-card"><svg class="ic"><use href="#i-shapes"/></svg><b id="dElements">…</b><h3>Real PNG elements</h3><p>Transparent PNGs in Funny, General and Winter, searchable in the editor library.</p></div>
+      <div class="d-card"><svg class="ic"><use href="#i-layout"/></svg><b id="dTemplates">…</b><h3>Templates</h3><p>Classic layouts and meme formats, loaded onto the canvas in one click.</p></div>
+      <div class="d-card"><svg class="ic"><use href="#i-download"/></svg><b>1080px</b><h3>PNG export</h3><p>Every design downloads as a crisp 1080px PNG, in 1:1, 4:5 or 9:16.</p></div>
+      <div class="d-card"><svg class="ic"><use href="#i-x"/></svg><b>1 tap</b><h3>Post on X</h3><p>Share straight from the editor with the Post button, or save to the session gallery.</p></div>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="templates">
+    <div class="lp-sec-head"><h2>Templates</h2><span class="lp-count" id="lpTplCount">…</span></div>
+    <div class="show-grid" id="lpTpls"></div>
+    <div class="lp-more"><span>All 9 templates, including Top &amp; Bottom, Two-Panel Reaction and Caption Bar, live in the studio.</span><a class="btn ghost" href="#/studio">Open Studio</a></div>
+  </section>
+
+  <section class="lp-sec" id="how">
+    <div class="lp-sec-head"><h2>How it works</h2></div>
+    <div class="formula">
+      <div class="f-card"><span class="step-n">1</span><h3>Pick a sticker</h3><p>Choose a Lofi character or an Original face. It lands on the canvas, ready to move.</p></div>
+      <div class="f-card"><span class="step-n">2</span><h3>Add elements and text</h3><p>Drop in PNG elements, write your caption, drag, resize and rotate everything into place.</p></div>
+      <div class="f-card"><span class="step-n">3</span><h3>Download and share</h3><p>Export a crisp 1080px PNG and post it on X.</p></div>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="gallery">
+    <div class="lp-sec-head"><h2>Gallery</h2><span class="lp-count">Made with the templates</span></div>
+    <div class="gallery" id="lpGallery"></div>
+    <div style="text-align:center;margin-top:20px"><a class="btn" href="#/studio">Open Studio</a></div>
+  </section>
+
+  <div class="lp-footer">
+    <div class="lp-footer-in">
+      <div class="lp-fcol">
+        <div class="lp-fbrand"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"><span>Lofi Meme Studio</span></div>
+        <p>The meme maker for Lofi the Yeti. Stickers, elements and templates, free to use.</p>
+      </div>
+      <div class="lp-fcol">
+        <h3>Studio</h3>
+        <a href="#showcase">Showcase</a>
+        <a href="#details">Details</a>
+        <a href="#templates">Templates</a>
+        <a href="#how">How it works</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#/studio">Open Studio</a>
+      </div>
+      <div class="lp-fcol">
+        <h3>Lofi Games</h3>
+        <a href="https://winterplay.online/lofigame/" target="_blank" rel="noopener">Play Lofi Games</a>
+        <a href="https://winterplay.online/lofigame/" target="_blank" rel="noopener">winterplay.online/lofigame</a>
+      </div>
+      <div class="lp-fcol">
+        <h3>Follow</h3>
+        <a href="https://x.com/lofitheyeti" target="_blank" rel="noopener">Lofi on X</a>
+        <a href="https://x.com/lofigamexyz" target="_blank" rel="noopener">Lofi Games on X</a>
+      </div>
+    </div>
+    <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
+  </div>
+</div>
+
+<div id="view-studio">
+<div class="wrap">
+
+  <div class="intro">
+    <div class="brandline">
+      <a href="#/" aria-label="Back to home"><img class="logo-face" src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"></a>
+      <h1>Lofi <em>Meme</em> Studio</h1>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="statStickers">…</b><span>Stickers</span></div>
+      <div class="stat"><b id="statOriginals">…</b><span>Originals</span></div>
+      <div class="stat"><b id="statElements">…</b><span>Elements</span></div>
+      <div class="stat"><b id="statTemplates">…</b><span>Templates</span></div>
+    </div>
+    <a class="btn ghost" href="#/">Home</a>
+  </div>
+
+  <main class="studio">
+    <!-- LIBRARY -->
+    <aside class="panel library" aria-label="Library">
+      <div class="panel-head"><h2><svg class="ic"><use href="#i-layers"/></svg>Library</h2></div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="stickers"><svg class="ic"><use href="#i-smile"/></svg>Stickers</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="elements"><svg class="ic"><use href="#i-shapes"/></svg>Elements</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="text"><svg class="ic"><use href="#i-type"/></svg>Text</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="backgrounds"><svg class="ic"><use href="#i-image"/></svg>Canvas</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="templates"><svg class="ic"><use href="#i-layout"/></svg>Templates</button>
+      </div>
+
+      <div class="tabpane active" id="pane-stickers">
+        <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="search" id="stickerSearch" type="search" placeholder="Search stickers" aria-label="Search stickers"></div>
+        <div class="pack-head"><h3>Lofi character</h3><span id="charCount"></span></div>
+        <div class="grid" id="stickerGrid"></div>
+        <div class="pack-head"><h3>Original pack</h3><span id="origCount"></span></div>
+        <div class="grid orig" id="origGrid"></div>
+        <p class="countline" id="stickerCount"></p>
+      </div>
+
+      <div class="tabpane" id="pane-elements">
+        <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="search" id="elSearch" type="search" placeholder="Search elements" aria-label="Search elements"></div>
+        <div id="elScroll"><div id="elGroups"></div></div>
+        <p class="countline" id="elCount"></p>
+      </div>
+
+      <div class="tabpane" id="pane-text">
+        <div class="field"><label for="textInput">Caption</label><textarea id="textInput" rows="2" placeholder="When the chart finally goes up">When the chart finally goes up</textarea></div>
+        <div class="row">
+          <div class="field"><label for="fontSel">Font</label><select id="fontSel"></select></div>
+          <div class="field"><label for="textColor">Colour</label><input type="color" id="textColor" value="#ffffff"></div>
+        </div>
+        <button class="btn" id="addText" style="width:100%"><svg class="ic"><use href="#i-plus"/></svg>Add text</button>
+        <div class="field" style="margin-top:14px"><label>Quick captions</label>
+          <div class="presets" id="captionPresets"></div>
+        </div>
+        <div class="field"><label>Your photo</label><input type="file" id="photoInput" accept="image/*"></div>
+      </div>
+
+      <div class="tabpane" id="pane-backgrounds">
+        <p class="mini-label">Scenes</p>
+        <div class="scene-swatches" id="sceneSwatches"></div>
+        <p class="mini-label" style="margin-top:14px">Background</p>
+        <div class="swatches" id="bgSwatches"></div>
+        <p class="mini-label" style="margin-top:14px">Frame</p>
+        <div class="frame-grid" id="frameGrid"></div>
+      </div>
+
+      <div class="tabpane" id="pane-templates">
+        <div id="tplList"></div>
+      </div>
+    </aside>
+
+    <!-- CANVAS -->
+    <section class="canvas-area" aria-label="Editor">
+      <div class="toolbar">
+        <div class="seg" id="sizeSeg" role="group" aria-label="Canvas size">
+          <button class="on" data-size="r11">1:1</button><button data-size="r45">4:5</button><button data-size="r916">9:16</button>
+        </div>
+        <div class="zoombox" aria-label="Zoom">
+          <button id="zoomOut" aria-label="Zoom out"><svg class="ic"><use href="#i-minus"/></svg></button>
+          <button class="zv" id="zoomVal" aria-label="Reset zoom">100%</button>
+          <button id="zoomIn" aria-label="Zoom in"><svg class="ic"><use href="#i-plus"/></svg></button>
+        </div>
+        <div class="spacer"></div>
+        <button class="tool-btn icon" id="undoBtn" title="Undo" aria-label="Undo"><svg class="ic"><use href="#i-undo"/></svg></button>
+        <button class="tool-btn icon" id="redoBtn" title="Redo" aria-label="Redo"><svg class="ic"><use href="#i-redo"/></svg></button>
+        <button class="tool-btn icon" id="clearBtn" title="Clear canvas" aria-label="Clear canvas"><svg class="ic"><use href="#i-trash"/></svg></button>
+        <button class="tool-btn" id="toGalleryBtn"><svg class="ic"><use href="#i-image"/></svg>Gallery</button>
+        <button class="btn primary" id="downloadBtn"><svg class="ic"><use href="#i-download"/></svg>PNG</button>
+        <a class="btn dark" id="shareBtn" href="#" target="_blank" rel="noopener"><svg class="ic"><use href="#i-x"/></svg>Post</a>
+      </div>
+      <div class="stage-scroll" id="stageScroll"><div id="stage"><div class="frame-ol" id="frameOl"></div></div></div>
+      <p class="hint">Drag to move · corner resizes · top rotates · Del deletes</p>
+    </section>
+
+    <!-- INSPECTOR -->
+    <aside class="panel inspector" aria-label="Layer controls">
+      <div class="panel-head"><h2><svg class="ic"><use href="#i-sliders"/></svg>Layer</h2></div>
+      <div class="insp-body">
+      <p class="sub" id="selInfo">Nothing selected.</p>
+      <div id="controls" style="display:none">
+        <div class="insp-sec" style="margin-top:2px">
+          <h3>Transform</h3>
+          <label for="scaleRange">Size</label><input type="range" id="scaleRange" min="8" max="115" value="50">
+          <label for="rotRange">Rotate</label><input type="range" id="rotRange" min="-180" max="180" value="0">
+          <label for="opRange">Opacity</label><input type="range" id="opRange" min="10" max="100" value="100">
+        </div>
+        <div class="insp-sec">
+          <h3>Arrange</h3>
+          <div class="btn-grid">
+            <button id="fwdBtn"><svg class="ic"><use href="#i-chev-up"/></svg>Forward</button><button id="backBtn"><svg class="ic"><use href="#i-chev-down"/></svg>Back</button>
+            <button id="dupBtn"><svg class="ic"><use href="#i-copy"/></svg>Duplicate</button><button id="flipBtn"><svg class="ic"><use href="#i-flip"/></svg>Flip</button>
+            <button id="centerBtn"><svg class="ic"><use href="#i-center"/></svg>Centre</button><button id="delBtn" class="danger"><svg class="ic"><use href="#i-trash"/></svg>Delete</button>
+          </div>
+        </div>
+
+        <div class="insp-sec" id="textSec" style="display:none">
+          <h3>Text style</h3>
+          <label for="inspText">Caption</label><textarea id="inspText" rows="2"></textarea>
+          <label for="inspFont">Font</label><select id="inspFont"></select>
+          <label for="inspSize">Font size</label><input type="range" id="inspSize" min="3" max="16" step="0.5" value="7">
+          <label for="inspColor">Text colour</label><input type="color" id="inspColor" value="#ffffff">
+          <label for="inspOutline">Outline</label><input type="range" id="inspOutline" min="0" max="30" value="0">
+          <label for="inspOutlineColor">Outline colour</label><input type="color" id="inspOutlineColor" value="#12242e">
+          <label class="checkline"><input type="checkbox" id="inspShadow"> Text shadow</label>
+          <label for="inspBg">Highlight bar</label>
+          <div class="seg" id="inspBgSeg">
+            <button data-bg="">None</button><button data-bg="#ffffff">White</button><button data-bg="#12242e">Dark</button><button data-bg="#0ea5c6">Ice</button><button data-bg="#e9a426">Gold</button>
+          </div>
+        </div>
+
+        <div class="insp-sec">
+          <h3>Effects</h3>
+          <label for="fxShadow">Drop shadow</label><input type="range" id="fxShadow" min="0" max="20" value="0">
+          <label for="fxGlow">Glow</label><input type="range" id="fxGlow" min="0" max="30" value="0">
+          <label for="fxGlowColor">Glow colour</label><input type="color" id="fxGlowColor" value="#ffd25a">
+          <label for="fxOutline">Sticker outline</label><input type="range" id="fxOutline" min="0" max="10" value="0">
+          <label for="fxOutlineColor">Outline colour</label><input type="color" id="fxOutlineColor" value="#ffffff">
+          <label for="fxFilter">Filter</label>
+          <select id="fxFilter">
+            <option value="none">None</option>
+            <option value="grayscale(1)">Black &amp; white</option>
+            <option value="sepia(0.7)">Warm sepia</option>
+            <option value="saturate(1.9)">Vivid</option>
+            <option value="brightness(1.3)">Bright</option>
+            <option value="contrast(1.35)">Punchy</option>
+            <option value="hue-rotate(90deg)">Hue shift</option>
+            <option value="invert(1)">Invert</option>
+          </select>
+        </div>
+      </div>
+      <div class="layer-list"><label style="margin-top:0">Layers</label><div id="layerList"></div>
+        <div class="empty" id="emptyLayers">Canvas empty.</div>
+      </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- GALLERY -->
+  <section class="section">
+    <div class="section-head"><div><h2>Gallery</h2></div></div>
+    <div class="gallery" id="studioGallery"></div>
+  </section>
+
+  <!-- SYSTEM -->
+  <section class="section">
+    <div class="section-head"><div><h2>The library</h2></div></div>
+    <div class="formula">
+      <div class="f-card"><h3>Stickers</h3><div class="f-eq" id="eqStickers">…</div></div>
+      <div class="f-card"><h3>Elements</h3><div class="f-eq" id="eqElements">…</div></div>
+      <div class="f-card"><h3>Canvas</h3><div class="f-eq">20 backgrounds · 3 sizes · 1080px PNG</div></div>
+    </div>
+    <div class="f-card" style="margin-top:14px"><span class="badge">Planned</span><h3>Accounts &amp; public gallery</h3><p style="margin:6px 0 0;font-size:14.5px">Google sign-in, saved memes, public gallery. Needs a server — not in this version.</p></div>
+    <div class="sui">
+      <div><span class="badge">Planned</span><h3>Mint on Sui</h3><p>Mint a finished meme as an NFT on Sui. Not built yet.</p></div>
+      <button class="btn" onclick="toast('Planned for the next phase. PNG download works now.')">Notify me</button>
+    </div>
+  </section>
+
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<div class="lb" id="featLightbox" hidden role="dialog" aria-modal="true" aria-label="Featured design, enlarged view">
+  <div class="lb-card">
+    <button class="lb-close" type="button" id="lbClose" aria-label="Close enlarged view">✕</button>
+    <div class="sc-art">
+      <img class="scene" id="lbImg" src="assets/thumbs/featured-funny.webp" alt="" loading="lazy" decoding="async">
+      <div class="sc-cap" id="lbCap"></div>
+    </div>
+    <div class="sc-meta"><b id="lbName"></b><span class="sc-tag" id="lbTag"></span></div>
+  </div>
+</div>
+
+<script>
+/* Element library data, inlined so the studio is fully self-contained in this one file:
+   no separate JS file to load, fail, or go stale, on any host. */
+/* Real PNG element library: generated from manifest.json (123 transparent WebP images). */
+var ELEMENTS=[{"file":"funny-banana-01.webp","name":"funny-banana","cat":"funny","w":512,"h":512},{"file":"funny-banana-02.webp","name":"funny-banana","cat":"funny","w":512,"h":344},{"file":"funny-banana-03.webp","name":"funny-banana","cat":"funny","w":512,"h":264},{"file":"funny-crown-01.webp","name":"funny-crown","cat":"funny","w":465,"h":350},{"file":"funny-crown-02.webp","name":"funny-crown","cat":"funny","w":350,"h":350},{"file":"funny-crown-03.webp","name":"funny-crown","cat":"funny","w":350,"h":350},{"file":"funny-facepalm-02.webp","name":"funny-facepalm","cat":"funny","w":512,"h":286},{"file":"funny-facepalm-03.webp","name":"funny-facepalm","cat":"funny","w":512,"h":512},{"file":"funny-facepalm-04.webp","name":"funny-facepalm","cat":"funny","w":453,"h":512},{"file":"funny-glasses-02.webp","name":"funny-glasses","cat":"funny","w":485,"h":512},{"file":"funny-glasses-03.webp","name":"funny-glasses","cat":"funny","w":410,"h":512},{"file":"funny-laughing-emoji-01.webp","name":"funny-laughing-emoji","cat":"funny","w":512,"h":341},{"file":"funny-laughing-emoji-02.webp","name":"funny-laughing-emoji","cat":"funny","w":506,"h":512},{"file":"funny-laughing-emoji-03.webp","name":"funny-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-meme-face-03.webp","name":"funny-meme-face","cat":"funny","w":308,"h":320},{"file":"funny-meme-face-05.webp","name":"funny-meme-face","cat":"funny","w":512,"h":505},{"file":"funny-meme-face-06.webp","name":"funny-meme-face","cat":"funny","w":431,"h":512},{"file":"funny-moustache-01.webp","name":"funny-moustache","cat":"funny","w":480,"h":480},{"file":"funny-moustache-02.webp","name":"funny-moustache","cat":"funny","w":413,"h":320},{"file":"funny-moustache-03.webp","name":"funny-moustache","cat":"funny","w":512,"h":347},{"file":"funny-nerd-boy-01.webp","name":"funny-nerd-boy","cat":"funny","w":300,"h":455},{"file":"funny-party-confetti-01.webp","name":"funny-party-confetti","cat":"funny","w":350,"h":350},{"file":"funny-party-confetti-02.webp","name":"funny-party-confetti","cat":"funny","w":350,"h":350},{"file":"funny-party-confetti-03.webp","name":"funny-party-confetti","cat":"funny","w":512,"h":512},{"file":"funny-party-hat-01.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-party-hat-02.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-party-hat-03.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-pizza-01.webp","name":"funny-pizza","cat":"funny","w":512,"h":341},{"file":"funny-pizza-02.webp","name":"funny-pizza","cat":"funny","w":350,"h":350},{"file":"funny-pizza-03.webp","name":"funny-pizza","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-01.webp","name":"funny-popcorn","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-02.webp","name":"funny-popcorn","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-03.webp","name":"funny-popcorn","cat":"funny","w":465,"h":350},{"file":"funny-sunglasses-01.webp","name":"funny-sunglasses","cat":"funny","w":350,"h":350},{"file":"funny-sunglasses-02.webp","name":"funny-sunglasses","cat":"funny","w":350,"h":350},{"file":"funny-sunglasses-03.webp","name":"funny-sunglasses","cat":"funny","w":512,"h":478},{"file":"funny-thumbs-up-01.webp","name":"funny-thumbs-up","cat":"funny","w":512,"h":512},{"file":"funny-thumbs-up-02.webp","name":"funny-thumbs-up","cat":"funny","w":438,"h":350},{"file":"funny-thumbs-up-03.webp","name":"funny-thumbs-up","cat":"funny","w":512,"h":341},{"file":"funny-troll-face-02.webp","name":"funny-troll-face","cat":"funny","w":342,"h":280},{"file":"funny-troll-face-03.webp","name":"funny-troll-face","cat":"funny","w":512,"h":384},{"file":"funny-troll-face-04.webp","name":"funny-troll-face","cat":"funny","w":512,"h":416},{"file":"general-arrow-01.webp","name":"general-arrow","cat":"general","w":512,"h":252},{"file":"general-arrow-02.webp","name":"general-arrow","cat":"general","w":512,"h":411},{"file":"general-arrow-03.webp","name":"general-arrow","cat":"general","w":512,"h":415},{"file":"general-balloon-01.webp","name":"general-balloon","cat":"general","w":512,"h":512},{"file":"general-balloon-02.webp","name":"general-balloon","cat":"general","w":512,"h":341},{"file":"general-balloon-03.webp","name":"general-balloon","cat":"general","w":400,"h":400},{"file":"general-check-01.webp","name":"general-check","cat":"general","w":480,"h":480},{"file":"general-check-02.webp","name":"general-check","cat":"general","w":512,"h":341},{"file":"general-check-03.webp","name":"general-check","cat":"general","w":512,"h":512},{"file":"general-cross-01.webp","name":"general-cross","cat":"general","w":512,"h":413},{"file":"general-cross-02.webp","name":"general-cross","cat":"general","w":350,"h":350},{"file":"general-cross-03.webp","name":"general-cross","cat":"general","w":512,"h":466},{"file":"general-exclamation-01.webp","name":"general-exclamation","cat":"general","w":320,"h":320},{"file":"general-exclamation-02.webp","name":"general-exclamation","cat":"general","w":360,"h":350},{"file":"general-exclamation-03.webp","name":"general-exclamation","cat":"general","w":394,"h":439},{"file":"general-fire-01.webp","name":"general-fire","cat":"general","w":512,"h":512},{"file":"general-fire-02.webp","name":"general-fire","cat":"general","w":512,"h":293},{"file":"general-fire-03.webp","name":"general-fire","cat":"general","w":350,"h":350},{"file":"general-gift-box-01.webp","name":"general-gift-box","cat":"general","w":476,"h":512},{"file":"general-gift-box-03.webp","name":"general-gift-box","cat":"general","w":446,"h":512},{"file":"general-gift-box-04.webp","name":"general-gift-box","cat":"general","w":512,"h":512},{"file":"general-heart-01.webp","name":"general-heart","cat":"general","w":355,"h":320},{"file":"general-heart-02.webp","name":"general-heart","cat":"general","w":345,"h":280},{"file":"general-heart-03.webp","name":"general-heart","cat":"general","w":350,"h":350},{"file":"general-lightning-01.webp","name":"general-lightning","cat":"general","w":350,"h":350},{"file":"general-lightning-02.webp","name":"general-lightning","cat":"general","w":320,"h":512},{"file":"general-lightning-03.webp","name":"general-lightning","cat":"general","w":350,"h":350},{"file":"general-music-note-01.webp","name":"general-music-note","cat":"general","w":350,"h":350},{"file":"general-music-note-02.webp","name":"general-music-note","cat":"general","w":512,"h":287},{"file":"general-music-note-03.webp","name":"general-music-note","cat":"general","w":512,"h":377},{"file":"general-question-mark-01.webp","name":"general-question-mark","cat":"general","w":512,"h":507},{"file":"general-question-mark-02.webp","name":"general-question-mark","cat":"general","w":345,"h":350},{"file":"general-question-mark-03.webp","name":"general-question-mark","cat":"general","w":345,"h":350},{"file":"general-speech-bubble-01.webp","name":"general-speech-bubble","cat":"general","w":482,"h":350},{"file":"general-speech-bubble-02.webp","name":"general-speech-bubble","cat":"general","w":512,"h":512},{"file":"general-speech-bubble-03.webp","name":"general-speech-bubble","cat":"general","w":512,"h":293},{"file":"general-star-01.webp","name":"general-star","cat":"general","w":350,"h":350},{"file":"general-star-02.webp","name":"general-star","cat":"general","w":512,"h":190},{"file":"general-star-03.webp","name":"general-star","cat":"general","w":350,"h":350},{"file":"winter-aurora-01.webp","name":"winter-aurora","cat":"winter","w":512,"h":512},{"file":"winter-aurora-02.webp","name":"winter-aurora","cat":"winter","w":350,"h":350},{"file":"winter-aurora-03.webp","name":"winter-aurora","cat":"winter","w":350,"h":350},{"file":"winter-beanie-01.webp","name":"winter-beanie","cat":"winter","w":512,"h":512},{"file":"winter-beanie-02.webp","name":"winter-beanie","cat":"winter","w":350,"h":350},{"file":"winter-beanie-03.webp","name":"winter-beanie","cat":"winter","w":420,"h":512},{"file":"winter-candy-cane-01.webp","name":"winter-candy-cane","cat":"winter","w":350,"h":350},{"file":"winter-candy-cane-02.webp","name":"winter-candy-cane","cat":"winter","w":512,"h":171},{"file":"winter-candy-cane-03.webp","name":"winter-candy-cane","cat":"winter","w":512,"h":512},{"file":"winter-christmas-tree-01.webp","name":"winter-christmas-tree","cat":"winter","w":347,"h":512},{"file":"winter-christmas-tree-02.webp","name":"winter-christmas-tree","cat":"winter","w":293,"h":512},{"file":"winter-christmas-tree-03.webp","name":"winter-christmas-tree","cat":"winter","w":512,"h":512},{"file":"winter-cocoa-01.webp","name":"winter-cocoa","cat":"winter","w":465,"h":350},{"file":"winter-cocoa-02.webp","name":"winter-cocoa","cat":"winter","w":350,"h":350},{"file":"winter-cocoa-03.webp","name":"winter-cocoa","cat":"winter","w":350,"h":350},{"file":"winter-ice-skate-01.webp","name":"winter-ice-skate","cat":"winter","w":347,"h":280},{"file":"winter-ice-skate-02.webp","name":"winter-ice-skate","cat":"winter","w":512,"h":293},{"file":"winter-ice-skate-03.webp","name":"winter-ice-skate","cat":"winter","w":349,"h":280},{"file":"winter-igloo-01.webp","name":"winter-igloo","cat":"winter","w":512,"h":253},{"file":"winter-igloo-02.webp","name":"winter-igloo","cat":"winter","w":512,"h":512},{"file":"winter-igloo-03.webp","name":"winter-igloo","cat":"winter","w":512,"h":341},{"file":"winter-mittens-01.webp","name":"winter-mittens","cat":"winter","w":512,"h":413},{"file":"winter-mittens-02.webp","name":"winter-mittens","cat":"winter","w":350,"h":350},{"file":"winter-mittens-03.webp","name":"winter-mittens","cat":"winter","w":350,"h":350},{"file":"winter-pine-tree-01.webp","name":"winter-pine-tree","cat":"winter","w":512,"h":341},{"file":"winter-pine-tree-02.webp","name":"winter-pine-tree","cat":"winter","w":386,"h":512},{"file":"winter-pine-tree-03.webp","name":"winter-pine-tree","cat":"winter","w":265,"h":350},{"file":"winter-reindeer-03.webp","name":"winter-reindeer","cat":"winter","w":512,"h":512},{"file":"winter-reindeer-04.webp","name":"winter-reindeer","cat":"winter","w":333,"h":350},{"file":"winter-reindeer-05.webp","name":"winter-reindeer","cat":"winter","w":500,"h":512},{"file":"winter-scarf-01.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-scarf-02.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-scarf-03.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-snowball-01.webp","name":"winter-snowball","cat":"winter","w":512,"h":467},{"file":"winter-snowball-02.webp","name":"winter-snowball","cat":"winter","w":512,"h":467},{"file":"winter-snowball-03.webp","name":"winter-snowball","cat":"winter","w":512,"h":436},{"file":"winter-snowflake-01.webp","name":"winter-snowflake","cat":"winter","w":383,"h":350},{"file":"winter-snowflake-02.webp","name":"winter-snowflake","cat":"winter","w":512,"h":293},{"file":"winter-snowflake-03.webp","name":"winter-snowflake","cat":"winter","w":350,"h":350},{"file":"winter-snowman-01.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"winter-snowman-02.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"winter-snowman-03.webp","name":"winter-snowman","cat":"winter","w":350,"h":350}];
+</script>
+<script>
+/* ============ DATA: 20 real character stickers + Original pack ============ */
+var STICKERS=[
+ {id:"cute",label:"Cute",file:"lofi-sticker-cute.webp",w:423,h:512,search:"cute sweet shy blush hands"},
+ {id:"angry",label:"Angry",file:"lofi-sticker-angry.webp",w:370,h:512,search:"angry mad furious rage stomp"},
+ {id:"laughing",label:"Laughing",file:"lofi-sticker-laughing.webp",w:369,h:512,search:"laughing lol happy funny dance"},
+ {id:"snowball",label:"Snowball",file:"lofi-sticker-snowball.webp",w:501,h:512,search:"snowball play throw winter snow"},
+ {id:"sad",label:"Sad",file:"lofi-sticker-sad.webp",w:428,h:512,search:"sad crying tears down bad day"},
+ {id:"cool",label:"Cool",file:"lofi-sticker-cool.webp",w:512,h:458,search:"cool shades sunglasses chill hodl thumbs up"},
+ {id:"simple",label:"Simple",file:"lofi-sticker-simple.webp",w:364,h:512,search:"simple classic plain standing gm gn"},
+ {id:"celebration",label:"Celebration",file:"lofi-sticker-celebration.webp",w:512,h:510,search:"celebration party confetti win birthday"},
+ {id:"shocked",label:"Shocked",file:"lofi-sticker-shocked.webp",w:497,h:512,search:"shocked surprised omg wow"},
+ {id:"sideeye",label:"Side-eye",file:"lofi-sticker-sideeye.webp",w:451,h:512,search:"side eye suspicious sus judging"},
+ {id:"crying-laughing",label:"Crying laughing",file:"lofi-sticker-crying-laughing.webp",w:387,h:512,search:"crying laughing tears joy rofl lol"},
+ {id:"facepalm",label:"Facepalm",file:"lofi-sticker-facepalm.webp",w:512,h:471,search:"facepalm fail smh mistake"},
+ {id:"shrug",label:"Shrug",file:"lofi-sticker-shrug.webp",w:512,h:421,search:"shrug whatever dunno idk"},
+ {id:"wink",label:"Wink",file:"lofi-sticker-wink.webp",w:512,h:451,search:"wink cheeky flirty"},
+ {id:"sleepy",label:"Sleepy",file:"lofi-sticker-sleepy.webp",w:446,h:512,search:"sleepy tired gn night yawn zzz"},
+ {id:"thinking",label:"Thinking",file:"lofi-sticker-thinking.webp",w:416,h:512,search:"thinking hmm pondering idea"},
+ {id:"scared",label:"Scared",file:"lofi-sticker-scared.webp",w:512,h:502,search:"scared afraid panic fear"},
+ {id:"love",label:"Love",file:"lofi-sticker-love.webp",w:435,h:512,search:"love hearts adore crush"},
+ {id:"dizzy",label:"Dizzy",file:"lofi-sticker-dizzy.webp",w:494,h:512,search:"dizzy confused spinning stars"},
+ {id:"ski",label:"Ski",file:"lofi-sticker-ski.webp",w:512,h:476,search:"ski skiing snow sport winter slope"}
+];
+var ORIGINALS=[
+ {id:"orig-happy",label:"Happy",file:"lofi-original-happy.webp",w:508,h:512,search:"original face happy classic official"},
+ {id:"orig-angry",label:"Angry",file:"lofi-original-angry.webp",w:508,h:512,search:"original face angry classic official"},
+ {id:"orig-sad",label:"Sad",file:"lofi-original-sad.webp",w:512,h:508,search:"original face sad classic official"},
+ {id:"orig-shocked",label:"Shocked",file:"lofi-original-shocked.webp",w:504,h:512,search:"original face shocked classic official"},
+ {id:"orig-laughing",label:"Laughing",file:"lofi-original-laughing.webp",w:512,h:511,search:"original face laughing lol happy funny classic official"},
+ {id:"orig-cute",label:"Cute",file:"lofi-original-cute.webp",w:512,h:508,search:"original face cute sweet shy blush classic official"},
+ {id:"orig-cool",label:"Cool",file:"lofi-original-cool.webp",w:512,h:494,search:"original face cool shades sunglasses chill classic official"},
+ {id:"orig-celebration",label:"Celebration",file:"lofi-original-celebration.webp",w:497,h:512,search:"original face celebration party confetti win classic official"},
+ {id:"orig-sideeye",label:"Side-eye",file:"lofi-original-sideeye.webp",w:510,h:512,search:"original face side eye suspicious sus judging classic official"},
+ {id:"orig-crying-laughing",label:"Crying laughing",file:"lofi-original-crying-laughing.webp",w:512,h:462,search:"original face crying laughing tears joy rofl lol classic official"},
+ {id:"orig-facepalm",label:"Facepalm",file:"lofi-original-facepalm.webp",w:512,h:438,search:"original face facepalm fail smh mistake classic official"},
+ {id:"orig-shrug",label:"Shrug",file:"lofi-original-shrug.webp",w:512,h:369,search:"original face shrug whatever dunno idk classic official"},
+ {id:"orig-wink",label:"Wink",file:"lofi-original-wink.webp",w:512,h:509,search:"original face wink cheeky flirty classic official"},
+ {id:"orig-sleepy",label:"Sleepy",file:"lofi-original-sleepy.webp",w:512,h:490,search:"original face sleepy tired gn night yawn zzz classic official"},
+ {id:"orig-thinking",label:"Thinking",file:"lofi-original-thinking.webp",w:512,h:499,search:"original face thinking hmm pondering idea classic official"},
+ {id:"orig-scared",label:"Scared",file:"lofi-original-scared.webp",w:512,h:430,search:"original face scared afraid panic fear classic official"},
+ {id:"orig-love",label:"Love",file:"lofi-original-love.webp",w:512,h:497,search:"original face love hearts adore crush classic official"},
+ {id:"orig-dizzy",label:"Dizzy",file:"lofi-original-dizzy.webp",w:437,h:512,search:"original face dizzy confused spinning stars classic official"},
+ {id:"orig-simple",label:"Simple",file:"lofi-original-simple.webp",w:511,h:512,search:"original face simple classic plain standing gm gn official"},
+ {id:"orig-mischievous",label:"Mischievous",file:"lofi-original-mischievous.webp",w:511,h:512,search:"original face mischievous sneaky cheeky grin classic official"}
+];
+function stickerByFile(f){ return STICKERS.concat(ORIGINALS).find(function(s){return s.file===f}) || STICKERS[0]; }
+var BGS=[
+ ["Ice Sky","#8ED8F2","#E8F9FF"],["Deep Ocean","#0B4F6C","#01BAEF"],["Midnight","#101E2E","#2B4A67"],
+ ["Sunset","#FF9A5A","#FFD25A"],["Candy","#FF8FBF","#FFD1E3"],["Mint Field","#5ED3A5","#D8F7E8"],
+ ["Golden Hour","#E9A426","#FFE9A8"],["Grape Soda","#6C4AB0","#B79CED"],["Coral Reef","#FF5A3C","#FFB199"],
+ ["Forest","#1D5C3F","#7BC47F"],["Snow Day","#DCEEF5","#FFFFFF"],["Charcoal","#232323","#555555"],
+ ["Sui Blue","#4DA2FF","#C0E6FF"],["Rose","#C2185B","#F48FB1"],["Lime Pop","#8BC34A","#E6F4C5"],
+ ["Coffee","#6D4C41","#BCAAA4"],["Arctic Night","#0F2233","#3D6E8F"],["Peach","#FFAB91","#FFF3E0"],
+ ["Teal Wave","#00838F","#80DEEA"],["Paper","#F5EFE0","#FFFFFF"]
+];
+var SCENES=[
+ {name:"Mountain Day",file:"bg-scene-mountain-day.webp"},
+ {name:"Aurora Night",file:"bg-scene-aurora-night.webp"},
+ {name:"Cozy Cabin",file:"bg-scene-cozy-cabin.webp"},
+ {name:"Pastel Forest",file:"bg-scene-pastel-forest.webp"},
+ {name:"Sunset",file:"bg-scene-sunset.webp"},
+ {name:"Ice Cave",file:"bg-scene-ice-cave.webp"},
+ {name:"Village",file:"bg-scene-village.webp"},
+ {name:"Blizzard",file:"bg-scene-blizzard.webp"},
+ {name:"Frozen Falls",file:"bg-scene-frozen-falls.webp"},
+ {name:"Lantern Path",file:"bg-scene-lantern-path.webp"},
+ {name:"Moonlit Night",file:"bg-scene-moonlit-night.webp"},
+ {name:"Snowy Bridge",file:"bg-scene-snowy-bridge.webp"}
+];
+function isSceneBg(bg){ return !!(bg&&bg[1]==="scene"); }
+function sceneBgEntry(s){ return [s.name,"scene","assets/"+s.file]; }
+var FRAMES=["None","Clean White","Bold Black","Ice Blue","Gold","Coral","Dashed","Double","Sticker Pop","Polaroid"];
+var FRAME_CSS={"Clean White":"border:14px solid #fff","Bold Black":"border:14px solid #141414","Ice Blue":"border:14px solid #0EA5C6","Gold":"border:14px solid #E9A426","Coral":"border:14px solid #FF5A3C","Dashed":"border:10px dashed #12242E","Double":"border:6px solid #fff;outline:6px solid #12242E;outline-offset:-14px","Sticker Pop":"border:12px solid #fff;box-shadow:inset 0 0 0 3px #D6E2E7","Polaroid":"border:12px solid #fff;border-bottom-width:44px"};
+var FRAME_STROKE={"Clean White":"#fff","Bold Black":"#141414","Ice Blue":"#0EA5C6","Gold":"#E9A426","Coral":"#FF5A3C","Dashed":"#12242E","Double":"#fff","Sticker Pop":"#fff","Polaroid":"#fff"};
+var FONTS=[
+ {css:"'Baloo 2'",label:"Baloo Rounded",weight:800},
+ {css:"'Archivo Black'",label:"Archivo Black · meme",weight:400},
+ {css:"'Anton'",label:"Anton · poster",weight:400},
+ {css:"'Nunito Sans'",label:"Nunito · clean",weight:800}
+];
+function fontOf(css){ return FONTS.find(function(f){return f.css===css}) || FONTS[0]; }
+var CAPTIONS=["GM","GN Lofi","HODL","When moon?","Lofi to the moon","Still early","WAGMI","Touch grass, then chart","Buy the dip?","50,000 m or nothing"];
+
+/* ============ EDITOR STATE & HISTORY ============ */
+var stage=document.getElementById('stage');
+var stageScroll=document.getElementById('stageScroll');
+var layers=[], selId=null, uid=0, stageSize="r11", zoom=1;
+var currentBg=BGS[0], currentFrame="None";
+var undoStack=[], redoStack=[];
+function curState(){ return JSON.stringify({layers:layers,bg:currentBg,frame:currentFrame,size:stageSize}); }
+function pushUndo(){ undoStack.push(curState()); if(undoStack.length>40)undoStack.shift(); redoStack.length=0; syncHistBtns(); }
+function restoreState(s){
+  var o=JSON.parse(s); layers=o.layers; currentBg=o.bg; currentFrame=o.frame; stageSize=o.size||"r11"; selId=null;
+  uid=layers.reduce(function(m,l){return Math.max(m,l.id)},uid);
+  document.querySelectorAll('#sizeSeg button').forEach(function(b){ b.classList.toggle('on',b.dataset.size===stageSize); });
+  document.querySelectorAll('#frameGrid .frame-btn').forEach(function(b){ b.classList.toggle('on',b.textContent===currentFrame); });
+  syncBgUI();
+  applyBg(); render();
+}
+function syncHistBtns(){
+  document.getElementById('undoBtn').disabled=!undoStack.length;
+  document.getElementById('redoBtn').disabled=!redoStack.length;
+}
+document.getElementById('undoBtn').onclick=function(){ if(!undoStack.length)return; redoStack.push(curState()); restoreState(undoStack.pop()); syncHistBtns(); };
+document.getElementById('redoBtn').onclick=function(){ if(!redoStack.length)return; undoStack.push(curState()); restoreState(redoStack.pop()); syncHistBtns(); };
+function applyBg(){
+  if(isSceneBg(currentBg)){ stage.style.background="url('"+currentBg[2]+"') center / cover no-repeat"; }
+  else{ stage.style.background="linear-gradient(160deg,"+currentBg[1]+","+currentBg[2]+")"; }
+  applyFrame();
+}
+function syncBgUI(){
+  document.querySelectorAll('#bgSwatches .swatch').forEach(function(b,i){ b.classList.toggle('on',!isSceneBg(currentBg)&&BGS[i][0]===currentBg[0]); });
+  document.querySelectorAll('#sceneSwatches .scene-swatch').forEach(function(b,i){ b.classList.toggle('on',isSceneBg(currentBg)&&SCENES[i].name===currentBg[0]); });
+}
+function applyFrame(){ document.getElementById('frameOl').setAttribute("style","inset:0;pointer-events:none;z-index:60;"+(FRAME_CSS[currentFrame]||"")); }
+
+/* ============ LAYER RENDERING ============ */
+function baseLayer(o){
+  var l={type:"sticker",name:"Layer",x:50,y:50,w:40,rot:0,op:1,flip:false,
+    shadow:0,glow:0,glowColor:"#FFD25A",outline:0,outlineColor:"#FFFFFF",filter:"none"};
+  for(var k in o) l[k]=o[k];
+  return l;
+}
+function fxFilterCSS(l){
+  var parts=[];
+  if(l.filter&&l.filter!=="none") parts.push(l.filter);
+  if(l.outline>0){ var o=(l.outline*0.9+0.6).toFixed(1), c=l.outlineColor;
+    parts.push("drop-shadow("+o+"px 0 0 "+c+")","drop-shadow(-"+o+"px 0 0 "+c+")","drop-shadow(0 "+o+"px 0 "+c+")","drop-shadow(0 -"+o+"px 0 "+c+")"); }
+  if(l.glow>0) parts.push("drop-shadow(0 0 "+(l.glow*0.9)+"px "+l.glowColor+")");
+  if(l.shadow>0) parts.push("drop-shadow(0 "+(l.shadow*0.55+2)+"px "+(l.shadow*0.7+2)+"px rgba(8,25,35,.5))");
+  return parts.join(" ");
+}
+function elByFile(f){ var L=(typeof ELEMENTS!=="undefined"&&ELEMENTS&&ELEMENTS.length)?ELEMENTS:[{file:"general-star-01.webp",name:"general-star",cat:"general",w:350,h:350}]; return L.find(function(e){return e.file===f}) || L[0]; }
+function layerEl(l,idx){
+  var d=document.createElement('div');
+  d.className='layer'+(l.id===selId?' selected':''); d.dataset.id=l.id;
+  d.style.left=l.x+'%'; d.style.top=l.y+'%'; d.style.width=l.w+'%'; d.style.zIndex=idx+1;
+  d.style.transform='translate(-50%,-50%) rotate('+l.rot+'deg) scaleX('+(l.flip?-1:1)+')';
+  d.style.opacity=l.op;
+  var wrap=document.createElement('div'); wrap.className='fxwrap';
+  var f=fxFilterCSS(l); if(f) wrap.style.filter=f;
+  if(l.type==='sticker'||l.type==='original'){
+    var s=stickerByFile(l.file); d.style.aspectRatio=s.w+' / '+s.h;
+    var im=document.createElement('img'); im.src='assets/'+l.file; im.alt=l.name; im.draggable=false; wrap.appendChild(im);
+  }
+  if(l.type==='element'){ var ee=elByFile(l.file); d.style.aspectRatio=ee.w+' / '+ee.h; var im3=document.createElement('img'); im3.src='assets/'+l.file; im3.alt=l.name; im3.draggable=false; wrap.appendChild(im3); }
+  if(l.type==='image'){ if(l.ar) d.style.aspectRatio=l.ar; var im2=document.createElement('img'); im2.src=l.src; im2.alt='Your uploaded photo'; im2.draggable=false; wrap.appendChild(im2); }
+  if(l.type==='text'){
+    var t=document.createElement('div'); t.className='txt'; t.textContent=l.text;
+    var fo=fontOf(l.font); t.style.fontFamily=l.font; t.style.fontWeight=fo.weight;
+    t.style.color=l.color; t.style.fontSize=(l.size/100*stage.clientWidth)+'px';
+    if(l.tOutline>0){ t.style.webkitTextStroke=(l.size/100*stage.clientWidth*l.tOutline/100)+'px '+l.tOutlineColor; t.style.paintOrder='stroke fill'; }
+    if(l.tShadow) t.style.textShadow='0.07em 0.07em 0 rgba(18,36,46,.85)';
+    if(l.bgC){ t.style.background=l.bgC; t.style.padding='0.16em 0.34em'; t.style.borderRadius='0.14em'; }
+    wrap.appendChild(t);
+  }
+  d.appendChild(wrap);
+  var hd=document.createElement('div'); hd.className='handles';
+  hd.innerHTML='<div class="h-rot" data-h="rot" title="Rotate"></div><div class="h-br" data-h="br" title="Resize"></div>';
+  d.appendChild(hd);
+  d.addEventListener('pointerdown',onLayerPointer);
+  return d;
+}
+function render(){
+  stage.querySelectorAll('.layer').forEach(function(e){e.remove()});
+  layers.forEach(function(l,i){ stage.appendChild(layerEl(l,i)); });
+  var list=document.getElementById('layerList'); list.innerHTML='';
+  document.getElementById('emptyLayers').style.display=layers.length?'none':'block';
+  layers.slice().reverse().forEach(function(l){
+    var b=document.createElement('button'); b.className='layer-item'+(l.id===selId?' on':'');
+    var tag=l.type==='sticker'?'Sticker':l.type==='original'?'Original':l.type==='element'?'Element':l.type==='text'?'Text':'Photo';
+    b.innerHTML=''; b.appendChild(document.createTextNode(l.name));
+    var tg=document.createElement('span'); tg.className='tag'; tg.textContent=tag; b.appendChild(tg);
+    b.onclick=function(){ select(l.id); }; list.appendChild(b);
+  });
+  syncInspector();
+}
+function select(id){ selId=id; render(); }
+function getSel(){ return layers.find(function(l){return l.id===selId}); }
+function addLayer(l){ pushUndo(); l.id=++uid; layers.push(l); selId=l.id; render(); return l; }
+stage.addEventListener('pointerdown',function(e){ if(e.target===stage){ selId=null; render(); } });
+
+/* ============ DRAG / RESIZE / ROTATE ============ */
+var gesture=null;
+function onLayerPointer(e){
+  var el=e.currentTarget, id=+el.dataset.id, l=layers.find(function(x){return x.id===id});
+  if(!l) return;
+  if(selId!==id){ selId=id; render(); el=stage.querySelector('.layer[data-id="'+id+'"]'); if(!el) return; }
+  var handle=e.target.dataset?e.target.dataset.h:null;
+  var sr=stage.getBoundingClientRect(), lr=el.getBoundingClientRect();
+  var cx=lr.left+lr.width/2, cy=lr.top+lr.height/2;
+  var preSnap=curState();
+  if(handle==='rot'){ gesture={mode:'rot',id:id,cx:cx,cy:cy,a0:Math.atan2(e.clientY-cy,e.clientX-cx),r0:l.rot,snap:preSnap}; }
+  else if(handle==='br'){ gesture={mode:'size',id:id,cx:cx,cy:cy,d0:Math.max(8,Math.hypot(e.clientX-cx,e.clientY-cy)),w0:l.w,s0:l.size,snap:preSnap}; }
+  else { gesture={mode:'move',id:id,dx:e.clientX-cx,dy:e.clientY-cy,snap:preSnap}; }
+  try{ el.setPointerCapture(e.pointerId); }catch(err){}
+  el.onpointermove=function(ev){
+    if(!gesture) return;
+    var ll=layers.find(function(x){return x.id===gesture.id}); if(!ll) return;
+    var r2=stage.getBoundingClientRect();
+    if(gesture.mode==='move'){
+      ll.x=Math.min(98,Math.max(2,(ev.clientX-gesture.dx-r2.left)/r2.width*100));
+      ll.y=Math.min(98,Math.max(2,(ev.clientY-gesture.dy-r2.top)/r2.height*100));
+    } else if(gesture.mode==='rot'){
+      var a=Math.atan2(ev.clientY-gesture.cy,ev.clientX-gesture.cx);
+      var deg=gesture.r0+(a-gesture.a0)*180/Math.PI;
+      deg=((deg+180)%360+360)%360-180;
+      [0,90,-90,180,-180,45,-45].forEach(function(s){ if(Math.abs(deg-s)<5) deg=s; });
+      ll.rot=Math.round(deg);
+    } else if(gesture.mode==='size'){
+      var d=Math.max(8,Math.hypot(ev.clientX-gesture.cx,ev.clientY-gesture.cy));
+      ll.w=Math.min(118,Math.max(6,gesture.w0*d/gesture.d0));
+      if(ll.type==='text'&&gesture.s0) ll.size=Math.min(18,Math.max(2.5,gesture.s0*d/gesture.d0));
+    }
+    var elx=stage.querySelector('.layer[data-id="'+ll.id+'"]');
+    if(elx){ elx.style.left=ll.x+'%'; elx.style.top=ll.y+'%'; elx.style.width=ll.w+'%';
+      elx.style.transform='translate(-50%,-50%) rotate('+ll.rot+'deg) scaleX('+(ll.flip?-1:1)+')';
+      if(ll.type==='text'){ var tx=elx.querySelector('.txt'); if(tx) tx.style.fontSize=(ll.size/100*stage.clientWidth)+'px'; } }
+  };
+  el.onpointerup=el.onpointercancel=function(){
+    if(gesture&&gesture.snap&&gesture.snap!==curState()){ undoStack.push(gesture.snap); if(undoStack.length>40)undoStack.shift(); redoStack.length=0; }
+    gesture=null; el.onpointermove=null; el.onpointerup=null; render(); syncHistBtns(); };
+  e.preventDefault(); e.stopPropagation();
+}
+
+/* ============ INSPECTOR ============ */
+var snapStash=null;
+function stashSnap(){ snapStash=curState(); }
+function commitSnap(){ if(snapStash&&snapStash!==curState()){ undoStack.push(snapStash); if(undoStack.length>40)undoStack.shift(); redoStack.length=0; } snapStash=null; syncHistBtns(); }
+function bindSnap(el){ if(!el) return; el.addEventListener('pointerdown',stashSnap); el.addEventListener('focus',stashSnap); el.addEventListener('change',commitSnap); el.addEventListener('blur',commitSnap); }
+function syncInspector(){
+  var l=getSel(), c=document.getElementById('controls'), info=document.getElementById('selInfo');
+  if(!l){ c.style.display='none'; info.textContent='Nothing selected.'; return; }
+  c.style.display='block'; info.textContent='Selected: '+l.name;
+  document.getElementById('scaleRange').value=Math.round(l.w);
+  document.getElementById('rotRange').value=l.rot;
+  document.getElementById('opRange').value=Math.round(l.op*100);
+  document.getElementById('fxShadow').value=l.shadow;
+  document.getElementById('fxGlow').value=l.glow;
+  document.getElementById('fxGlowColor').value=l.glowColor;
+  document.getElementById('fxOutline').value=l.outline;
+  document.getElementById('fxOutlineColor').value=l.outlineColor;
+  document.getElementById('fxFilter').value=l.filter;
+  var ts=document.getElementById('textSec');
+  if(l.type==='text'){
+    ts.style.display='block';
+    if(document.activeElement!==document.getElementById('inspText')) document.getElementById('inspText').value=l.text;
+    document.getElementById('inspFont').value=l.font;
+    document.getElementById('inspSize').value=l.size;
+    document.getElementById('inspColor').value=l.color;
+    document.getElementById('inspOutline').value=l.tOutline;
+    document.getElementById('inspOutlineColor').value=l.tOutlineColor;
+    document.getElementById('inspShadow').checked=!!l.tShadow;
+    document.querySelectorAll('#inspBgSeg button').forEach(function(b){ b.classList.toggle('on',b.dataset.bg===(l.bgC||'')); });
+  } else ts.style.display='none';
+}
+document.getElementById('scaleRange').addEventListener('input',function(e){ var l=getSel(); if(l){ l.w=+e.target.value; render(); }});
+document.getElementById('rotRange').addEventListener('input',function(e){ var l=getSel(); if(l){ l.rot=+e.target.value; render(); }});
+document.getElementById('opRange').addEventListener('input',function(e){ var l=getSel(); if(l){ l.op=+e.target.value/100; render(); }});
+document.getElementById('fxShadow').addEventListener('input',function(e){ var l=getSel(); if(l){ l.shadow=+e.target.value; render(); }});
+document.getElementById('fxGlow').addEventListener('input',function(e){ var l=getSel(); if(l){ l.glow=+e.target.value; render(); }});
+document.getElementById('fxGlowColor').addEventListener('input',function(e){ var l=getSel(); if(l){ l.glowColor=e.target.value; render(); }});
+document.getElementById('fxOutline').addEventListener('input',function(e){ var l=getSel(); if(l){ l.outline=+e.target.value; render(); }});
+document.getElementById('fxOutlineColor').addEventListener('input',function(e){ var l=getSel(); if(l){ l.outlineColor=e.target.value; render(); }});
+document.getElementById('fxFilter').addEventListener('change',function(e){ var l=getSel(); if(l){ l.filter=e.target.value; render(); }});
+['scaleRange','rotRange','opRange','fxShadow','fxGlow','fxGlowColor','fxOutline','fxOutlineColor','fxFilter','inspText','inspFont','inspSize','inspColor','inspOutline','inspOutlineColor','inspShadow'].forEach(function(id){ bindSnap(document.getElementById(id)); });
+document.getElementById('inspText').addEventListener('input',function(e){ var l=getSel(); if(l&&l.type==='text'){ l.text=e.target.value; l.name='Text · '+l.text.slice(0,18); render(); }});
+document.getElementById('inspFont').addEventListener('change',function(e){ var l=getSel(); if(l){ l.font=e.target.value; render(); }});
+document.getElementById('inspSize').addEventListener('input',function(e){ var l=getSel(); if(l){ l.size=+e.target.value; render(); }});
+document.getElementById('inspColor').addEventListener('input',function(e){ var l=getSel(); if(l){ l.color=e.target.value; render(); }});
+document.getElementById('inspOutline').addEventListener('input',function(e){ var l=getSel(); if(l){ l.tOutline=+e.target.value; render(); }});
+document.getElementById('inspOutlineColor').addEventListener('input',function(e){ var l=getSel(); if(l){ l.tOutlineColor=e.target.value; render(); }});
+document.getElementById('inspShadow').addEventListener('change',function(e){ var l=getSel(); if(l){ l.tShadow=e.target.checked; render(); }});
+document.getElementById('inspBgSeg').addEventListener('click',function(e){ if(e.target.tagName!=='BUTTON')return; var l=getSel(); if(!l)return; stashSnap(); l.bgC=e.target.dataset.bg||''; commitSnap(); render(); });
+document.getElementById('delBtn').onclick=function(){ var l=getSel(); if(!l)return; pushUndo(); layers=layers.filter(function(x){return x.id!==l.id}); selId=null; render(); };
+document.getElementById('dupBtn').onclick=function(){ var l=getSel(); if(!l)return; var cp=JSON.parse(JSON.stringify(l)); delete cp.id; cp.x=Math.min(90,cp.x+7); cp.y=Math.min(90,cp.y+7); cp.name=l.name+' copy'; addLayer(baseLayer(cp)); };
+document.getElementById('flipBtn').onclick=function(){ var l=getSel(); if(l){ pushUndo(); l.flip=!l.flip; render(); }};
+document.getElementById('centerBtn').onclick=function(){ var l=getSel(); if(l){ pushUndo(); l.x=50; l.y=50; render(); }};
+document.getElementById('fwdBtn').onclick=function(){ var l=getSel(); if(!l)return; var i=layers.indexOf(l); if(i<layers.length-1){ pushUndo(); layers.splice(i,1); layers.splice(i+1,0,l); render(); }};
+document.getElementById('backBtn').onclick=function(){ var l=getSel(); if(!l)return; var i=layers.indexOf(l); if(i>0){ pushUndo(); layers.splice(i,1); layers.splice(i-1,0,l); render(); }};
+document.getElementById('clearBtn').onclick=function(){ if(!layers.length)return; pushUndo(); layers=[]; selId=null; render(); toast('Canvas cleared.'); };
+document.getElementById('sizeSeg').addEventListener('click',function(e){ if(e.target.tagName!=='BUTTON')return;
+  this.querySelectorAll('button').forEach(function(b){b.classList.remove('on')}); e.target.classList.add('on');
+  pushUndo(); stageSize=e.target.dataset.size; stage.className=stageSize==='r11'?'':stageSize; applyZoom(); render(); });
+
+/* Zoom */
+function fitW(){ return Math.max(240,stageScroll.clientWidth-32); }
+function applyZoom(){ stage.style.width=Math.round(fitW()*zoom)+'px'; document.getElementById('zoomVal').textContent=Math.round(zoom*100)+'%'; }
+document.getElementById('zoomIn').onclick=function(){ zoom=Math.min(2,+(zoom+0.15).toFixed(2)); applyZoom(); render(); };
+document.getElementById('zoomOut').onclick=function(){ zoom=Math.max(0.4,+(zoom-0.15).toFixed(2)); applyZoom(); render(); };
+document.getElementById('zoomVal').onclick=function(){ zoom=1; applyZoom(); render(); };
+var rszT=null;
+window.addEventListener('resize',function(){ clearTimeout(rszT); rszT=setTimeout(function(){ applyZoom(); render(); },120); });
+
+/* Keyboard */
+var lastNudgeSnap=0;
+document.addEventListener('keydown',function(e){
+  var tag=document.activeElement&&document.activeElement.tagName;
+  if(/INPUT|TEXTAREA|SELECT/.test(tag||'')) return;
+  if(document.documentElement.dataset.view!=='studio') return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){ e.preventDefault(); if(e.shiftKey) document.getElementById('redoBtn').click(); else document.getElementById('undoBtn').click(); return; }
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){ e.preventDefault(); document.getElementById('redoBtn').click(); return; }
+  var l=getSel(); if(!l) return;
+  if(e.key==='Delete'||e.key==='Backspace'){ document.getElementById('delBtn').click(); return; }
+  var step=e.shiftKey?2:0.7, moved=true;
+  if(e.key==='ArrowLeft') l.x-=step; else if(e.key==='ArrowRight') l.x+=step;
+  else if(e.key==='ArrowUp') l.y-=step; else if(e.key==='ArrowDown') l.y+=step; else moved=false;
+  if(moved){ e.preventDefault(); var now=Date.now(); if(now-lastNudgeSnap>500){ pushUndo(); lastNudgeSnap=now; } render(); }
+});
+</script>
+<script>
+/* ============ LIBRARY UI: STICKERS (two packs) ============ */
+var stickerQ="";
+function stickerCard(s,pack){
+  var d=document.createElement('div'); d.className='card'; d.setAttribute('role','button'); d.setAttribute('tabindex','0');
+  var im=document.createElement('img'); im.src='assets/thumbs/'+s.file; im.alt=(pack==='original'?'Original Lofi · ':'Lofi · ')+s.label+' sticker'; im.loading='lazy'; im.decoding='async';
+  d.appendChild(im); var sp=document.createElement('span'); sp.textContent=s.label; d.appendChild(sp);
+  function add(){ addLayer(baseLayer({type:pack,name:(pack==='original'?'Original · ':'Sticker · ')+s.label,file:s.file,x:50,y:52,w:52})); toast('Added: '+s.label+(pack==='original'?' (Original pack)':'')); }
+  d.onclick=add; d.onkeydown=function(e){ if(e.key==='Enter')add(); };
+  return d;
+}
+function drawStickers(){
+  var q=stickerQ;
+  var cg=document.getElementById('stickerGrid'); cg.innerHTML='';
+  var og=document.getElementById('origGrid'); og.innerHTML='';
+  var n1=0,n2=0;
+  STICKERS.forEach(function(s){ if(!q||(s.label+' '+s.search).toLowerCase().indexOf(q)>-1){ cg.appendChild(stickerCard(s,'character')); n1++; } });
+  ORIGINALS.forEach(function(s){ if(!q||(s.label+' '+s.search).toLowerCase().indexOf(q)>-1){ og.appendChild(stickerCard(s,'original')); n2++; } });
+  document.getElementById('charCount').textContent=STICKERS.length+' stickers';
+  document.getElementById('origCount').textContent=ORIGINALS.length+' faces';
+  document.getElementById('stickerCount').textContent=q?('Showing '+n1+' character + '+n2+' original for “'+q+'”'):(STICKERS.length+' character + '+ORIGINALS.length+' original');
+}
+document.getElementById('stickerSearch').addEventListener('input',function(e){ stickerQ=e.target.value.trim().toLowerCase(); drawStickers(); });
+
+/* ============ LIBRARY UI: ELEMENTS (real PNG library, grouped by category) ============ */
+var elQ='';
+var EL_CATS=[["funny","Funny"],["general","General"],["winter","Winter"]];
+function elCatCount(c){ return ELEMENTS.filter(function(e){return e.cat===c}).length; }
+function elLabel(e){
+  var base=e.name.replace(/^(funny|general|winter)-/,'').replace(/-/g,' ');
+  base=base.charAt(0).toUpperCase()+base.slice(1);
+  var m=e.file.match(/-(\d+)\.webp$/);
+  return (m&&+m[1]>1)?base+' '+ (+m[1]):base;
+}
+function drawElements(){
+  var box=document.getElementById('elGroups'); box.innerHTML='';
+  var shown=0;
+  EL_CATS.forEach(function(c){
+    var total=elCatCount(c[0]);
+    var list=ELEMENTS.filter(function(e){ return e.cat===c[0] && (!elQ || (e.name+' '+c[1]).toLowerCase().indexOf(elQ)>-1); });
+    if(!list.length) return;
+    shown+=list.length;
+    var block=document.createElement('div'); block.className='cat-block';
+    var head=document.createElement('div'); head.className='cat-head';
+    var h=document.createElement('h3'); h.textContent=c[1]; head.appendChild(h);
+    var cnt=document.createElement('span'); cnt.textContent=(list.length===total)?(total+' images'):(list.length+' of '+total); head.appendChild(cnt);
+    block.appendChild(head);
+    var grid=document.createElement('div'); grid.className='el-grid';
+    list.forEach(function(e){
+      var btn=document.createElement('button'); btn.className='el-btn'; btn.title=elLabel(e)+' · '+c[1];
+      var im=document.createElement('img'); im.src='assets/thumbs/'+e.file; im.alt=elLabel(e); im.loading='lazy'; im.decoding='async'; btn.appendChild(im);
+      var sp=document.createElement('span'); sp.textContent=elLabel(e); btn.appendChild(sp);
+      btn.onclick=function(){ addLayer(baseLayer({type:'element',name:'Element · '+elLabel(e),file:e.file,x:50,y:50,w:26})); toast('Added: '+elLabel(e)); };
+      grid.appendChild(btn);
+    });
+    block.appendChild(grid);
+    box.appendChild(block);
+  });
+  if(!shown){ var em=document.createElement('div'); em.className='empty'; em.textContent='No elements match “'+elQ+'”.'; box.appendChild(em); }
+  document.getElementById('elCount').textContent=elQ
+    ? ('Showing '+shown+' of '+ELEMENTS.length+' elements')
+    : (ELEMENTS.length+' elements · '+elCatCount('funny')+' funny · '+elCatCount('general')+' general · '+elCatCount('winter')+' winter');
+}
+document.getElementById('elSearch').addEventListener('input',function(e){ elQ=e.target.value.trim().toLowerCase(); drawElements(); });
+
+/* ============ LIBRARY UI: BACKGROUNDS & FRAMES ============ */
+var sceneEl=document.getElementById('sceneSwatches');
+function buildScenes(){
+SCENES.forEach(function(s){ var b=document.createElement('button'); b.className='scene-swatch'; b.title=s.name; b.setAttribute('aria-label','Scene background '+s.name);
+  var im=document.createElement('img'); im.src='assets/thumbs/'+s.file; im.alt=''; im.loading='lazy'; im.decoding='async'; b.appendChild(im);
+  var sp=document.createElement('span'); sp.textContent=s.name; b.appendChild(sp);
+  b.onclick=function(){ pushUndo(); currentBg=sceneBgEntry(s); syncBgUI(); applyBg(); }; sceneEl.appendChild(b); });
+}
+var bgEl=document.getElementById('bgSwatches');
+BGS.forEach(function(bg,i){ var b=document.createElement('button'); b.className='swatch'+(i===0?' on':''); b.style.background='linear-gradient(150deg,'+bg[1]+','+bg[2]+')'; b.title=bg[0]; b.setAttribute('aria-label','Background '+bg[0]);
+  b.onclick=function(){ pushUndo(); currentBg=bg; syncBgUI(); applyBg(); }; bgEl.appendChild(b); });
+var frEl=document.getElementById('frameGrid');
+FRAMES.forEach(function(f){ var b=document.createElement('button'); b.className='frame-btn'+(f==='None'?' on':''); b.textContent=f;
+  b.onclick=function(){ pushUndo(); currentFrame=f; frEl.querySelectorAll('.frame-btn').forEach(function(x){x.classList.remove('on')}); b.classList.add('on'); applyFrame(); }; frEl.appendChild(b); });
+
+/* ============ LIBRARY UI: TEXT & PHOTO ============ */
+var fontSel=document.getElementById('fontSel'), inspFont=document.getElementById('inspFont');
+FONTS.forEach(function(f){ [fontSel,inspFont].forEach(function(sel){ var o=document.createElement('option'); o.value=f.css; o.textContent=f.label; sel.appendChild(o); }); });
+CAPTIONS.forEach(function(c){ var b=document.createElement('button'); b.className='preset'; b.textContent=c;
+  b.onclick=function(){ document.getElementById('textInput').value=c; addTextLayer(); }; document.getElementById('captionPresets').appendChild(b); });
+function addTextLayer(){
+  var v=document.getElementById('textInput').value.trim(); if(!v){ toast('Write a caption first.'); return; }
+  addLayer(baseLayer({type:'text',name:'Text · '+v.slice(0,18),text:v,font:fontSel.value,color:document.getElementById('textColor').value,
+    size:7,tOutline:14,tOutlineColor:'#12242E',tShadow:true,bgC:'',x:50,y:86,w:84}));
+}
+document.getElementById('addText').onclick=addTextLayer;
+document.getElementById('photoInput').addEventListener('change',function(e){ var f=e.target.files[0]; if(!f)return;
+  var url=URL.createObjectURL(f); var probe=new Image();
+  probe.onload=function(){ addLayer(baseLayer({type:'image',name:'Your photo',src:url,ar:probe.naturalWidth+' / '+probe.naturalHeight,x:50,y:50,w:60})); };
+  probe.src=url; });
+
+/* Tabs */
+document.querySelectorAll('.tab').forEach(function(t){ t.onclick=function(){
+  document.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected','false')}); t.setAttribute('aria-selected','true');
+  document.querySelectorAll('.tabpane').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('pane-'+t.dataset.tab).classList.add('active');
+  if(t.dataset.tab==='elements'&&typeof ensureElements==='function') ensureElements(); }; });
+
+/* ============ TEMPLATES ============ */
+function mkSticker(file,x,y,w){ var s=stickerByFile(file); var orig=ORIGINALS.indexOf(s)>-1;
+  return baseLayer({type:orig?'original':'sticker',name:(orig?'Original · ':'Sticker · ')+s.label,file:file,x:x,y:y,w:w}); }
+function mkText(text,x,y,w,opts){ var l=baseLayer({type:'text',name:'Text · '+text.slice(0,18),text:text,font:"'Baloo 2'",color:'#ffffff',size:7,tOutline:14,tOutlineColor:'#12242E',tShadow:true,bgC:'',x:x,y:y,w:w}); if(opts) for(var k in opts) l[k]=opts[k]; return l; }
+function mkElementFile(file,x,y,w){ var e=elByFile(file); return baseLayer({type:'element',name:'Element · '+elLabel(e),file:file,x:x,y:y,w:w}); }
+function mkEl(file,x,y,w,rot){ var l=mkElementFile(file,x,y,w); if(rot) l.rot=rot; return l; }
+/* Caption exactly as drawn on the landing template cards (.sc-cap): Anton, white, heavy black outline, bottom centre */
+function mkCapText(text){ return mkText(text,50,91,92,{font:"'Anton'",size:7,tOutline:26,tOutlineColor:'#111111'}); }
+var TEMPLATES=[
+ {name:"GM Lofi",fmt:"Classic",desc:"Cute Lofi in a pastel snowy scene, the classic good-morning post",scene:"featured-cute.webp",thumb:"featured-cute.webp",build:function(){ return [mkEl("general-heart-03.webp",12,11,15,-10), mkEl("general-star-03.webp",88,11,17,8), mkEl("general-heart-03.webp",93,44,10,12), mkCapText("GM")]; }},
+ {name:"When Moon?",fmt:"Classic",desc:"Shocked Lofi under an aurora night sky, waiting on the moon",scene:"featured-reaction.webp",thumb:"featured-reaction.webp",build:function(){ return [mkEl("general-star-01.webp",10,10,13,-8), mkEl("general-star-03.webp",11,85,16,10), mkEl("general-star-01.webp",92,26,9,14), mkCapText("WHEN MOON?")]; }},
+ {name:"Angry Market",fmt:"Classic",desc:"Lofi throwing a snowball in bright snowy mountains",scene:"featured-winter.webp",thumb:"featured-winter.webp",build:function(){ return [mkEl("winter-snowflake-01.webp",9,9,13), mkEl("winter-snowflake-02.webp",93,56,12), mkEl("general-lightning-01.webp",8,83,9,-6), mkCapText("WHO SOLD?!")]; }},
+ {name:"HODL Mode",fmt:"Classic",desc:"Laughing Lofi at the cozy cabin party, no panic",scene:"featured-funny.webp",thumb:"featured-funny.webp",build:function(){ return [mkEl("funny-party-confetti-03.webp",12,12,22), mkEl("funny-party-confetti-03.webp",89,12,20), mkEl("funny-crown-01.webp",13,85,19,-6), mkCapText("HODL.")]; }},
+ {name:"Sleepy GN",fmt:"Classic",desc:"Sleepy Lofi, lights out",bg:2,thumb:"lofi-sticker-sleepy.webp",build:function(){ return [mkSticker("lofi-sticker-sleepy.webp",50,48,54), mkText("GN Lofi",50,88,70)]; }},
+ {name:"Winner",fmt:"Classic",desc:"Pure joy, confetti optional",bg:3,thumb:"lofi-sticker-celebration.webp",build:function(){ return [mkSticker("lofi-sticker-celebration.webp",50,48,58), mkText("We did it!",50,88,80)]; }},
+ {name:"Top & Bottom",fmt:"Meme format",desc:"The original meme layout: big text top and bottom",bg:0,thumb:"lofi-sticker-laughing.webp",build:function(){ var o={font:"'Archivo Black'",size:8,tOutline:26};
+   return [mkSticker("lofi-sticker-laughing.webp",50,50,62), mkText("WHEN THE MEME",50,10,92,o), mkText("WRITES ITSELF",50,91,92,o)]; }},
+ {name:"Two-Panel Reaction",fmt:"Meme format",desc:"Before and after, side by side",bg:10,thumb:"lofi-sticker-sideeye.webp",build:function(){
+   return [mkSticker("lofi-sticker-sideeye.webp",26,44,40), mkSticker("lofi-sticker-ski.webp",74,44,42),
+     mkText("Before coffee",26,86,44,{size:5.5,color:'#12242E',tOutline:0,tShadow:false}), mkText("After coffee",74,86,44,{size:5.5,color:'#12242E',tOutline:0,tShadow:false})]; }},
+ {name:"Caption Bar",fmt:"Meme format",desc:"White bar on top, reaction below, meme-generator style",bg:12,thumb:"lofi-original-shocked.webp",build:function(){
+   return [mkText("POV: you found Lofi Meme Studio",50,9,96,{size:6,color:'#12242E',tOutline:0,tShadow:false,bgC:'#ffffff'}), mkSticker("lofi-original-shocked.webp",50,56,58)]; }}
+];
+/* Preview of a template's exact composition: same background and layers the editor loads,
+   placed with the editor's own geometry (centre x/y %, width %, rotation, caption style),
+   so a thumbnail or card can never drift from what the template actually opens. */
+function tplArt(t){
+  var art=document.createElement('div'); art.className='tpl-art sm';
+  if(t.scene){ var bg=document.createElement('img'); bg.className='ta-bg'; bg.src='assets/thumbs/'+t.scene; bg.alt=''; bg.loading='lazy'; bg.decoding='async'; art.appendChild(bg); }
+  else art.style.background='linear-gradient(160deg,'+BGS[t.bg][1]+','+BGS[t.bg][2]+')';
+  t.build().forEach(function(l){
+    if(l.type==='text'){
+      var cap=document.createElement('div'); cap.className='ta-cap'; cap.textContent=l.text;
+      cap.style.left=l.x+'%'; cap.style.top=l.y+'%'; cap.style.width=l.w+'%';
+      cap.style.fontFamily=l.font; cap.style.fontWeight=fontOf(l.font).weight; cap.style.color=l.color;
+      cap.style.setProperty('--fs',l.size); cap.style.setProperty('--ol',l.tOutline||0); cap.style.setProperty('--olc',l.tOutlineColor||'#111111');
+      if(l.tShadow) cap.style.textShadow='0.07em 0.07em 0 rgba(18,36,46,.85)';
+      if(l.bgC){ cap.style.background=l.bgC; cap.style.padding='0.16em 0.34em'; cap.style.borderRadius='0.14em'; }
+      art.appendChild(cap);
+    } else {
+      var im=document.createElement('img'); im.className='ta-el'; im.src='assets/thumbs/'+l.file; im.alt=''; im.loading='lazy'; im.decoding='async';
+      im.style.left=l.x+'%'; im.style.top=l.y+'%'; im.style.width=l.w+'%';
+      im.style.transform='translate(-50%,-50%) rotate('+l.rot+'deg)'+(l.flip?' scaleX(-1)':'');
+      art.appendChild(im);
+    }
+  });
+  return art;
+}
+/* Appends a template's image layers (elements/stickers) to a full-size preview box,
+   positioned exactly as the editor places them. Text layers are left to the caller. */
+function appendTplLayers(t,box,cls,z){
+  t.build().forEach(function(l){
+    if(l.type==='text') return;
+    var im=document.createElement('img'); if(cls) im.className=cls; im.src='assets/thumbs/'+l.file; im.alt=''; im.loading='lazy'; im.decoding='async';
+    im.style.position='absolute'; im.style.left=l.x+'%'; im.style.top=l.y+'%'; im.style.width=l.w+'%';
+    im.style.transform='translate(-50%,-50%) rotate('+l.rot+'deg)'+(l.flip?' scaleX(-1)':'');
+    im.style.zIndex=z||2; box.appendChild(im);
+  });
+}
+var tplEl=document.getElementById('tplList');
+function buildTplList(){
+TEMPLATES.forEach(function(t){
+  var b=document.createElement('button'); b.className='tpl';
+  b.appendChild(tplArt(t));
+  var mid=document.createElement('span'); mid.className='tpl-txt'; var bb=document.createElement('b'); bb.textContent=t.name; mid.appendChild(bb); b.appendChild(mid);
+  var fm=document.createElement('span'); fm.className='fmt'; fm.textContent=t.fmt; b.appendChild(fm);
+  b.onclick=function(){ pushUndo(); currentBg=t.scene?sceneBgEntry({name:t.name,file:t.scene}):BGS[t.bg]; stageSize='r11'; stage.className='';
+    document.querySelectorAll('#sizeSeg button').forEach(function(x,i){ x.classList.toggle('on',i===0); });
+    layers=t.build(); layers.forEach(function(l){ l.id=++uid; }); selId=null; applyBg();
+    syncBgUI();
+    render(); toast('Template loaded: '+t.name); };
+  tplEl.appendChild(b); });
+}
+
+/* ============ GALLERY (this session) ============ */
+var gal=document.getElementById('studioGallery'), votes={};
+function buildStudioGallery(){
+TEMPLATES.slice(0,6).forEach(function(t,i){
+  var card=document.createElement('div'); card.className='g-card';
+  var art=t.scene
+    ? '<div class="g-art"><img class="shot" src="assets/thumbs/'+t.scene+'" alt="'+t.name+' example" loading="lazy" decoding="async"><div class="g-cap"></div></div>'
+    : '<div class="g-art" style="background:linear-gradient(160deg,'+BGS[t.bg][1]+','+BGS[t.bg][2]+')"><img class="stk" src="assets/thumbs/'+t.thumb+'" alt="'+t.name+' example" loading="lazy" decoding="async"><div class="g-cap"></div></div>';
+  card.innerHTML=art
+   +'<div class="g-meta"><div><b></b><span>Template</span></div><button class="vote" data-i="t'+i+'"><svg class="ic"><use href="#i-heart"/></svg><span>0</span></button></div>';
+  if(t.scene) appendTplLayers(t,card.querySelector('.g-art'),'',1);
+  card.querySelector('.g-cap').textContent=t.build().filter(function(l){return l.type==='text'})[0].text;
+  card.querySelector('.g-meta b').textContent=t.name;
+  gal.appendChild(card); });
+}
+gal.addEventListener('click',function(e){ var b=e.target.closest('.vote'); if(!b)return; var i=b.dataset.i;
+  if(votes[i]){ votes[i]=0; b.classList.remove('voted'); } else { votes[i]=1; b.classList.add('voted'); }
+  b.querySelector('span').textContent=votes[i]; });
+document.getElementById('toGalleryBtn').onclick=async function(){
+  if(!layers.length){ toast('Add a sticker first.'); return; }
+  var cv=await renderPNG(540);
+  var card=document.createElement('div'); card.className='g-card';
+  var idx='u'+Date.now(); votes[idx]=0;
+  card.innerHTML='<div class="g-art"><img class="shot" src="'+cv.toDataURL('image/png')+'" alt="Your Lofi meme"></div>'
+   +'<div class="g-meta"><div><b>Your meme</b><span>Yours · this session</span></div><button class="vote" data-i="'+idx+'"><svg class="ic"><use href="#i-heart"/></svg><span>0</span></button></div>';
+  gal.insertBefore(card,gal.firstChild);
+  toast('Added to gallery.');
+  card.scrollIntoView({behavior:'smooth',block:'center'});
+};
+
+/* ============ EXPORT PNG (1080px) ============ */
+function loadImg(src){ return new Promise(function(res,rej){ var img=new Image(); img.onload=function(){res(img)}; img.onerror=rej; img.src=src; }); }
+function silhouette(img,color,W,H){
+  var c=document.createElement('canvas'); c.width=Math.max(2,Math.round(W)); c.height=Math.max(2,Math.round(H));
+  var x=c.getContext('2d'); x.drawImage(img,0,0,c.width,c.height);
+  x.globalCompositeOperation='source-in'; x.fillStyle=color; x.fillRect(0,0,c.width,c.height); return c;
+}
+function drawFXImage(ctx,img,w,h,l,scale){
+  if(l.filter&&l.filter!=='none'){ try{ ctx.filter=l.filter; }catch(e){} }
+  if(l.outline>0){ var sil=silhouette(img,l.outlineColor,w,h), o=(l.outline*1.1+1)*scale;
+    [[o,0],[-o,0],[0,o],[0,-o],[o,o],[-o,o],[o,-o],[-o,-o]].forEach(function(p){ ctx.drawImage(sil,-w/2+p[0],-h/2+p[1],w,h); }); }
+  if(l.glow>0){ ctx.save(); ctx.shadowColor=l.glowColor; ctx.shadowBlur=l.glow*1.4*scale; ctx.shadowOffsetX=0; ctx.shadowOffsetY=0;
+    ctx.drawImage(img,-w/2,-h/2,w,h); ctx.drawImage(img,-w/2,-h/2,w,h); ctx.restore(); }
+  if(l.shadow>0){ ctx.save(); ctx.shadowColor='rgba(8,25,35,.5)'; ctx.shadowBlur=l.shadow*1.1*scale; ctx.shadowOffsetY=l.shadow*0.8*scale;
+    ctx.drawImage(img,-w/2,-h/2,w,h); ctx.restore(); }
+  ctx.drawImage(img,-w/2,-h/2,w,h);
+  try{ ctx.filter='none'; }catch(e){}
+}
+function wrapLines(ctx,text,maxW){
+  var out=[];
+  text.split('\n').forEach(function(para){
+    var words=para.split(/\s+/).filter(Boolean), line='';
+    if(!words.length){ out.push(''); return; }
+    words.forEach(function(wd){ var test=line?line+' '+wd:wd;
+      if(ctx.measureText(test).width>maxW&&line){ out.push(line); line=wd; } else line=test; });
+    if(line) out.push(line);
+  });
+  return out;
+}
+async function renderPNG(W){
+  var H=stageSize==='r916'?Math.round(W*16/9):(stageSize==='r45'?Math.round(W*5/4):W);
+  var scale=W/540;
+  var cv=document.createElement('canvas'); cv.width=W; cv.height=H; var ctx=cv.getContext('2d');
+  if(isSceneBg(currentBg)){
+    try{ var bgIm=await loadImg(currentBg[2]);
+      var bs=Math.max(W/bgIm.naturalWidth,H/bgIm.naturalHeight), bw=bgIm.naturalWidth*bs, bh=bgIm.naturalHeight*bs;
+      ctx.drawImage(bgIm,(W-bw)/2,(H-bh)/2,bw,bh);
+    }catch(e){ ctx.fillStyle='#BFE8F2'; ctx.fillRect(0,0,W,H); }
+  } else {
+    var g=ctx.createLinearGradient(0,0,W*0.3,H); g.addColorStop(0,currentBg[1]); g.addColorStop(1,currentBg[2]); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  }
+  for(var i=0;i<layers.length;i++){ var l=layers[i];
+    ctx.save(); ctx.globalAlpha=l.op; ctx.translate(W*l.x/100,H*l.y/100); ctx.rotate(l.rot*Math.PI/180); if(l.flip)ctx.scale(-1,1);
+    var wpx=W*l.w/100;
+    try{
+      if(l.type==='sticker'||l.type==='original'){ var s=stickerByFile(l.file); var im=await loadImg('assets/'+s.file); drawFXImage(ctx,im,wpx,wpx*s.h/s.w,l,scale); }
+      else if(l.type==='element'){ var ee2=elByFile(l.file); var im2=await loadImg('assets/'+ee2.file); drawFXImage(ctx,im2,wpx,wpx*ee2.h/ee2.w,l,scale); }
+      else if(l.type==='image'){ var im3=await loadImg(l.src); drawFXImage(ctx,im3,wpx,wpx*im3.naturalHeight/im3.naturalWidth,l,scale); }
+      else if(l.type==='text'){
+        var fo=fontOf(l.font), fs=l.size/100*W;
+        ctx.font=fo.weight+' '+fs+'px '+l.font+',sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        var lines=wrapLines(ctx,l.text,wpx), lh=fs*1.14, totalH=lines.length*lh;
+        if(l.bgC){ ctx.fillStyle=l.bgC; var bw=0,bh=totalH+fs*0.36;
+          lines.forEach(function(ln){ bw=Math.max(bw,ctx.measureText(ln).width); });
+          roundRect(ctx,-bw/2-fs*0.34,-totalH/2-fs*0.18,bw+fs*0.68,bh,fs*0.14); ctx.fill(); }
+        if(l.shadow>0){ ctx.save(); ctx.shadowColor='rgba(8,25,35,.5)'; ctx.shadowBlur=l.shadow*1.1*scale; ctx.shadowOffsetY=l.shadow*0.8*scale; }
+        lines.forEach(function(ln,li){ var y=(li-(lines.length-1)/2)*lh;
+          if(l.tOutline>0){ ctx.lineWidth=fs*l.tOutline/100; ctx.strokeStyle=l.tOutlineColor; ctx.lineJoin='round'; ctx.strokeText(ln,0,y); }
+          else if(l.tShadow){ ctx.save(); ctx.fillStyle='rgba(18,36,46,.85)'; ctx.fillText(ln,fs*0.05,y+fs*0.05); ctx.restore(); }
+          ctx.fillStyle=l.color; ctx.fillText(ln,0,y); });
+        if(l.shadow>0) ctx.restore();
+        if(l.glow>0){ ctx.save(); ctx.shadowColor=l.glowColor; ctx.shadowBlur=l.glow*1.4*scale; ctx.fillStyle=l.color;
+          lines.forEach(function(ln,li){ ctx.fillText(ln,0,(li-(lines.length-1)/2)*lh); }); ctx.restore(); }
+        if(l.filter&&l.filter!=='none'){ /* canvas filter applies per-draw; text filter is approximated by glow/shadow above */ }
+      }
+    }catch(err){}
+    ctx.restore();
+  }
+  if(currentFrame!=="None"){ ctx.strokeStyle=FRAME_STROKE[currentFrame]||"#fff"; ctx.lineWidth=Math.round(W*0.032); if(currentFrame==="Dashed")ctx.setLineDash([W*0.024,W*0.017]); ctx.strokeRect(ctx.lineWidth/2,ctx.lineWidth/2,W-ctx.lineWidth,H-ctx.lineWidth); }
+  return cv;
+}
+function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+document.getElementById('downloadBtn').onclick=async function(){
+  var cv=await renderPNG(1080);
+  var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
+  toast('PNG downloaded · 1080px.');
+};
+document.getElementById('shareBtn').addEventListener('click',function(){
+  this.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Play like a yeti.');
+});
+
+/* ============ DEFERRED STUDIO BUILD: library grids and their images are created
+   only when the studio view first opens, never on the landing page.
+   Every section builds independently: if one part ever fails, the rest of the
+   studio, including the editor itself, still opens. The heavy Elements grid
+   (123 images) is built even later, the first time its tab is opened. ============ */
+var libraryBuilt=false, elementsBuilt=false;
+function ensureElements(){
+  if(elementsBuilt) return; elementsBuilt=true;
+  try{ drawElements(); }catch(e){}
+}
+function ensureStudio(){
+  if(!libraryBuilt){ libraryBuilt=true;
+    try{ drawStickers(); }catch(e){}
+    try{ buildScenes(); }catch(e){}
+    try{ buildTplList(); }catch(e){}
+    try{ buildStudioGallery(); }catch(e){}
+  }
+  try{ initEditor(); }catch(e){}
+}
+
+/* ============ COUNTS (from the real libraries) & INIT ============ */
+var EL_COUNT=(typeof ELEMENTS!=="undefined"&&ELEMENTS)?ELEMENTS.length:0;
+document.getElementById('statStickers').textContent=STICKERS.length.toLocaleString();
+document.getElementById('statOriginals').textContent=ORIGINALS.length.toLocaleString();
+document.getElementById('statElements').textContent=EL_COUNT.toLocaleString();
+document.getElementById('statTemplates').textContent=TEMPLATES.length.toLocaleString();
+document.getElementById('eqStickers').textContent=STICKERS.length+' character + '+ORIGINALS.length+' original';
+document.getElementById('eqElements').textContent=EL_COUNT+' PNG images · '+elCatCount('funny')+' funny · '+elCatCount('general')+' general · '+elCatCount('winter')+' winter';
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show')},2600); }
+var editorInited=false;
+function initEditor(){
+  if(editorInited) return; editorInited=true;
+  stage.className=''; applyBg(); applyZoom();
+  layers.push(baseLayer({type:'sticker',name:'Sticker · Cute',file:'lofi-sticker-cute.webp',x:50,y:48,w:56}));
+  layers.push(baseLayer({type:'text',name:'Text · GM',text:'GM',font:"'Baloo 2'",color:'#ffffff',size:8,tOutline:16,tOutlineColor:'#12242E',tShadow:true,bgC:'',x:50,y:88,w:70}));
+  layers.forEach(function(l){ l.id=++uid; });
+  selId=layers[0].id;
+  undoStack=[]; redoStack=[]; syncHistBtns(); render();
+}
+</script>
+<script>
+/* ============ LANDING PAGE (populated from the real libraries) & ROUTER ============ */
+(function(){
+  /* View switching is direct JS state, never dependent on the URL hash:
+     the studio opens on the click itself, in any host or iframe, even where
+     fragment navigation is blocked, stripped, or owned by the shell around
+     the page. The hash is still updated afterwards, as a courtesy for
+     shareable links and the back button, inside try/catch so a blocked
+     history/hash write can never stop the studio from opening. */
+  function setHash(h){ try{ history.replaceState(null,'',h); }catch(e){ try{ location.hash=h; }catch(e2){} } }
+  function showStudio(){
+    document.documentElement.dataset.view='studio';
+    setHash('#/studio');
+    ensureStudio();
+    requestAnimationFrame(function(){ try{ applyZoom(); render(); }catch(e){} window.scrollTo(0,0); });
+  }
+  function showLanding(){
+    document.documentElement.dataset.view='landing';
+    setHash('#/');
+    window.scrollTo(0,0);
+  }
+  function goStudio(){ showStudio(); }
+  document.querySelectorAll('a[href="#/studio"]').forEach(function(a){
+    a.addEventListener('click',function(e){ e.preventDefault(); showStudio(); });
+  });
+  document.querySelectorAll('a[href="#/"]').forEach(function(a){
+    a.addEventListener('click',function(e){ e.preventDefault(); showLanding(); });
+  });
+
+  /* Details: real counts from the libraries, no image grids on the landing page */
+  document.getElementById('dStickers').textContent=STICKERS.length;
+  document.getElementById('dOriginals').textContent=ORIGINALS.length;
+  document.getElementById('dElements').textContent=ELEMENTS.length;
+  document.getElementById('dTemplates').textContent=TEMPLATES.length;
+
+  /* Featured designs are a view-only showcase: enlarge in a lightbox, never the editor */
+  var lb=document.getElementById('featLightbox'), lbImg=document.getElementById('lbImg'),
+      lbCap=document.getElementById('lbCap'), lbName=document.getElementById('lbName'), lbTag=document.getElementById('lbTag');
+  function closeLb(){ lb.hidden=true; document.body.style.overflow=''; }
+  function openLb(card){
+    var img=card.querySelector('img.scene'), cap=card.querySelector('.sc-cap'),
+        nm=card.querySelector('.sc-meta b'), tg=card.querySelector('.sc-tag');
+    lbImg.src=img.getAttribute('data-full')||img.getAttribute('src'); lbImg.alt=img.getAttribute('alt')||'';
+    lbCap.textContent=cap?cap.textContent:'';
+    lbName.textContent=nm?nm.textContent:'';
+    lbTag.textContent=tg?tg.textContent:'';
+    lb.hidden=false; document.body.style.overflow='hidden';
+    document.getElementById('lbClose').focus();
+  }
+  document.querySelectorAll('#showcase .sc-card').forEach(function(c){ c.addEventListener('click',function(){ openLb(c); }); });
+  document.getElementById('lbClose').addEventListener('click',closeLb);
+  lb.addEventListener('click',function(e){ if(e.target===lb) closeLb(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!lb.hidden) closeLb(); });
+
+  var tg=document.getElementById('lpTpls');
+  document.getElementById('lpTplCount').textContent=TEMPLATES.length+' templates';
+  var TPL_ALT={"GM Lofi":"Cute Lofi in a pastel snowy scene with a snowman","When Moon?":"Shocked Lofi under an aurora night sky","Angry Market":"Lofi throwing a snowball in bright snowy mountains","HODL Mode":"Laughing Lofi in a cozy cabin party scene"};
+  TEMPLATES.slice(0,4).forEach(function(t,i){
+    var b=document.createElement('button'); b.className='sc-card'; b.type='button';
+    var art=document.createElement('div'); art.className='sc-art';
+    var im=document.createElement('img'); im.className='scene'; im.src='assets/thumbs/'+(t.scene||'featured-cute.webp'); im.alt=(TPL_ALT[t.name]||t.name)+' · '+t.name+' template preview'; im.loading='lazy'; im.decoding='async'; art.appendChild(im);
+    appendTplLayers(t,art,'el',2);
+    var capTxt=t.build().filter(function(l){ return l.type==='text'; })[0];
+    var cap=document.createElement('div'); cap.className='sc-cap'; cap.textContent=capTxt?capTxt.text:t.name; art.appendChild(cap);
+    b.appendChild(art);
+    var meta=document.createElement('div'); meta.className='sc-meta';
+    var bb=document.createElement('b'); bb.textContent=t.name; meta.appendChild(bb);
+    var fm=document.createElement('span'); fm.className='sc-tag classic'; fm.textContent=t.fmt; meta.appendChild(fm);
+    b.appendChild(meta);
+    b.onclick=function(){ ensureStudio(); document.getElementById('tplList').children[i].click(); goStudio(); };
+    tg.appendChild(b);
+  });
+
+  var gal=document.getElementById('lpGallery');
+  TEMPLATES.slice(0,6).forEach(function(t){
+    var card=document.createElement('div'); card.className='g-card';
+    var art=t.scene
+      ? '<div class="g-art"><img class="shot" src="assets/thumbs/'+t.scene+'" alt="'+t.name+' meme example" loading="lazy" decoding="async"><div class="g-cap"></div></div>'
+      : '<div class="g-art" style="background:linear-gradient(160deg,'+BGS[t.bg][1]+','+BGS[t.bg][2]+')"><img class="stk" src="assets/thumbs/'+t.thumb+'" alt="'+t.name+' meme example" loading="lazy" decoding="async"><div class="g-cap"></div></div>';
+    card.innerHTML=art
+      +'<div class="g-meta"><div><b></b><span>Template</span></div></div>';
+    if(t.scene) appendTplLayers(t,card.querySelector('.g-art'),'',1);
+    card.querySelector('.g-cap').textContent=t.build().filter(function(l){ return l.type==='text'; })[0].text;
+    card.querySelector('.g-meta b').textContent=t.name;
+    gal.appendChild(card);
+  });
+
+  function syncView(){
+    /* Back/forward and shared #/studio links still land in the right view. */
+    if(location.hash==='#/studio'){ showStudio(); return; }
+    if(document.documentElement.dataset.view==='studio' && (location.hash==='#/'||location.hash===''||location.hash.charAt(1)!=='/')){
+      document.documentElement.dataset.view='landing';
+      if(location.hash==='#/'||location.hash==='') window.scrollTo(0,0);
+    }
+  }
+  window.addEventListener('hashchange',syncView);
+  if(location.hash==='#/studio'){ showStudio(); }
+})();
+</script>
+</body>
+</html>
