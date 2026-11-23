@@ -249,9 +249,11 @@ section[id]{scroll-margin-top:88px}
 .lp-cta{flex:none;padding:10px 16px;font-size:14px}
 .lp-hero{position:relative;padding:30px 0 10px;overflow:hidden}
 .lp-hero-in{position:relative;max-width:1200px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:1.02fr .98fr;gap:34px;align-items:center}
+.lp-hero-in>*{min-width:0;max-width:100%;box-sizing:border-box}
+.lp-hero-in>div:first-child{width:100%;max-width:100%}
 .lp-hero h1{font-size:clamp(44px,6.4vw,72px);line-height:.98}
-.lp-hero h1 em{font-style:normal;color:var(--ice-dark);position:relative;z-index:0}
-.lp-hero h1 em::after{content:"";position:absolute;left:-2px;right:-2px;bottom:5px;height:14px;background:var(--yellow);z-index:-1}
+.lp-hero h1 .nowrap-unit{white-space:nowrap}
+.lp-hero h1 .fast-block{display:inline-block;background:var(--yellow);color:var(--ink);padding:.04em .1em .02em;line-height:.86;font-size:1.04em;letter-spacing:-.01em;vertical-align:baseline;box-sizing:border-box}
 .lp-hero p{font-size:17.5px;line-height:1.6;font-weight:600;color:var(--muted);max-width:520px;margin:16px 0 0}
 .lp-hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
 .lp-hero-btns .btn{font-size:15px;padding:13px 20px}
@@ -331,6 +333,8 @@ section[id]{scroll-margin-top:88px}
  .wrap{padding:14px 12px 36px}
  .lp-sec{padding:30px 12px 2px}
  .lp-hero-in{padding:0 12px}
+ .lp-hero h1{font-size:clamp(34px,10.5vw,44px)}
+ .lp-hero h1 .fast-block{font-size:.94em}
  .lp-header-in{padding:8px 12px}
  .lp-brand{font-size:17px}.lp-brand img{width:38px;height:38px}
  .lp-cta{padding:9px 13px;font-size:13.5px}
@@ -355,8 +359,9 @@ section[id]{scroll-margin-top:88px}
  .intro .btn{width:100%}
 }
 /* Landing gallery preview grid: 3 across on desktop (6 items = 2 full rows), 2 on phones */
-#lpGallery{grid-template-columns:repeat(3,1fr)}
-@media(max-width:640px){#lpGallery{grid-template-columns:repeat(2,1fr);gap:12px}#lpGallery .g-cap{font-size:14px}}
+#pubGallery{grid-template-columns:repeat(3,1fr)}
+@media(max-width:640px){#pubGallery{grid-template-columns:repeat(2,1fr);gap:12px}}
+@media(max-width:460px){#pubGallery{grid-template-columns:1fr}}
 /* ===== Tightened Neo-Brutalism system: one border scale, hard shadows, square corners ===== */
 h1,h2{letter-spacing:-.01em}
 .lp-header{border-top:6px solid var(--yellow)}
@@ -389,6 +394,75 @@ input[type=range]{cursor:pointer}
 .tabs{scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+/* ===== Professional polish: one rhythm for spacing, headings, buttons, grids ===== */
+.lp-hero{padding:36px 0 26px}
+.lp-stats{margin-top:28px}
+@media(min-width:641px){.lp-stats{grid-template-columns:repeat(4,1fr);max-width:520px}}
+.lp-sec-head h2,.section-head h2{font-size:clamp(26px,3.2vw,34px)}
+.section-head{align-items:center;margin-bottom:16px}
+#showcase{padding-top:44px}
+#details{margin-top:36px}
+#how{margin-top:36px}
+.btn{min-height:50px}
+.tool-btn{min-height:44px}
+.tab{min-height:44px}
+.formula,.gallery{gap:18px}
+.d-card{display:flex;flex-direction:column;align-items:flex-start}
+.stat{display:flex;flex-direction:column;justify-content:center}
+.lp-footer{margin-top:64px}
+.lp-footer-in{padding:40px 16px 28px}
+.lp-fcol a{padding:4px 0}
+@media(max-width:640px){.formula,.gallery,.detail-grid{gap:12px}}
+/* Phone header fit: brand + CTA stay inside a 320px viewport */
+@media(max-width:400px){.lp-header-in{gap:8px;padding:8px 10px}.lp-brand{font-size:13.5px;gap:8px}.lp-brand img{width:34px;height:34px}.lp-cta{padding:8px;font-size:12px}}
+
+/* ===== Phase 3: sign-in, publish, public community gallery ===== */
+.authbox{display:flex;align-items:center;position:relative;flex:none}
+.auth-btn{padding:10px 14px;font-size:13.5px;min-height:44px}
+.auth-user{display:flex;align-items:center;gap:9px}
+.auth-avatar{width:40px;height:40px;flex:none;border:var(--bd2);background:var(--yellow);color:var(--ink);font-family:"Archivo Black",sans-serif;font-size:16px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;box-shadow:var(--sh-xs);overflow:hidden}
+.auth-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.auth-name{font-weight:900;font-size:13.5px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.auth-menu{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border:var(--bd);box-shadow:var(--sh-sm);min-width:180px;z-index:90;padding:6px}
+.auth-menu[hidden]{display:none}
+.auth-menu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:#fff;border:0;padding:10px 11px;font-weight:800;font-size:13.5px;color:var(--ink);text-transform:uppercase;cursor:pointer;min-height:44px}
+.auth-menu button:hover{background:var(--yellow)}
+.auth-menu button.danger{color:var(--coral)}
+.studio-auth{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.auth-card{position:relative}
+.auth-card h3{font-size:21px;margin:0 30px 6px 0}
+.auth-sub{font-weight:600;color:var(--muted);font-size:14.5px;margin:0 0 16px;line-height:1.55}
+.auth-or{display:flex;align-items:center;gap:10px;font-weight:900;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 12px}
+.auth-or::before,.auth-or::after{content:"";flex:1;border-top:2px solid var(--ink)}
+.auth-err{border:var(--bd2);border-color:var(--coral);background:#FFF1EF;color:#8F1D0D;padding:10px 12px;font-weight:700;font-size:13.5px;line-height:1.5;margin:12px 0 0}
+.auth-note{font-size:12.5px;color:var(--muted);font-weight:700;line-height:1.55;margin:14px 0 0;border-top:2px dashed var(--ink);padding-top:12px}
+.auth-x{position:absolute;top:12px;right:12px}
+.gtabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.gal-tools{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:6px}
+.gal-tools .searchbox{flex:1;min-width:220px;max-width:380px;margin-bottom:0}
+.gal-status{font-weight:700;color:var(--muted);font-size:14px;margin:8px 0 14px;line-height:1.55}
+.gal-status:empty{display:none}
+.g-art.pub{padding:0}
+.g-body{padding:11px 12px 12px}
+.g-title{font-size:15px;font-weight:900;text-transform:uppercase;line-height:1.25;overflow-wrap:anywhere}
+.g-creator{display:flex;align-items:center;gap:8px;margin-top:7px;min-width:0}
+.g-ava{width:27px;height:27px;flex:none;border:var(--bd2);background:var(--yellow);color:var(--ink);font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.g-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.g-creator b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g-creator span{font-size:12px;color:var(--muted);font-weight:700;flex:none;margin-left:auto}
+.g-actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.g-act{border:var(--bd2);background:#fff;border-radius:3px;padding:7px 11px;font-weight:800;font-size:12.5px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sh-xs);text-transform:uppercase;min-height:38px;transition:transform .1s,box-shadow .1s}
+.g-act .ic{width:15px;height:15px}
+.g-act:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.g-act:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.g-act.voted{background:var(--yellow)}
+.g-act.danger{color:var(--coral)}
+.crown-badge{position:absolute;top:10px;left:10px;z-index:3;background:var(--yellow);color:var(--ink);border:var(--bd2);box-shadow:var(--sh-xs);padding:5px 9px;font-weight:900;font-size:12px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px}
+.crown-badge .ic{width:15px;height:15px}
+.hidden-badge{position:absolute;top:10px;right:10px;z-index:3;background:var(--ink);color:#fff;border:var(--bd2);padding:5px 9px;font-weight:900;font-size:11px;text-transform:uppercase}
+.g-empty{grid-column:1/-1}
+@media(max-width:640px){.auth-name{display:none}.auth-btn{padding:9px 11px;font-size:12.5px}}
+@media(max-width:480px){.lp-header-in{flex-wrap:wrap}.auth-menu{position:fixed;top:64px;right:12px}}
 </style>
 </head>
 <body>
@@ -414,6 +488,12 @@ input[type=range]{cursor:pointer}
 <symbol id="i-center" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/></symbol>
 <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.3 22h-6.3l-4.9-6.4L6.5 22H3.4l7.3-8.3L1 2h6.5l4.4 5.9zm-1.1 18h1.7L7.6 3.9H5.8z"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" stroke-linejoin="round"><path d="M12 15V4M6.4 9.4L12 3.8l5.6 5.6M4 15.5V21h16v-5.5"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M5 21.5v-18"/><path d="M5 4h11.5L14 7.5l2.5 3.5H5"/></symbol>
+<symbol id="i-crown" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3.5 17L2.2 8.2l5.6 3.4L12 5.2l4.2 6.4 5.6-3.4L20.5 17z"/><path d="M4 20.5h16" fill="none" stroke-width="2.2"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="round"><path d="M13.5 5.5L20 12l-6.5 6.5v-4.2C7 14.3 4.8 16.6 3.5 20c-.3-6.8 3-11 10-11.7z"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="round"><path d="M14 4h6.5v16H14M10.5 8L6 12l4.5 4M6 12h11"/></symbol>
 </defs></svg>
 <header class="lp-header">
     <div class="lp-header-in">
@@ -425,6 +505,7 @@ input[type=range]{cursor:pointer}
         <a href="#how">How it works</a>
         <a href="#gallery">Gallery</a>
       </nav>
+      <div class="authbox" data-auth-slot></div>
       <a class="btn lp-cta" href="#/studio">Open Studio</a>
     </div>
   </header>
@@ -434,7 +515,7 @@ input[type=range]{cursor:pointer}
     <div class="lp-hero-in">
       <div>
         <span style="display:inline-flex;align-items:center;gap:6px;background:#FFC400;border:2px solid #111111;border-radius:3px;padding:6px 11px;font-size:12.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#111111;box-shadow:3px 3px 0 #111111;margin-bottom:16px">● Free meme maker for Lofi</span>
-        <h1>Make Lofi memes. <em>Fast.</em></h1>
+        <h1>Make Lofi <span class="nowrap-unit">memes. <span class="fast-block">Fast.</span></span></h1>
         <p>Real Lofi stickers, a library of PNG elements and classic meme formats. Pick one, add your caption, download and post.</p>
         <div class="lp-hero-btns">
           <a class="btn" href="#/studio">Start making</a>
@@ -519,8 +600,19 @@ input[type=range]{cursor:pointer}
   </section>
 
   <section class="lp-sec" id="gallery">
-    <div class="lp-sec-head"><h2>Gallery</h2><span class="lp-count">Made with the templates</span></div>
-    <div class="gallery" id="lpGallery"></div>
+    <div class="lp-sec-head"><h2>Community gallery</h2><span class="lp-count">Published by makers</span></div>
+    <div class="gtabs" role="tablist" aria-label="Gallery filters">
+      <button class="tab" type="button" data-gtab="newest" aria-selected="true">Newest</button>
+      <button class="tab" type="button" data-gtab="today" aria-selected="false">Top today</button>
+      <button class="tab" type="button" data-gtab="week" aria-selected="false">Top this week</button>
+      <button class="tab" type="button" data-gtab="all" aria-selected="false">Top all time</button>
+      <button class="tab" type="button" data-gtab="mine" aria-selected="false">My memes</button>
+    </div>
+    <div class="gal-tools">
+      <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="search" id="galSearch" type="search" placeholder="Search memes or makers" aria-label="Search the community gallery"></div>
+    </div>
+    <p class="gal-status" id="galStatus">Loading the community gallery…</p>
+    <div class="gallery" id="pubGallery"></div>
     <div style="text-align:center;margin-top:20px"><a class="btn" href="#/studio">Open Studio</a></div>
   </section>
 
@@ -540,9 +632,10 @@ input[type=range]{cursor:pointer}
       <div class="stat"><b id="statElements">…</b><span>Elements</span></div>
       <div class="stat"><b id="statTemplates">…</b><span>Templates</span></div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <a class="btn" href="#/" aria-label="Back to landing page">&larr; Back</a>
       <a class="btn ghost" href="#/">Home</a>
+      <div class="authbox" data-auth-slot></div>
     </div>
   </div>
 
@@ -618,6 +711,7 @@ input[type=range]{cursor:pointer}
         <button class="tool-btn icon" id="clearBtn" title="Clear canvas" aria-label="Clear canvas"><svg class="ic"><use href="#i-trash"/></svg></button>
         <button class="tool-btn" id="toGalleryBtn"><svg class="ic"><use href="#i-image"/></svg>Gallery</button>
         <button class="btn primary" id="downloadBtn"><svg class="ic"><use href="#i-download"/></svg>PNG</button>
+        <button class="btn" id="publishBtn" type="button"><svg class="ic"><use href="#i-upload"/></svg>Publish to gallery</button>
         <button class="btn dark" id="shareBtn" type="button"><svg class="ic"><use href="#i-x"/></svg>Post</button>
       </div>
       <div class="stage-scroll" id="stageScroll"><div id="stage"><div class="frame-ol" id="frameOl"></div></div></div>
@@ -720,6 +814,38 @@ input[type=range]{cursor:pointer}
     <div class="cf-btns">
       <button class="btn ghost" type="button" id="confirmNo">Cancel</button>
       <button class="btn" type="button" id="confirmYes">Continue</button>
+    </div>
+  </div>
+</div>
+
+<div class="lb" id="authModal" hidden role="dialog" aria-modal="true" aria-label="Sign in">
+  <div class="cf-card auth-card">
+    <button class="lb-close auth-x" type="button" id="authClose" aria-label="Close sign in">✕</button>
+    <h3>Sign in</h3>
+    <p class="auth-sub">Sign in to publish memes to the community gallery, vote for your favourites and keep your own collection.</p>
+    <button class="btn dark" type="button" id="googleBtn" style="width:100%">Continue with Google</button>
+    <div class="auth-or">or with email</div>
+    <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></div>
+    <div class="field"><label for="authPass">Password</label><input type="password" id="authPass" autocomplete="current-password" placeholder="Password"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" type="button" id="emailSignIn" style="flex:1">Sign in</button>
+      <button class="btn ghost" type="button" id="emailSignUp" style="flex:1">Create account</button>
+    </div>
+    <p class="auth-err" id="authErr" hidden></p>
+    <p class="auth-note" id="authPreviewNote" hidden>Sign-in works on the live site (lofi-meme-studio.vercel.app). This preview address is not approved for sign-in, so sign-in is blocked here.</p>
+  </div>
+</div>
+
+<div class="lb" id="pubModal" hidden role="dialog" aria-modal="true" aria-label="Publish to gallery">
+  <div class="cf-card auth-card">
+    <button class="lb-close auth-x" type="button" id="pubClose" aria-label="Close publish">✕</button>
+    <h3>Publish to gallery</h3>
+    <p class="auth-sub">Your meme goes to the public community gallery on the home page, where makers can vote for it. Your full 1080px PNG download stays on this device, unchanged.</p>
+    <div class="field"><label for="pubTitle">Title</label><input type="text" id="pubTitle" maxlength="80" placeholder="Give your meme a title"></div>
+    <p class="auth-err" id="pubErr" hidden></p>
+    <div class="cf-btns">
+      <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
+      <button class="btn" type="button" id="pubGo">Publish</button>
     </div>
   </div>
 </div>
@@ -1517,20 +1643,6 @@ function initEditor(){
     tg.appendChild(b);
   });
 
-  var gal=document.getElementById('lpGallery');
-  TEMPLATES.slice(0,6).forEach(function(t){
-    var card=document.createElement('div'); card.className='g-card';
-    var art=t.scene
-      ? '<div class="g-art"><img class="shot" src="assets/thumbs/'+t.scene+'" alt="'+t.name+' meme example" loading="lazy" decoding="async"><div class="g-cap"></div></div>'
-      : '<div class="g-art" style="background:linear-gradient(160deg,'+BGS[t.bg][1]+','+BGS[t.bg][2]+')"><img class="stk" src="assets/thumbs/'+t.thumb+'" alt="'+t.name+' meme example" loading="lazy" decoding="async"><div class="g-cap"></div></div>';
-    card.innerHTML=art
-      +'<div class="g-meta"><div><b></b><span>Template</span></div></div>';
-    if(t.scene) appendTplLayers(t,card.querySelector('.g-art'),'',1);
-    card.querySelector('.g-cap').textContent=t.build().filter(function(l){ return l.type==='text'; })[0].text;
-    card.querySelector('.g-meta b').textContent=t.name;
-    gal.appendChild(card);
-  });
-
   function syncView(){
     /* Back/forward and shared #/studio links still land in the right view. */
     if(location.hash==='#/studio'){ showStudio(); return; }
@@ -1542,6 +1654,443 @@ function initEditor(){
   window.addEventListener('hashchange',syncView);
   if(location.hash==='#/studio'){ showStudio(); }
 })();
+</script>
+
+<!-- ============================================================================
+FIRESTORE RULES FOR THE memes COLLECTION (Phase 3)
+The project rules currently deny the memes collection, so publishing, voting
+and the public gallery stay blocked until this block is added. In the Firebase
+console: Firestore Database, Rules, paste this match block inside
+match /databases/{database}/documents { ... }, next to the existing blocks,
+then Publish.
+
+match /memes/{memeId} {
+  // Public read of memes that are not hidden; owners can also read their own.
+  allow read: if resource.data.hidden == false
+    || (request.auth != null && resource.data.creatorUid == request.auth.uid);
+
+  // Create: signed in only, the creator must be the signed-in user, and the
+  // counters must start clean.
+  allow create: if request.auth != null
+    && request.resource.data.creatorUid == request.auth.uid
+    && request.resource.data.votes == 0
+    && request.resource.data.voterUids.size() == 0
+    && request.resource.data.reports == 0
+    && request.resource.data.hidden == false;
+
+  // Vote: a signed-in user may change only votes and voterUids, and the count
+  // must always equal the number of voters.
+  // Report: a signed-in user may add exactly one report (their uid joins
+  // reporterUids); hidden may only turn true once reports reach 3.
+  allow update: if request.auth != null
+    && request.resource.data.creatorUid == resource.data.creatorUid
+    && request.resource.data.image == resource.data.image
+    && request.resource.data.title == resource.data.title
+    && request.resource.data.createdAt == resource.data.createdAt
+    && (
+      (request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['votes', 'voterUids'])
+        && request.resource.data.votes
+          == request.resource.data.voterUids.size())
+      ||
+      (request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['reports', 'reporterUids', 'hidden'])
+        && request.resource.data.reports == resource.data.reports + 1
+        && !(request.auth.uid in resource.data.reporterUids)
+        && request.auth.uid in request.resource.data.reporterUids
+        && (request.resource.data.hidden == false
+            || request.resource.data.reports >= 3))
+    );
+
+  // Delete: only the owner.
+  allow delete: if request.auth != null
+    && resource.data.creatorUid == request.auth.uid;
+}
+============================================================================= -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ============ PHASE 3: SIGN-IN, PUBLISH, PUBLIC COMMUNITY GALLERY ============
+   Same Firebase project as the hub. Everything here is guarded: if the SDK,
+   sign-in or the database is unavailable (for example on a preview address
+   that is not approved for sign-in), the studio and the session gallery keep
+   working and every failure shows a clear message instead of failing silently. */
+var FB_CONFIG={
+  apiKey:"AIzaSyBQ5isDVE9nWFXO-3es3OmxVL047HmnE28",
+  authDomain:"winterplay.online",
+  projectId:"lofi-games",
+  storageBucket:"lofi-games.firebasestorage.app",
+  messagingSenderId:"885237508877",
+  appId:"1:885237508877:web:ac09a74ce6a82d8e5c1e44"
+};
+var LIVE_HOST="lofi-meme-studio.vercel.app";
+var IS_PREVIEW=(location.hostname!==LIVE_HOST);
+var fbAuth=null, fbDb=null, fbUser=null;
+try{
+  if(window.firebase&&firebase.initializeApp){
+    firebase.initializeApp(FB_CONFIG);
+    fbAuth=firebase.auth();
+    fbDb=firebase.firestore();
+  }
+}catch(e){ fbAuth=null; fbDb=null; }
+
+function authErrorText(err){
+  var code=(err&&err.code)||"";
+  if(code==="auth/unauthorized-domain") return "This address is not approved for sign-in. Sign-in works on the live site: "+LIVE_HOST;
+  if(code==="auth/popup-closed-by-user") return "The sign-in window was closed before it finished. Try again.";
+  if(code==="auth/popup-blocked") return "The browser blocked the sign-in window. Allow popups for this site, then try again.";
+  if(code==="auth/user-not-found"||code==="auth/wrong-password"||code==="auth/invalid-credential") return "That email and password do not match an account. Check them, or create an account below.";
+  if(code==="auth/email-already-in-use") return "That email already has an account. Use Sign in instead.";
+  if(code==="auth/weak-password") return "That password is too weak. Use at least 6 characters.";
+  if(code==="auth/invalid-email") return "That email address does not look right.";
+  if(code==="auth/network-request-failed") return "Network problem. Check your connection and try again.";
+  if(code==="auth/operation-not-allowed") return "This sign-in method is not switched on for the project yet.";
+  return (err&&err.message)||"Something went wrong. Try again.";
+}
+function dbErrorText(err){
+  var code=(err&&err.code)||"";
+  if(code==="permission-denied") return "The database rules do not allow this yet. The memes rules need to be added in the Firebase console (Firestore Database, then Rules). They are listed in the build notes for this update.";
+  if(code==="unavailable") return "The database is unreachable right now. Try again in a moment.";
+  if(code==="not-found") return "That meme is no longer there.";
+  return (err&&err.message)||"Something went wrong. Try again.";
+}
+
+/* ---------- Sign-in UI (landing header + studio top bar) ---------- */
+var pendingAfterSignIn=null;
+function renderAuth(){
+  document.querySelectorAll('[data-auth-slot]').forEach(function(slot){
+    slot.innerHTML="";
+    if(!fbUser){
+      var b=document.createElement('button'); b.type="button"; b.className="btn ghost auth-btn"; b.textContent="Sign in";
+      b.addEventListener('click',function(){ openAuth(); });
+      slot.appendChild(b); return;
+    }
+    var wrap=document.createElement('div'); wrap.className="auth-user";
+    var av=document.createElement('button'); av.type="button"; av.className="auth-avatar"; av.setAttribute('aria-label','Account menu'); av.setAttribute('aria-haspopup','true');
+    if(fbUser.photoURL){ var im=document.createElement('img'); im.src=fbUser.photoURL; im.alt=""; im.referrerPolicy="no-referrer"; av.appendChild(im); }
+    else av.textContent=(fbUser.displayName||fbUser.email||"M").charAt(0).toUpperCase();
+    var nm=document.createElement('span'); nm.className="auth-name"; nm.textContent=fbUser.displayName||fbUser.email||"Maker";
+    var menu=document.createElement('div'); menu.className="auth-menu"; menu.hidden=true;
+    var mine=document.createElement('button'); mine.type="button"; mine.innerHTML='<svg class="ic"><use href="#i-image"/></svg>My memes';
+    mine.addEventListener('click',function(){ menu.hidden=true; goMyMemes(); });
+    var out=document.createElement('button'); out.type="button"; out.className="danger"; out.innerHTML='<svg class="ic"><use href="#i-out"/></svg>Sign out';
+    out.addEventListener('click',function(){ menu.hidden=true; if(fbAuth) fbAuth.signOut().then(function(){ toast('Signed out of this site.'); }).catch(function(){}); });
+    menu.appendChild(mine); menu.appendChild(out);
+    av.addEventListener('click',function(e){ e.stopPropagation();
+      document.querySelectorAll('.auth-menu').forEach(function(x){ if(x!==menu) x.hidden=true; });
+      menu.hidden=!menu.hidden; });
+    wrap.appendChild(av); wrap.appendChild(nm); wrap.appendChild(menu);
+    slot.appendChild(wrap);
+  });
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest||!e.target.closest('.authbox')) document.querySelectorAll('.auth-menu').forEach(function(x){ x.hidden=true; });
+});
+function goMyMemes(){
+  document.documentElement.dataset.view="landing";
+  try{ history.replaceState(null,"","#/"); }catch(e){}
+  setGalTab("mine");
+  setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60);
+}
+
+/* ---------- Sign-in modal ---------- */
+var authModal=document.getElementById('authModal'), authErr=document.getElementById('authErr');
+function showAuthErr(msg){ authErr.textContent=msg; authErr.hidden=false; }
+function openAuth(){
+  authErr.hidden=true;
+  document.getElementById('authPreviewNote').hidden=!IS_PREVIEW;
+  authModal.hidden=false; document.body.style.overflow="hidden";
+  document.getElementById('googleBtn').focus();
+}
+function closeAuth(){ authModal.hidden=true; document.body.style.overflow=""; }
+document.getElementById('authClose').addEventListener('click',closeAuth);
+authModal.addEventListener('click',function(e){ if(e.target===authModal) closeAuth(); });
+document.getElementById('googleBtn').addEventListener('click',function(){
+  authErr.hidden=true;
+  if(!fbAuth){ showAuthErr("Sign-in is unavailable on this address. Sign-in works on the live site: "+LIVE_HOST); return; }
+  var prov=new firebase.auth.GoogleAuthProvider();
+  fbAuth.signInWithPopup(prov).then(function(){ closeAuth(); toast('Signed in. Welcome!'); })
+    .catch(function(err){ showAuthErr(authErrorText(err)); });
+});
+function emailValues(){
+  return { email:document.getElementById('authEmail').value.trim(), pass:document.getElementById('authPass').value };
+}
+document.getElementById('emailSignIn').addEventListener('click',function(){
+  authErr.hidden=true;
+  if(!fbAuth){ showAuthErr("Sign-in is unavailable on this address. Sign-in works on the live site: "+LIVE_HOST); return; }
+  var v=emailValues();
+  if(!v.email||!v.pass){ showAuthErr("Type your email and password first."); return; }
+  fbAuth.signInWithEmailAndPassword(v.email,v.pass).then(function(){ closeAuth(); toast('Signed in. Welcome back!'); })
+    .catch(function(err){ showAuthErr(authErrorText(err)); });
+});
+document.getElementById('emailSignUp').addEventListener('click',function(){
+  authErr.hidden=true;
+  if(!fbAuth){ showAuthErr("Sign-in is unavailable on this address. Sign-in works on the live site: "+LIVE_HOST); return; }
+  var v=emailValues();
+  if(!v.email||!v.pass){ showAuthErr("Type an email and a password (at least 6 characters) first."); return; }
+  fbAuth.createUserWithEmailAndPassword(v.email,v.pass).then(function(cred){
+      if(cred.user&&!cred.user.displayName){ cred.user.updateProfile({displayName:v.email.split("@")[0]}).catch(function(){}); }
+      closeAuth(); toast('Account created. You are signed in.');
+    }).catch(function(err){ showAuthErr(authErrorText(err)); });
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=="Escape") return;
+  if(!authModal.hidden) closeAuth();
+  if(!document.getElementById('pubModal').hidden) closePublish();
+});
+
+/* ---------- Public gallery state ---------- */
+var pubMemes=[], galLoaded=false, galFailed=false, galTab="newest", galQ="";
+function fmtDate(d){ try{ return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return ""; } }
+function byVotes(a,b){ return (b.votes-a.votes)||(b.createdAt-a.createdAt); }
+function setGalTab(t){
+  galTab=t;
+  document.querySelectorAll('[data-gtab]').forEach(function(b){ b.setAttribute('aria-selected',b.dataset.gtab===t?'true':'false'); });
+  renderGallery();
+}
+document.querySelectorAll('[data-gtab]').forEach(function(b){
+  b.addEventListener('click',function(){
+    if(b.dataset.gtab==="mine"&&!fbUser){ pendingAfterSignIn="mine"; openAuth(); toast('Sign in to see your memes.'); }
+    setGalTab(b.dataset.gtab);
+  });
+});
+document.getElementById('galSearch').addEventListener('input',function(e){ galQ=e.target.value.trim().toLowerCase(); renderGallery(); });
+
+function loadGallery(){
+  var st=document.getElementById('galStatus');
+  if(!fbDb){
+    galFailed=true;
+    if(st) st.textContent="The community gallery connects to the live database. "+(IS_PREVIEW?("Sign-in works on the live site: "+LIVE_HOST):"");
+    renderGallery(); return;
+  }
+  if(st) st.textContent="Loading the community gallery…";
+  fbDb.collection('memes').orderBy('createdAt','desc').limit(200).get()
+    .then(function(snap){
+      pubMemes=[];
+      snap.forEach(function(doc){
+        var d=doc.data(); d.id=doc.id;
+        d.createdAt=(d.createdAt&&d.createdAt.toDate)?d.createdAt.toDate():new Date();
+        d.votes=d.votes||0; d.voterUids=d.voterUids||[]; d.reports=d.reports||0; d.reporterUids=d.reporterUids||[]; d.hidden=!!d.hidden;
+        pubMemes.push(d);
+      });
+      galLoaded=true; galFailed=false; renderGallery();
+    })
+    .catch(function(err){
+      galFailed=true; pubMemes=[];
+      if(st) st.textContent=dbErrorText(err);
+      renderGallery();
+    });
+}
+function currentList(){
+  var list;
+  if(galTab==="mine"){
+    list=fbUser?pubMemes.filter(function(m){ return m.creatorUid===fbUser.uid; }):[];
+    list.sort(function(a,b){ return b.createdAt-a.createdAt; });
+  } else {
+    list=pubMemes.filter(function(m){ return !m.hidden; });
+    if(galTab==="today"){ var s=new Date(); s.setHours(0,0,0,0); list=list.filter(function(m){ return m.createdAt>=s; }); list.sort(byVotes); }
+    else if(galTab==="week"){ var w=new Date(Date.now()-7*86400000); list=list.filter(function(m){ return m.createdAt>=w; }); list.sort(byVotes); }
+    else if(galTab==="all"){ list.sort(byVotes); }
+    else list.sort(function(a,b){ return b.createdAt-a.createdAt; });
+  }
+  if(galQ) list=list.filter(function(m){ return (((m.title||"")+" "+(m.creatorName||"")).toLowerCase().indexOf(galQ)>-1); });
+  return list;
+}
+function renderGallery(){
+  var grid=document.getElementById('pubGallery'); if(!grid) return;
+  var st=document.getElementById('galStatus');
+  grid.innerHTML="";
+  if(galFailed){ return; }
+  if(galTab==="mine"&&!fbUser){ if(st) st.textContent="Sign in to see the memes you have published."; return; }
+  if(!galLoaded){ if(st) st.textContent="Loading the community gallery…"; return; }
+  var list=currentList();
+  if(!list.length){
+    if(st) st.textContent=galQ?("No memes match \u201C"+galQ+"\u201D.")
+      : galTab==="mine"?"You have not published any memes yet. Make one in the studio and press Publish to gallery."
+      : galTab==="today"?"No memes published today yet. Yours could be the first."
+      : galTab==="week"?"No memes published in the last 7 days yet."
+      : "No memes in the gallery yet. Open the studio, make one and press Publish to gallery.";
+    var em=document.createElement('div'); em.className="empty g-empty"; em.textContent="Nothing here yet.";
+    grid.appendChild(em); return;
+  }
+  if(st) st.textContent=list.length+(list.length===1?" meme":" memes");
+  list.forEach(function(m,i){ grid.appendChild(memeCard(m,i)); });
+}
+function avatarEl(photo,name,cls){
+  var a=document.createElement('span'); a.className=cls;
+  if(photo){ var im=document.createElement('img'); im.src=photo; im.alt=""; im.loading="lazy"; im.referrerPolicy="no-referrer"; a.appendChild(im); }
+  else a.textContent=(name||"M").charAt(0).toUpperCase();
+  return a;
+}
+function memeCard(m,idx){
+  var card=document.createElement('div'); card.className="g-card";
+  var art=document.createElement('div'); art.className="g-art pub";
+  var im=document.createElement('img'); im.className="shot"; im.src=m.image; im.alt=(m.title||"Lofi meme")+" by "+(m.creatorName||"a maker"); im.loading="lazy"; im.decoding="async";
+  art.appendChild(im);
+  if((galTab==="today"||galTab==="week"||galTab==="all")&&idx===0){
+    var crown=document.createElement('span'); crown.className="crown-badge"; crown.innerHTML='<svg class="ic"><use href="#i-crown"/></svg>#1';
+    art.appendChild(crown);
+  }
+  if(m.hidden){ var hb=document.createElement('span'); hb.className="hidden-badge"; hb.textContent="Hidden"; art.appendChild(hb); }
+  card.appendChild(art);
+  var body=document.createElement('div'); body.className="g-body";
+  var title=document.createElement('div'); title.className="g-title"; title.textContent=m.title||"Untitled meme"; body.appendChild(title);
+  var crow=document.createElement('div'); crow.className="g-creator";
+  crow.appendChild(avatarEl(m.creatorPhoto,m.creatorName,"g-ava"));
+  var cn=document.createElement('b'); cn.textContent=m.creatorName||"Maker"; crow.appendChild(cn);
+  var dt=document.createElement('span'); dt.textContent=fmtDate(m.createdAt); crow.appendChild(dt);
+  body.appendChild(crow);
+  var acts=document.createElement('div'); acts.className="g-actions";
+  var voted=!!(fbUser&&m.voterUids.indexOf(fbUser.uid)>-1);
+  var vote=document.createElement('button'); vote.type="button"; vote.className="g-act vote"+(voted?" voted":"");
+  vote.setAttribute('aria-label',(voted?"Remove your vote from ":"Vote for ")+(m.title||"this meme"));
+  vote.innerHTML='<svg class="ic"><use href="#i-heart"/></svg>';
+  var vc=document.createElement('span'); vc.textContent=m.votes; vote.appendChild(vc);
+  vote.addEventListener('click',function(){ toggleVote(m); });
+  acts.appendChild(vote);
+  var share=document.createElement('button'); share.type="button"; share.className="g-act";
+  share.innerHTML='<svg class="ic"><use href="#i-share"/></svg>Share';
+  share.addEventListener('click',function(){ shareMeme(m); });
+  acts.appendChild(share);
+  var own=!!(fbUser&&m.creatorUid===fbUser.uid);
+  if(!own){
+    var rep=document.createElement('button'); rep.type="button"; rep.className="g-act";
+    rep.innerHTML='<svg class="ic"><use href="#i-flag"/></svg>Report';
+    rep.addEventListener('click',function(){ reportMeme(m); });
+    acts.appendChild(rep);
+  }
+  if(own){
+    var del=document.createElement('button'); del.type="button"; del.className="g-act danger";
+    del.innerHTML='<svg class="ic"><use href="#i-trash"/></svg>Delete';
+    del.addEventListener('click',function(){ deleteMeme(m); });
+    acts.appendChild(del);
+  }
+  body.appendChild(acts);
+  card.appendChild(body);
+  return card;
+}
+function toggleVote(m){
+  if(!fbUser){ openAuth(); toast('Sign in to vote.'); return; }
+  if(!fbDb){ toast('Voting works on the live site: '+LIVE_HOST); return; }
+  var uid=fbUser.uid, has=m.voterUids.indexOf(uid)>-1;
+  var FV=firebase.firestore.FieldValue;
+  var upd=has?{voterUids:FV.arrayRemove(uid),votes:FV.increment(-1)}:{voterUids:FV.arrayUnion(uid),votes:FV.increment(1)};
+  if(has){ m.voterUids=m.voterUids.filter(function(u){ return u!==uid; }); m.votes=Math.max(0,m.votes-1); }
+  else { m.voterUids.push(uid); m.votes++; }
+  renderGallery();
+  fbDb.collection('memes').doc(m.id).update(upd).catch(function(err){
+    if(has){ m.voterUids.push(uid); m.votes++; } else { m.voterUids=m.voterUids.filter(function(u){ return u!==uid; }); m.votes=Math.max(0,m.votes-1); }
+    renderGallery(); toast(dbErrorText(err));
+  });
+}
+function reportMeme(m){
+  if(!fbUser){ openAuth(); toast('Sign in to report a meme.'); return; }
+  if(!fbDb){ toast('Reporting works on the live site: '+LIVE_HOST); return; }
+  if((m.reporterUids||[]).indexOf(fbUser.uid)>-1){ toast('You already reported this meme.'); return; }
+  askConfirm('Report this meme? A meme with 3 reports is hidden from the public gallery.',function(){
+    var FV=firebase.firestore.FieldValue;
+    var newCount=(m.reports||0)+1;
+    var upd={reports:FV.increment(1),reporterUids:FV.arrayUnion(fbUser.uid)};
+    if(newCount>=3) upd.hidden=true;
+    fbDb.collection('memes').doc(m.id).update(upd).then(function(){
+      m.reports=newCount; m.reporterUids.push(fbUser.uid);
+      if(newCount>=3){ m.hidden=true; toast('Reported. This meme is now hidden from the gallery.'); }
+      else toast('Reported. Thanks for keeping the gallery clean.');
+      renderGallery();
+    }).catch(function(err){ toast(dbErrorText(err)); });
+  });
+}
+function deleteMeme(m){
+  if(!fbDb){ toast('Deleting works on the live site: '+LIVE_HOST); return; }
+  askConfirm('Delete this meme? It will be removed from the public gallery for good.',function(){
+    fbDb.collection('memes').doc(m.id).delete().then(function(){
+      pubMemes=pubMemes.filter(function(x){ return x.id!==m.id; });
+      renderGallery(); toast('Meme deleted.');
+    }).catch(function(err){ toast(dbErrorText(err)); });
+  });
+}
+function shareMeme(m){
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight;
+    c.getContext('2d').drawImage(img,0,0);
+    var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=c.toDataURL('image/png'); a.click();
+    toast('PNG downloaded — attach it to your X post.',10000);
+    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://lofi-meme-studio.vercel.app/#/studio');
+    setTimeout(function(){
+      var win=null; try{ win=window.open(postUrl,'_blank','noopener'); }catch(e){}
+      if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
+    },1500);
+  };
+  img.onerror=function(){ toast('Could not load that meme image.'); };
+  img.src=m.image;
+}
+
+/* ---------- Publish from the studio ---------- */
+var pubModal=document.getElementById('pubModal'), pubErr=document.getElementById('pubErr'), pubGo=document.getElementById('pubGo');
+function openPublish(){
+  pubErr.hidden=true;
+  var t=layers.filter(function(l){ return l.type==='text'; })[0];
+  document.getElementById('pubTitle').value=t?t.text:"";
+  pubModal.hidden=false; document.body.style.overflow="hidden";
+  document.getElementById('pubTitle').focus();
+}
+function closePublish(){ pubModal.hidden=true; document.body.style.overflow=""; }
+document.getElementById('pubClose').addEventListener('click',closePublish);
+document.getElementById('pubCancel').addEventListener('click',closePublish);
+pubModal.addEventListener('click',function(e){ if(e.target===pubModal) closePublish(); });
+document.getElementById('publishBtn').addEventListener('click',function(){
+  if(!layers.length){ toast('Add a sticker first.'); return; }
+  if(!fbDb){ toast('Publishing works on the live site: '+LIVE_HOST); return; }
+  if(!fbUser){ pendingAfterSignIn="publish"; openAuth(); toast('Sign in to publish your meme.'); return; }
+  openPublish();
+});
+pubGo.addEventListener('click',function(){
+  if(!fbUser||!fbDb) return;
+  var title=document.getElementById('pubTitle').value.trim()||"Untitled meme";
+  pubErr.hidden=true; pubGo.disabled=true; pubGo.textContent="Publishing…";
+  renderPNG(540).then(function(cv){
+    var scale=Math.min(1,540/Math.max(cv.width,cv.height)), out=cv;
+    if(scale<1){
+      out=document.createElement('canvas');
+      out.width=Math.round(cv.width*scale); out.height=Math.round(cv.height*scale);
+      out.getContext('2d').drawImage(cv,0,0,out.width,out.height);
+    }
+    var dataUrl=out.toDataURL('image/jpeg',0.8);
+    return fbDb.collection('memes').add({
+      image:dataUrl,
+      title:title,
+      creatorUid:fbUser.uid,
+      creatorName:fbUser.displayName||(fbUser.email?fbUser.email.split("@")[0]:"Maker"),
+      creatorPhoto:fbUser.photoURL||"",
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      votes:0, voterUids:[], reports:0, reporterUids:[], hidden:false
+    });
+  }).then(function(){
+    pubGo.disabled=false; pubGo.textContent="Publish";
+    closePublish(); toast('Published to the community gallery.');
+    loadGallery();
+  }).catch(function(err){
+    pubGo.disabled=false; pubGo.textContent="Publish";
+    pubErr.textContent=dbErrorText(err); pubErr.hidden=false;
+  });
+});
+
+/* ---------- Auth state ---------- */
+if(fbAuth){
+  fbAuth.onAuthStateChanged(function(u){
+    fbUser=u||null;
+    renderAuth(); renderGallery();
+    if(fbUser&&pendingAfterSignIn){
+      var p=pendingAfterSignIn; pendingAfterSignIn=null;
+      if(p==="publish"&&document.documentElement.dataset.view==="studio"&&layers.length) openPublish();
+      if(p==="mine") setGalTab("mine");
+    }
+  });
+}
+renderAuth();
+loadGallery();
 </script>
 </body>
 </html>
