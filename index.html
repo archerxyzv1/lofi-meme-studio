@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light"/>
 <link rel="icon" href="data:,"/>
 <title>Lofi Meme Studio</title>
-<script>document.documentElement.dataset.view=(window.location.hash==='#/studio')?'studio':'landing';</script>
+<script>(function(){var h=window.location.hash;document.documentElement.dataset.view=(h==='#/studio')?'studio':(h==='#/profile')?'profile':'landing';var b='ice';try{b=window.sessionStorage.getItem('lms-bg')||'ice';}catch(e){}document.documentElement.dataset.bg=b;})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Archivo+Black&family=Anton&display=swap" rel="stylesheet">
@@ -235,6 +235,26 @@ footer{margin-top:32px;padding-top:16px;border-top:var(--bd);color:var(--ink);fo
 #view-studio{display:none}
 html[data-view="studio"] #view-studio{display:block}
 html[data-view="studio"] #view-landing{display:none}
+#view-profile{display:none}
+html[data-view="profile"] #view-profile{display:block}
+html[data-view="profile"] #view-landing{display:none}
+/* ===== Five site backgrounds: flat Neo-Brutalism patterns, picked in the footer ===== */
+html[data-bg="cream"]{--bg:#FAF0DC}
+html[data-bg="mint"]{--bg:#D8F3E3}
+html[data-bg="pink"]{--bg:#FBE4EE}
+html[data-bg="lav"]{--bg:#E6E4F0}
+html[data-bg="cream"] body::before{background-image:linear-gradient(rgba(17,17,17,.09) 2px,transparent 2px),linear-gradient(90deg,rgba(17,17,17,.09) 2px,transparent 2px);background-size:28px 28px}
+html[data-bg="mint"] body::before{background-image:radial-gradient(rgba(17,17,17,.15) 1.6px,transparent 1.7px);background-size:20px 20px}
+html[data-bg="pink"] body::before{background-image:repeating-linear-gradient(45deg,rgba(17,17,17,.08) 0 10px,transparent 10px 22px)}
+html[data-bg="lav"] body::before{background-image:conic-gradient(rgba(17,17,17,.07) 25%,transparent 0 50%,rgba(17,17,17,.07) 0 75%,transparent 0);background-size:30px 30px}
+.bg-swatches{display:flex;gap:8px;flex-wrap:wrap}
+.bg-sw{width:36px;height:36px;min-height:36px;padding:0;border:2px solid #fff;box-shadow:3px 3px 0 rgba(0,0,0,.5);cursor:pointer}
+.bg-sw.on{outline:3px solid var(--yellow);outline-offset:2px}
+.bg-sw[data-bgset="ice"]{background-color:#D8F0FA;background-image:radial-gradient(rgba(17,17,17,.28) 1.6px,transparent 1.7px);background-size:9px 9px}
+.bg-sw[data-bgset="cream"]{background-color:#FAF0DC;background-image:linear-gradient(rgba(17,17,17,.2) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(17,17,17,.2) 1.5px,transparent 1.5px);background-size:9px 9px}
+.bg-sw[data-bgset="mint"]{background-color:#D8F3E3;background-image:radial-gradient(rgba(17,17,17,.24) 1.6px,transparent 1.7px);background-size:8px 8px}
+.bg-sw[data-bgset="pink"]{background-color:#FBE4EE;background-image:repeating-linear-gradient(45deg,rgba(17,17,17,.18) 0 4px,transparent 4px 9px)}
+.bg-sw[data-bgset="lav"]{background-color:#E6E4F0;background-image:conic-gradient(rgba(17,17,17,.16) 25%,transparent 0 50%,rgba(17,17,17,.16) 0 75%,transparent 0);background-size:12px 12px}
 section[id]{scroll-margin-top:88px}
 .brandline{display:flex;align-items:center;gap:12px;min-width:0}
 .logo-face{width:48px;height:48px;object-fit:cover;border-radius:3px;background:#fff;display:block;border:var(--bd2);box-shadow:var(--sh-xs)}
@@ -243,10 +263,7 @@ section[id]{scroll-margin-top:88px}
 .lp-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:"Archivo Black",sans-serif;font-size:19px;line-height:1;text-transform:uppercase;white-space:nowrap}
 .lp-brand img{width:42px;height:42px;object-fit:cover;border-radius:3px;background:#fff;border:var(--bd2);flex:none}
 .lp-brand em{font-style:normal;color:var(--accent)}
-.lp-nav{display:flex;gap:4px;margin-left:auto;align-items:center}
-.lp-nav a{color:var(--ink);text-decoration:none;font-weight:800;font-size:13px;letter-spacing:.03em;text-transform:uppercase;padding:8px 11px;border-radius:3px;white-space:nowrap;border:2px solid transparent}
-.lp-nav a:hover{background:var(--yellow);border-color:var(--ink)}
-.lp-cta{flex:none;padding:10px 16px;font-size:14px}
+.lp-cta{flex:none;padding:10px 16px;font-size:14px;margin-left:auto}
 .lp-hero{position:relative;padding:30px 0 10px;overflow:hidden}
 .lp-hero-in{position:relative;max-width:1200px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:1.02fr .98fr;gap:34px;align-items:center}
 .lp-hero-in>*{min-width:0;max-width:100%;box-sizing:border-box}
@@ -297,7 +314,7 @@ section[id]{scroll-margin-top:88px}
 .f-card p{margin:6px 0 0;font-size:14.5px;color:var(--muted);font-weight:600}
 .lp-tpls .tpl{border-radius:3px}
 .lp-footer{margin-top:56px;background:var(--ink);color:#fff;overflow:hidden}
-.lp-footer-in{max-width:1200px;margin:0 auto;padding:38px 16px 26px;display:grid;grid-template-columns:1.6fr 1fr;gap:28px}
+.lp-footer-in{max-width:1200px;margin:0 auto;padding:38px 16px 26px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:28px}
 .lp-fbrand{display:flex;align-items:center;gap:10px;font-family:"Archivo Black";font-size:18px;text-transform:uppercase}
 .lp-fbrand img{width:44px;height:44px;object-fit:cover;border-radius:3px;background:#fff;border:2px solid #fff}
 .lp-fcol p{font-size:13.5px;opacity:.8;margin:10px 0 0;max-width:300px;font-weight:600;line-height:1.6}
@@ -326,7 +343,6 @@ section[id]{scroll-margin-top:88px}
  .lp-hero p{font-size:16.5px}
  .lp-meme{max-width:480px}
  .lp-footer-in{grid-template-columns:1fr 1fr}
- .lp-nav{display:none}
  .lp-header-in{flex-wrap:wrap}
  .lp-brand{order:1}
  .authbox{order:2;margin-left:auto}
@@ -385,7 +401,6 @@ h1,h2{letter-spacing:-.01em}
 .swatch:active,.scene-swatch:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 .lb-close{transition:transform .1s,box-shadow .1s}
 .lb-close:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
-.lp-nav a:active{background:var(--accent);color:#fff;border-color:var(--ink)}
 input[type=range]{cursor:pointer}
 #elScroll{scrollbar-color:var(--ink) #fff}
 #elScroll::-webkit-scrollbar{width:10px}
@@ -446,8 +461,9 @@ input[type=range]{cursor:pointer}
 .google-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .google-btn svg{width:22px;height:22px;flex:none;display:block}
 .google-btn span{flex:1;text-align:center;margin-right:34px}
-.pf-card{width:min(94vw,780px);max-height:88vh;overflow-y:auto}
-.pf-head{display:flex;align-items:center;gap:14px;padding-right:36px}
+.pf-page{background:var(--surface);border:var(--bd);box-shadow:var(--sh);padding:22px}
+.pf-back{margin:2px 0 16px}
+.pf-head{display:flex;align-items:center;gap:14px}
 .pf-ava{width:64px;height:64px;flex:none;border:var(--bd);background:var(--yellow);color:var(--ink);font-family:"Archivo Black",sans-serif;font-size:26px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--sh-xs)}
 .pf-ava img{width:100%;height:100%;object-fit:cover;display:block}
 .pf-id{min-width:0}
@@ -531,13 +547,6 @@ input[type=range]{cursor:pointer}
 <header class="lp-header">
     <div class="lp-header-in">
       <a class="lp-brand" href="#/"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" decoding="async"><span>Lofi <em>Meme</em> Studio</span></a>
-      <nav class="lp-nav" aria-label="Sections">
-        <a href="#showcase">Showcase</a>
-        <a href="#details">Details</a>
-        <a href="#templates">Templates</a>
-        <a href="#how">How it works</a>
-        <a href="#gallery">Gallery</a>
-      </nav>
       <a class="btn lp-cta" href="#/studio">Open Studio</a>
       <div class="authbox" data-auth-slot></div>
     </div>
@@ -547,9 +556,7 @@ input[type=range]{cursor:pointer}
   <section class="lp-hero">
     <div class="lp-hero-in">
       <div>
-        <span style="display:inline-flex;align-items:center;gap:6px;background:#FFC400;border:2px solid #111111;border-radius:3px;padding:6px 11px;font-size:12.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#111111;box-shadow:3px 3px 0 #111111;margin-bottom:16px">● Free meme maker for Lofi</span>
         <h1>Make Lofi <span class="nowrap-unit">memes. <span class="fast-block">Fast.</span></span></h1>
-        <p>Real Lofi stickers, a library of PNG elements and classic meme formats. Pick one, add your caption, download and post.</p>
         <div class="lp-hero-btns">
           <a class="btn" href="#/studio">Start making</a>
           <a class="btn ghost" href="#showcase">See featured designs</a>
@@ -572,7 +579,7 @@ input[type=range]{cursor:pointer}
   </section>
 
   <section class="lp-sec" id="showcase">
-    <div class="lp-sec-head"><h2>Featured designs</h2><span class="lp-count">Made in the studio</span></div>
+    <div class="lp-sec-head"><h2>Featured designs</h2></div>
     <div class="show-grid">
       <button class="sc-card" type="button">
         <div class="sc-art">
@@ -608,32 +615,32 @@ input[type=range]{cursor:pointer}
   <section class="lp-sec" id="details">
     <div class="lp-sec-head"><h2>Inside the studio</h2></div>
     <div class="detail-grid">
-      <div class="d-card"><svg class="ic"><use href="#i-smile"/></svg><b id="dStickers">…</b><h3>Character stickers</h3><p>Full-body Lofi in every mood, from angry to ski-ready. Drag, resize, rotate, flip.</p></div>
-      <div class="d-card"><svg class="ic"><use href="#i-heart"/></svg><b id="dOriginals">…</b><h3>Original faces</h3><p>The classic Lofi face as its own pack of expressions, kept separate from the character set.</p></div>
-      <div class="d-card"><svg class="ic"><use href="#i-shapes"/></svg><b id="dElements">…</b><h3>Real PNG elements</h3><p>Transparent PNGs in Funny, General and Winter, searchable in the editor library.</p></div>
-      <div class="d-card"><svg class="ic"><use href="#i-layout"/></svg><b id="dTemplates">…</b><h3>Templates</h3><p>Classic layouts and meme formats, loaded onto the canvas in one click.</p></div>
-      <div class="d-card"><svg class="ic"><use href="#i-download"/></svg><b>1080px</b><h3>PNG export</h3><p>Every design downloads as a crisp 1080px PNG, in 1:1, 4:5 or 9:16.</p></div>
-      <div class="d-card"><svg class="ic"><use href="#i-x"/></svg><b>1 tap</b><h3>Post on X</h3><p>Share straight from the editor with the Post button, or save to the session gallery.</p></div>
+      <div class="d-card"><svg class="ic"><use href="#i-smile"/></svg><b id="dStickers">…</b><h3>Character stickers</h3></div>
+      <div class="d-card"><svg class="ic"><use href="#i-heart"/></svg><b id="dOriginals">…</b><h3>Original faces</h3></div>
+      <div class="d-card"><svg class="ic"><use href="#i-shapes"/></svg><b id="dElements">…</b><h3>Real PNG elements</h3></div>
+      <div class="d-card"><svg class="ic"><use href="#i-layout"/></svg><b id="dTemplates">…</b><h3>Templates</h3></div>
+      <div class="d-card"><svg class="ic"><use href="#i-download"/></svg><b>1080px</b><h3>PNG export</h3></div>
+      <div class="d-card"><svg class="ic"><use href="#i-x"/></svg><b>1 tap</b><h3>Post on X</h3></div>
     </div>
   </section>
 
   <section class="lp-sec" id="templates">
     <div class="lp-sec-head"><h2>Templates</h2><span class="lp-count" id="lpTplCount">…</span></div>
     <div class="show-grid" id="lpTpls"></div>
-    <div class="lp-more"><span>All 9 templates, including Top &amp; Bottom, Two-Panel Reaction and Caption Bar, live in the studio.</span><a class="btn ghost" href="#/studio">Open Studio</a></div>
+    <div class="lp-more"><a class="btn ghost" href="#/studio">Open Studio</a></div>
   </section>
 
   <section class="lp-sec" id="how">
     <div class="lp-sec-head"><h2>How it works</h2></div>
     <div class="formula">
-      <div class="f-card"><span class="step-n">1</span><h3>Pick a sticker</h3><p>Choose a Lofi character or an Original face. It lands on the canvas, ready to move.</p></div>
-      <div class="f-card"><span class="step-n">2</span><h3>Add elements and text</h3><p>Drop in PNG elements, write your caption, drag, resize and rotate everything into place.</p></div>
-      <div class="f-card"><span class="step-n">3</span><h3>Download and share</h3><p>Export a crisp 1080px PNG and post it on X.</p></div>
+      <div class="f-card"><span class="step-n">1</span><h3>Pick a sticker</h3></div>
+      <div class="f-card"><span class="step-n">2</span><h3>Add elements and text</h3></div>
+      <div class="f-card"><span class="step-n">3</span><h3>Download and share</h3></div>
     </div>
   </section>
 
   <section class="lp-sec" id="gallery">
-    <div class="lp-sec-head"><h2>Community gallery</h2><span class="lp-count">Published by makers</span></div>
+    <div class="lp-sec-head"><h2>Community gallery</h2></div>
     <div class="gtabs" role="tablist" aria-label="Gallery filters">
       <button class="tab" type="button" data-gtab="newest" aria-selected="true">Newest</button>
       <button class="tab" type="button" data-gtab="today" aria-selected="false">Top today</button>
@@ -646,7 +653,6 @@ input[type=range]{cursor:pointer}
     </div>
     <p class="gal-status" id="galStatus">Loading the community gallery…</p>
     <div class="gallery" id="pubGallery"></div>
-    <div style="text-align:center;margin-top:20px"><a class="btn" href="#/studio">Open Studio</a></div>
   </section>
 
 </div>
@@ -821,20 +827,59 @@ input[type=range]{cursor:pointer}
 </div>
 </div>
 
+<div id="view-profile">
+  <div class="wrap">
+    <div class="pf-back"><button class="btn" type="button" id="profileBack">&larr; Back</button></div>
+    <div class="pf-page">
+      <div class="pf-head">
+        <span class="pf-ava" id="pfAva"></span>
+        <div class="pf-id">
+          <h3 id="pfName">Maker</h3>
+          <p class="pf-email" id="pfEmail"></p>
+          <p class="pf-joined" id="pfJoined"></p>
+        </div>
+      </div>
+      <div class="pf-stats">
+        <div class="stat"><b id="pfStatPub">0</b><span>Published</span></div>
+        <div class="stat"><b id="pfStatVotes">0</b><span>Votes received</span></div>
+        <div class="stat"><b id="pfStatLiked">0</b><span>Liked</span></div>
+      </div>
+      <h3 class="pf-sec">My memes</h3>
+      <p class="gal-status" id="pfMineStatus"></p>
+      <div class="gallery pf-grid" id="pfMine"></div>
+      <h3 class="pf-sec">Liked memes</h3>
+      <p class="gal-status" id="pfLikedStatus"></p>
+      <div class="gallery pf-grid" id="pfLiked"></div>
+    </div>
+  </div>
+</div>
+
 <div class="lp-footer">
   <div class="lp-footer-in">
     <div class="lp-fcol">
       <div class="lp-fbrand"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"><span>Lofi Meme Studio</span></div>
-      <p>The meme maker for Lofi the Yeti. Stickers, elements and templates, free to use.</p>
     </div>
     <div class="lp-fcol">
-      <h3>Studio</h3>
+      <h3>Explore</h3>
       <a href="#showcase">Showcase</a>
       <a href="#details">Details</a>
       <a href="#templates">Templates</a>
       <a href="#how">How it works</a>
       <a href="#gallery">Gallery</a>
+    </div>
+    <div class="lp-fcol">
+      <h3>Studio</h3>
       <a href="#/studio">Open Studio</a>
+    </div>
+    <div class="lp-fcol">
+      <h3>Background</h3>
+      <div class="bg-swatches" role="group" aria-label="Site background design">
+        <button type="button" class="bg-sw" data-bgset="ice" aria-label="Icy blue with dots" title="Icy blue · dots"></button>
+        <button type="button" class="bg-sw" data-bgset="cream" aria-label="Cream paper with grid" title="Cream paper · grid"></button>
+        <button type="button" class="bg-sw" data-bgset="mint" aria-label="Mint with dots" title="Mint · dots"></button>
+        <button type="button" class="bg-sw" data-bgset="pink" aria-label="Pink with diagonal stripes" title="Pink · stripes"></button>
+        <button type="button" class="bg-sw" data-bgset="lav" aria-label="Lavender grey with checker" title="Lavender grey · checker"></button>
+      </div>
     </div>
   </div>
   <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
@@ -854,7 +899,6 @@ input[type=range]{cursor:pointer}
   <div class="cf-card auth-card">
     <button class="lb-close auth-x" type="button" id="authClose" aria-label="Close sign in">✕</button>
     <h3>Sign in</h3>
-    <p class="auth-sub">Sign in to publish memes to the community gallery, vote for your favourites and keep your own collection.</p>
     <button class="google-btn" type="button" id="googleBtn"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg><span>Continue with Google</span></button>
     <div class="auth-or">or</div>
     <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></div>
@@ -872,38 +916,12 @@ input[type=range]{cursor:pointer}
   <div class="cf-card auth-card">
     <button class="lb-close auth-x" type="button" id="pubClose" aria-label="Close publish">✕</button>
     <h3>Publish to gallery</h3>
-    <p class="auth-sub">Your meme goes to the public community gallery on the home page, where makers can vote for it. Your full 1080px PNG download stays on this device, unchanged.</p>
     <div class="field"><label for="pubTitle">Title</label><input type="text" id="pubTitle" maxlength="80" placeholder="Give your meme a title"></div>
     <p class="auth-err" id="pubErr" hidden></p>
     <div class="cf-btns">
       <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
       <button class="btn" type="button" id="pubGo">Publish</button>
     </div>
-  </div>
-</div>
-
-<div class="lb" id="profileModal" hidden role="dialog" aria-modal="true" aria-label="Your profile">
-  <div class="cf-card pf-card">
-    <button class="lb-close auth-x" type="button" id="profileClose" aria-label="Close profile">✕</button>
-    <div class="pf-head">
-      <span class="pf-ava" id="pfAva"></span>
-      <div class="pf-id">
-        <h3 id="pfName">Maker</h3>
-        <p class="pf-email" id="pfEmail"></p>
-        <p class="pf-joined" id="pfJoined"></p>
-      </div>
-    </div>
-    <div class="pf-stats">
-      <div class="stat"><b id="pfStatPub">0</b><span>Published</span></div>
-      <div class="stat"><b id="pfStatVotes">0</b><span>Votes received</span></div>
-      <div class="stat"><b id="pfStatLiked">0</b><span>Liked</span></div>
-    </div>
-    <h3 class="pf-sec">My memes</h3>
-    <p class="gal-status" id="pfMineStatus"></p>
-    <div class="gallery pf-grid" id="pfMine"></div>
-    <h3 class="pf-sec">Liked memes</h3>
-    <p class="gal-status" id="pfLikedStatus"></p>
-    <div class="gallery pf-grid" id="pfLiked"></div>
   </div>
 </div>
 
@@ -1643,17 +1661,38 @@ function initEditor(){
   document.querySelectorAll('a[href="#/"]').forEach(function(a){
     a.addEventListener('click',function(e){ e.preventDefault(); showLanding(); });
   });
-  /* Section links in the shared header/footer: from the studio they return to the landing section */
-  document.querySelectorAll('.lp-nav a[href^="#"], .lp-fcol a[href^="#"]').forEach(function(a){
+  /* Section links in the shared footer: from the studio or profile they return to the landing section */
+  document.querySelectorAll('.lp-fcol a[href^="#"]').forEach(function(a){
     var h=a.getAttribute('href');
     if(h==='#/'||h==='#/studio') return;
     a.addEventListener('click',function(e){
-      if(document.documentElement.dataset.view!=='studio') return;
+      if(document.documentElement.dataset.view==='landing') return;
       e.preventDefault(); showLanding();
       var t=document.querySelector(h);
       if(t) setTimeout(function(){ t.scrollIntoView(); },40);
     });
   });
+  function showProfileView(){
+    document.documentElement.dataset.view='profile';
+    if(typeof renderProfile==='function'){ try{ renderProfile(); }catch(e){} }
+    window.scrollTo(0,0);
+  }
+  /* Background designs: five flat patterns for the whole site, switched from the footer */
+  function markBg(){
+    var cur=document.documentElement.dataset.bg||'ice';
+    document.querySelectorAll('[data-bgset]').forEach(function(b){
+      var on=b.getAttribute('data-bgset')===cur;
+      b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false');
+    });
+  }
+  document.querySelectorAll('[data-bgset]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.documentElement.dataset.bg=b.getAttribute('data-bgset');
+      try{ sessionStorage.setItem('lms-bg',b.getAttribute('data-bgset')); }catch(e){}
+      markBg();
+    });
+  });
+  markBg();
 
   /* Details: real counts from the libraries, no image grids on the landing page */
   document.getElementById('dStickers').textContent=STICKERS.length;
@@ -1701,15 +1740,18 @@ function initEditor(){
   });
 
   function syncView(){
-    /* Back/forward and shared #/studio links still land in the right view. */
+    /* Back/forward and shared #/studio / #/profile links still land in the right view. */
     if(location.hash==='#/studio'){ showStudio(); return; }
-    if(document.documentElement.dataset.view==='studio' && (location.hash==='#/'||location.hash===''||location.hash.charAt(1)!=='/')){
+    if(location.hash==='#/profile'){ showProfileView(); return; }
+    var v=document.documentElement.dataset.view;
+    if((v==='studio'||v==='profile') && (location.hash==='#/'||location.hash===''||location.hash.charAt(1)!=='/')){
       document.documentElement.dataset.view='landing';
       if(location.hash==='#/'||location.hash==='') window.scrollTo(0,0);
     }
   }
   window.addEventListener('hashchange',syncView);
   if(location.hash==='#/studio'){ showStudio(); }
+  if(location.hash==='#/profile'){ showProfileView(); }
 })();
 </script>
 
@@ -1874,19 +1916,23 @@ function goMyMemes(){
   setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60);
 }
 
-/* ---------- Profile view (real data: own memes + own votes from Firestore) ---------- */
-var profileModal=document.getElementById('profileModal');
-function profileIsOpen(){ return profileModal&&!profileModal.hidden; }
+/* ---------- Profile page (a full #/profile view, real data: own memes + own votes from Firestore) ---------- */
+function profileIsOpen(){ return document.documentElement.dataset.view==="profile"; }
 function openProfile(){
   if(!fbUser){ openAuth(); return; }
-  profileModal.hidden=false; document.body.style.overflow="hidden";
   if(fbDb){ if(!myLoaded) loadMyMemes(); if(!galLoaded) loadGallery(); }
+  document.documentElement.dataset.view="profile";
+  try{ history.replaceState(null,"","#/profile"); }catch(e){}
   renderProfile();
-  document.getElementById('profileClose').focus();
+  window.scrollTo(0,0);
 }
-function closeProfile(){ if(!profileModal) return; profileModal.hidden=true; if(document.body.style.overflow==="hidden") document.body.style.overflow=""; }
-document.getElementById('profileClose').addEventListener('click',closeProfile);
-profileModal.addEventListener('click',function(e){ if(e.target===profileModal) closeProfile(); });
+function closeProfile(){
+  if(!profileIsOpen()) return;
+  document.documentElement.dataset.view="landing";
+  try{ history.replaceState(null,"","#/"); }catch(e){}
+  window.scrollTo(0,0);
+}
+document.getElementById('profileBack').addEventListener('click',closeProfile);
 function renderProfile(){
   if(!profileIsOpen()||!fbUser) return;
   var name=fbUser.displayName||(fbUser.email?fbUser.email.split("@")[0]:"Maker");
@@ -1970,7 +2016,6 @@ document.addEventListener('keydown',function(e){
   if(e.key!=="Escape") return;
   if(!authModal.hidden) closeAuth();
   if(!document.getElementById('pubModal').hidden) closePublish();
-  if(!document.getElementById('profileModal').hidden) closeProfile();
 });
 
 /* ---------- Public gallery state ---------- */
