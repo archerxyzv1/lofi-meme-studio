@@ -6,14 +6,14 @@
 <meta name="color-scheme" content="light"/>
 <link rel="icon" href="data:,"/>
 <title>Lofi Meme Studio</title>
-<script>(function(){var h=window.location.hash;document.documentElement.dataset.view=(h==='#/studio')?'studio':(h==='#/profile')?'profile':'landing';var b='ice';try{b=window.sessionStorage.getItem('lms-bg')||'ice';}catch(e){}document.documentElement.dataset.bg=b;})();</script>
+<script>(function(){var h=window.location.hash;document.documentElement.dataset.view=(h==='#/studio')?'studio':(h==='#/profile')?'profile':'landing';})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Archivo+Black&family=Anton&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/thumbs/hero-meme-winter.webp" fetchpriority="high">
 <style>
 :root{
-  --bg:#D8F0FA; --surface:#FFFFFF; --surface2:#BFE6F5; --ink:#111111; --muted:#41525C;
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#BFE6F5; --ink:#111111; --muted:#41525C;
   --ice:#0EA5C6; --ice-dark:#06748E; --ice-light:#DFF5FB; --snow:#FFFFFF;
   --accent:#FF2E7E; --yellow:#FFC400; --coral:#E63E21; --gold:#E9A426; --pink:#E86A92; --mint:#1FA37A;
   --line:#111111; --line2:#111111;
@@ -26,7 +26,7 @@
 html{scroll-behavior:smooth;overflow-x:hidden}
 html,body{margin:0;padding:0}
 body{font-family:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-color:var(--bg);background-image:radial-gradient(rgba(17,17,17,.16) 1.6px, transparent 1.7px);background-size:22px 22px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-color:var(--bg);background-image:linear-gradient(rgba(17,17,17,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.07) 1px,transparent 1px);background-size:24px 24px}
 button,input,select,textarea{font:inherit}
 button{min-height:44px;cursor:pointer}
 a{color:var(--ice-dark)}
@@ -238,57 +238,6 @@ html[data-view="studio"] #view-landing{display:none}
 #view-profile{display:none}
 html[data-view="profile"] #view-profile{display:block}
 html[data-view="profile"] #view-landing{display:none}
-/* ===== Fifteen site backgrounds: flat Neo-Brutalism patterns, picked in the footer ===== */
-html[data-bg="cream"]{--bg:#FAF0DC}
-html[data-bg="mint"]{--bg:#D8F3E3}
-html[data-bg="pink"]{--bg:#FBE4EE}
-html[data-bg="lav"]{--bg:#E6E4F0}
-html[data-bg="cream"] body::before{background-image:linear-gradient(rgba(17,17,17,.09) 2px,transparent 2px),linear-gradient(90deg,rgba(17,17,17,.09) 2px,transparent 2px);background-size:28px 28px}
-html[data-bg="mint"] body::before{background-image:radial-gradient(rgba(17,17,17,.15) 1.6px,transparent 1.7px);background-size:20px 20px}
-html[data-bg="pink"] body::before{background-image:repeating-linear-gradient(45deg,rgba(17,17,17,.08) 0 10px,transparent 10px 22px)}
-html[data-bg="lav"] body::before{background-image:conic-gradient(rgba(17,17,17,.07) 25%,transparent 0 50%,rgba(17,17,17,.07) 0 75%,transparent 0);background-size:30px 30px}
-/* Professional group: calm, restrained, low contrast */
-html[data-bg="pro-grid"]{--bg:#FFFFFF}
-html[data-bg="pro-paper"]{--bg:#FBF7EF}
-html[data-bg="pro-slate"]{--bg:#E8EDF1}
-html[data-bg="pro-sky"]{--bg:#E3F1FA}
-html[data-bg="pro-sand"]{--bg:#F3EAD9}
-html[data-bg="pro-grid"] body::before{background-image:linear-gradient(rgba(17,17,17,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.07) 1px,transparent 1px);background-size:24px 24px}
-html[data-bg="pro-paper"] body::before{background-image:radial-gradient(rgba(17,17,17,.12) 1.3px,transparent 1.4px);background-size:18px 18px}
-html[data-bg="pro-slate"] body::before{background-image:linear-gradient(rgba(17,17,17,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.08) 1px,transparent 1px);background-size:26px 26px}
-html[data-bg="pro-sky"] body::before{background-image:radial-gradient(rgba(17,17,17,.12) 1.3px,transparent 1.4px);background-size:20px 20px}
-html[data-bg="pro-sand"] body::before{background-image:repeating-linear-gradient(0deg,rgba(17,17,17,.07) 0 1.5px,transparent 1.5px 22px)}
-/* Winter group: snowy, cold, kept light for readability */
-html[data-bg="win-frost"]{--bg:#DDEEF8}
-html[data-bg="win-snow"]{--bg:#FAFCFE}
-html[data-bg="win-mint"]{--bg:#DFF5EE}
-html[data-bg="win-glacier"]{--bg:#D9EAF6}
-html[data-bg="win-lav"]{--bg:#EFEDF7}
-html[data-bg="win-frost"] body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23111111' stroke-opacity='.16' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M24 9v30M10.5 16.5l27 15M37.5 16.5l-27 15'/%3E%3Cpath d='M24 9l-4.5 5M24 9l4.5 5M24 39l-4.5-5M24 39l4.5-5'/%3E%3C/g%3E%3C/svg%3E");background-size:56px 56px}
-html[data-bg="win-snow"] body::before{background-image:radial-gradient(rgba(17,17,17,.13) 1.8px,transparent 1.9px),radial-gradient(rgba(17,17,17,.09) 1.2px,transparent 1.3px);background-size:34px 34px,22px 22px;background-position:0 0,11px 13px}
-html[data-bg="win-mint"] body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23111111' stroke-opacity='.15' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M24 9v30M10.5 16.5l27 15M37.5 16.5l-27 15'/%3E%3Cpath d='M24 9l-4.5 5M24 9l4.5 5M24 39l-4.5-5M24 39l4.5-5'/%3E%3C/g%3E%3C/svg%3E");background-size:44px 44px}
-html[data-bg="win-glacier"] body::before{background-image:repeating-linear-gradient(60deg,rgba(255,255,255,.55) 0 2px,transparent 2px 18px)}
-html[data-bg="win-lav"] body::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 52 52'%3E%3Cg fill='none' stroke='%23111111' stroke-opacity='.15' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M15 5v20M6.3 10l17.4 10M23.7 10L6.3 20'/%3E%3C/g%3E%3Cpath d='M38 27l1.7 5.8 5.8 1.7-5.8 1.7L38 42l-1.7-5.8-5.8-1.7 5.8-1.7z' fill='%23111111' fill-opacity='.13'/%3E%3C/svg%3E");background-size:52px 52px}
-.bg-group-label{font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--yellow);margin:12px 0 6px}
-.bg-group-label.first{margin-top:0}
-.bg-swatches{display:flex;gap:8px;flex-wrap:wrap}
-.bg-sw{width:36px;height:36px;min-height:36px;padding:0;border:2px solid #fff;box-shadow:3px 3px 0 rgba(0,0,0,.5);cursor:pointer}
-.bg-sw.on{outline:3px solid var(--yellow);outline-offset:2px}
-.bg-sw[data-bgset="ice"]{background-color:#D8F0FA;background-image:radial-gradient(rgba(17,17,17,.28) 1.6px,transparent 1.7px);background-size:9px 9px}
-.bg-sw[data-bgset="cream"]{background-color:#FAF0DC;background-image:linear-gradient(rgba(17,17,17,.2) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(17,17,17,.2) 1.5px,transparent 1.5px);background-size:9px 9px}
-.bg-sw[data-bgset="mint"]{background-color:#D8F3E3;background-image:radial-gradient(rgba(17,17,17,.24) 1.6px,transparent 1.7px);background-size:8px 8px}
-.bg-sw[data-bgset="pink"]{background-color:#FBE4EE;background-image:repeating-linear-gradient(45deg,rgba(17,17,17,.18) 0 4px,transparent 4px 9px)}
-.bg-sw[data-bgset="lav"]{background-color:#E6E4F0;background-image:conic-gradient(rgba(17,17,17,.16) 25%,transparent 0 50%,rgba(17,17,17,.16) 0 75%,transparent 0);background-size:12px 12px}
-.bg-sw[data-bgset="pro-grid"]{background-color:#FFFFFF;background-image:linear-gradient(rgba(17,17,17,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.18) 1px,transparent 1px);background-size:8px 8px}
-.bg-sw[data-bgset="pro-paper"]{background-color:#FBF7EF;background-image:radial-gradient(rgba(17,17,17,.26) 1.3px,transparent 1.4px);background-size:8px 8px}
-.bg-sw[data-bgset="pro-slate"]{background-color:#E8EDF1;background-image:linear-gradient(rgba(17,17,17,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.2) 1px,transparent 1px);background-size:9px 9px}
-.bg-sw[data-bgset="pro-sky"]{background-color:#E3F1FA;background-image:radial-gradient(rgba(17,17,17,.26) 1.3px,transparent 1.4px);background-size:8px 8px}
-.bg-sw[data-bgset="pro-sand"]{background-color:#F3EAD9;background-image:repeating-linear-gradient(0deg,rgba(17,17,17,.2) 0 1.5px,transparent 1.5px 8px)}
-.bg-sw[data-bgset="win-frost"]{background-color:#DDEEF8;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23111111' stroke-opacity='.3' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M24 9v30M10.5 16.5l27 15M37.5 16.5l-27 15'/%3E%3Cpath d='M24 9l-4.5 5M24 9l4.5 5M24 39l-4.5-5M24 39l4.5-5'/%3E%3C/g%3E%3C/svg%3E");background-size:20px 20px}
-.bg-sw[data-bgset="win-snow"]{background-color:#FAFCFE;background-image:radial-gradient(rgba(17,17,17,.3) 1.8px,transparent 1.9px),radial-gradient(rgba(17,17,17,.2) 1.2px,transparent 1.3px);background-size:13px 13px,9px 9px;background-position:0 0,5px 6px}
-.bg-sw[data-bgset="win-mint"]{background-color:#DFF5EE;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23111111' stroke-opacity='.3' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M24 9v30M10.5 16.5l27 15M37.5 16.5l-27 15'/%3E%3Cpath d='M24 9l-4.5 5M24 9l4.5 5M24 39l-4.5-5M24 39l4.5-5'/%3E%3C/g%3E%3C/svg%3E");background-size:16px 16px}
-.bg-sw[data-bgset="win-glacier"]{background-color:#D9EAF6;background-image:repeating-linear-gradient(60deg,rgba(255,255,255,.8) 0 2px,transparent 2px 8px)}
-.bg-sw[data-bgset="win-lav"]{background-color:#EFEDF7;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 52 52'%3E%3Cg fill='none' stroke='%23111111' stroke-opacity='.3' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M15 5v20M6.3 10l17.4 10M23.7 10L6.3 20'/%3E%3C/g%3E%3Cpath d='M38 27l1.7 5.8 5.8 1.7-5.8 1.7L38 42l-1.7-5.8-5.8-1.7 5.8-1.7z' fill='%23111111' fill-opacity='.26'/%3E%3C/svg%3E");background-size:20px 20px}
 section[id]{scroll-margin-top:88px}
 .brandline{display:flex;align-items:center;gap:12px;min-width:0}
 .logo-face{width:48px;height:48px;object-fit:cover;border-radius:3px;background:#fff;display:block;border:var(--bd2);box-shadow:var(--sh-xs)}
@@ -348,7 +297,7 @@ section[id]{scroll-margin-top:88px}
 .f-card p{margin:6px 0 0;font-size:14.5px;color:var(--muted);font-weight:600}
 .lp-tpls .tpl{border-radius:3px}
 .lp-footer{margin-top:56px;background:var(--ink);color:#fff;overflow:hidden}
-.lp-footer-in{max-width:1200px;margin:0 auto;padding:38px 16px 26px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:28px}
+.lp-footer-in{max-width:1200px;margin:0 auto;padding:38px 16px 26px;display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:28px}
 .lp-fbrand{display:flex;align-items:center;gap:10px;font-family:"Archivo Black";font-size:18px;text-transform:uppercase}
 .lp-fbrand img{width:44px;height:44px;object-fit:cover;border-radius:3px;background:#fff;border:2px solid #fff}
 .lp-fcol p{font-size:13.5px;opacity:.8;margin:10px 0 0;max-width:300px;font-weight:600;line-height:1.6}
@@ -904,33 +853,6 @@ input[type=range]{cursor:pointer}
     <div class="lp-fcol">
       <h3>Studio</h3>
       <a href="#/studio">Open Studio</a>
-    </div>
-    <div class="lp-fcol">
-      <h3>Background</h3>
-      <p class="bg-group-label first">Classic</p>
-      <div class="bg-swatches" role="group" aria-label="Classic backgrounds">
-        <button type="button" class="bg-sw" data-bgset="ice" aria-label="Icy blue with dots" title="Icy blue · dots"></button>
-        <button type="button" class="bg-sw" data-bgset="cream" aria-label="Cream paper with grid" title="Cream paper · grid"></button>
-        <button type="button" class="bg-sw" data-bgset="mint" aria-label="Mint with dots" title="Mint · dots"></button>
-        <button type="button" class="bg-sw" data-bgset="pink" aria-label="Pink with diagonal stripes" title="Pink · stripes"></button>
-        <button type="button" class="bg-sw" data-bgset="lav" aria-label="Lavender grey with checker" title="Lavender grey · checker"></button>
-      </div>
-      <p class="bg-group-label">Professional</p>
-      <div class="bg-swatches" role="group" aria-label="Professional backgrounds">
-        <button type="button" class="bg-sw" data-bgset="pro-grid" aria-label="Studio white with fine grid" title="Studio white · fine grid"></button>
-        <button type="button" class="bg-sw" data-bgset="pro-paper" aria-label="Warm paper with dots" title="Warm paper · dots"></button>
-        <button type="button" class="bg-sw" data-bgset="pro-slate" aria-label="Soft slate with thin grid" title="Soft slate · grid"></button>
-        <button type="button" class="bg-sw" data-bgset="pro-sky" aria-label="Pale sky with dot grid" title="Pale sky · dot grid"></button>
-        <button type="button" class="bg-sw" data-bgset="pro-sand" aria-label="Light sand with horizontal lines" title="Light sand · lines"></button>
-      </div>
-      <p class="bg-group-label">Winter</p>
-      <div class="bg-swatches" role="group" aria-label="Winter backgrounds">
-        <button type="button" class="bg-sw" data-bgset="win-frost" aria-label="Frost blue with snowflakes" title="Frost blue · snowflakes"></button>
-        <button type="button" class="bg-sw" data-bgset="win-snow" aria-label="Soft white with snow dots" title="Soft white · snow dots"></button>
-        <button type="button" class="bg-sw" data-bgset="win-mint" aria-label="Icy mint with snowflake grid" title="Icy mint · flake grid"></button>
-        <button type="button" class="bg-sw" data-bgset="win-glacier" aria-label="Glacier blue with diagonal snow lines" title="Glacier blue · snow lines"></button>
-        <button type="button" class="bg-sw" data-bgset="win-lav" aria-label="Lavender snow with snowflakes and stars" title="Lavender snow · flakes and stars"></button>
-      </div>
     </div>
   </div>
   <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
@@ -1728,23 +1650,6 @@ function initEditor(){
     if(typeof renderProfile==='function'){ try{ renderProfile(); }catch(e){} }
     window.scrollTo(0,0);
   }
-  /* Background designs: fifteen flat patterns for the whole site, switched from the footer */
-  function markBg(){
-    var cur=document.documentElement.dataset.bg||'ice';
-    document.querySelectorAll('[data-bgset]').forEach(function(b){
-      var on=b.getAttribute('data-bgset')===cur;
-      b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false');
-    });
-  }
-  document.querySelectorAll('[data-bgset]').forEach(function(b){
-    b.addEventListener('click',function(){
-      document.documentElement.dataset.bg=b.getAttribute('data-bgset');
-      try{ sessionStorage.setItem('lms-bg',b.getAttribute('data-bgset')); }catch(e){}
-      markBg();
-    });
-  });
-  markBg();
-
   /* Details: real counts from the libraries, no image grids on the landing page */
   document.getElementById('dStickers').textContent=STICKERS.length;
   document.getElementById('dOriginals').textContent=ORIGINALS.length;
