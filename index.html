@@ -9,7 +9,7 @@
 <script>(function(){var h=window.location.hash;document.documentElement.dataset.view=(h==='#/studio')?'studio':(h==='#/profile')?'profile':'landing';})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Archivo+Black&family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Archivo+Black&family=Anton&family=Luckiest+Guy&family=Caveat:wght@700&family=Bungee&family=Oswald:wght@600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/thumbs/hero-meme-winter.webp" fetchpriority="high">
 <style>
 :root{
@@ -76,6 +76,17 @@ h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transfo
 .grid.orig .card img{height:76px}
 .card span{display:block;font-size:11px;font-weight:800;line-height:1.25;margin-top:4px;text-transform:uppercase}
 .countline{font-size:12.5px;color:var(--muted);margin:8px 2px 0;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+.chip{border:var(--bd2);border-radius:3px;background:#fff;padding:6px 10px;font-weight:800;font-size:12px;color:var(--ink);cursor:pointer;text-transform:uppercase;letter-spacing:.02em;transition:transform .1s,box-shadow .1s}
+.chip:hover{transform:translate(-1px,-1px);box-shadow:var(--sh-xs)}
+.chip:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.chip.on{background:var(--ink);color:#fff}
+.chip .n{opacity:.65;font-weight:900}
+.show-more{display:block;width:100%;margin-top:10px;border:var(--bd2);border-radius:3px;background:var(--yellow);color:var(--ink);padding:9px 12px;font-weight:900;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;cursor:pointer;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
+.show-more:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.show-more:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.lib-tabs{display:flex;width:100%;margin:10px 0 2px}
+.lib-tabs button{flex:1}
 .seg{display:flex;background:#fff;border:var(--bd2);border-radius:3px;padding:3px;gap:3px}
 .seg button{border:0;background:transparent;border-radius:2px;padding:7px 11px;font-weight:800;font-size:13px;min-height:36px;color:var(--ink);flex:1;text-transform:uppercase}
 .seg button.on{background:var(--ink);color:#fff}
@@ -545,10 +556,10 @@ input[type=range]{cursor:pointer}
           <a class="btn ghost" href="#showcase">See featured designs</a>
         </div>
         <div class="lp-stats">
-          <span class="lp-stat"><b>20</b>Stickers</span>
-          <span class="lp-stat"><b>20</b>Original faces</span>
+          <span class="lp-stat"><b id="lpStickers">…</b>Stickers</span>
+          <span class="lp-stat"><b id="lpOriginals">…</b>Original faces</span>
           <span class="lp-stat"><b id="lpElements">…</b>PNG elements</span>
-          <span class="lp-stat"><b>9</b>Templates</span>
+          <span class="lp-stat"><b id="lpTemplates">…</b>Templates</span>
         </div>
       </div>
       <div class="lp-meme">
@@ -674,15 +685,23 @@ input[type=range]{cursor:pointer}
 
       <div class="tabpane active" id="pane-stickers">
         <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="search" id="stickerSearch" type="search" placeholder="Search stickers" aria-label="Search stickers"></div>
-        <div class="pack-head"><h3>Lofi character</h3><span id="charCount"></span></div>
-        <div class="grid" id="stickerGrid"></div>
-        <div class="pack-head"><h3>Original pack</h3><span id="origCount"></span></div>
-        <div class="grid orig" id="origGrid"></div>
+        <div class="seg lib-tabs" id="stickerTabs" role="group" aria-label="Sticker pack filter">
+          <button data-stab="all" class="on">All</button><button data-stab="character">Character</button><button data-stab="original">Original</button>
+        </div>
+        <div id="charPack">
+          <div class="pack-head"><h3>Lofi character</h3><span id="charCount"></span></div>
+          <div class="grid" id="stickerGrid"></div>
+        </div>
+        <div id="origPack">
+          <div class="pack-head"><h3>Original pack</h3><span id="origCount"></span></div>
+          <div class="grid orig" id="origGrid"></div>
+        </div>
         <p class="countline" id="stickerCount"></p>
       </div>
 
       <div class="tabpane" id="pane-elements">
         <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="search" id="elSearch" type="search" placeholder="Search elements" aria-label="Search elements"></div>
+        <div class="chips" id="elChips" role="group" aria-label="Element category filter"></div>
         <div id="elScroll"><div id="elGroups"></div></div>
         <p class="countline" id="elCount"></p>
       </div>
@@ -701,10 +720,16 @@ input[type=range]{cursor:pointer}
       </div>
 
       <div class="tabpane" id="pane-backgrounds">
-        <p class="mini-label">Scenes</p>
-        <div class="scene-swatches" id="sceneSwatches"></div>
-        <p class="mini-label" style="margin-top:14px">Background</p>
-        <div class="swatches" id="bgSwatches"></div>
+        <div class="seg lib-tabs" id="bgTabs" role="group" aria-label="Background type filter" style="margin-top:2px">
+          <button data-bgtab="scenes" class="on">Winter scenes</button><button data-bgtab="colors">Colors</button>
+        </div>
+        <div id="bgScenesWrap">
+          <div class="scene-swatches" id="sceneSwatches"></div>
+          <div id="sceneMore"></div>
+        </div>
+        <div id="bgColorsWrap" style="display:none">
+          <div class="swatches" id="bgSwatches"></div>
+        </div>
         <p class="mini-label" style="margin-top:14px">Frame</p>
         <div class="frame-grid" id="frameGrid"></div>
       </div>
@@ -769,6 +794,20 @@ input[type=range]{cursor:pointer}
           <label for="inspOutline">Outline</label><input type="range" id="inspOutline" min="0" max="30" value="0">
           <label for="inspOutlineColor">Outline colour</label><input type="color" id="inspOutlineColor" value="#12242e">
           <label class="checkline"><input type="checkbox" id="inspShadow"> Text shadow</label>
+          <label for="inspEffect">Effect</label>
+          <select id="inspEffect">
+            <option value="none">None</option>
+            <option value="outline">Outline</option>
+            <option value="shadow">Drop Shadow</option>
+            <option value="hardshadow">Hard Shadow</option>
+            <option value="glow">Glow</option>
+            <option value="neon">Neon</option>
+            <option value="extrude">3D Extrude</option>
+            <option value="highlight">Highlight</option>
+            <option value="gradient">Gradient</option>
+            <option value="retro">Retro Shadow</option>
+            <option value="emboss">Emboss</option>
+          </select>
           <label for="inspBg">Highlight bar</label>
           <div class="seg" id="inspBgSeg">
             <button data-bg="">None</button><button data-bg="#ffffff">White</button><button data-bg="#12242e">Dark</button><button data-bg="#0ea5c6">Ice</button><button data-bg="#e9a426">Gold</button>
@@ -855,7 +894,7 @@ input[type=range]{cursor:pointer}
       <a href="#/studio">Open Studio</a>
     </div>
   </div>
-  <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
+  <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Emoji elements: Twemoji (CC-BY 4.0)</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
 </div>
 
 <div class="lb" id="confirmModal" hidden role="dialog" aria-modal="true" aria-label="Confirm">
@@ -914,11 +953,11 @@ input[type=range]{cursor:pointer}
 <script>
 /* Element library data, inlined so the studio is fully self-contained in this one file:
    no separate JS file to load, fail, or go stale, on any host. */
-/* Real PNG element library: generated from manifest.json (205 transparent WebP images). */
-var ELEMENTS=[{"file":"funny-banana-01.webp","name":"funny-banana","cat":"funny","w":512,"h":512},{"file":"funny-banana-02.webp","name":"funny-banana","cat":"funny","w":512,"h":344},{"file":"funny-banana-03.webp","name":"funny-banana","cat":"funny","w":512,"h":264},{"file":"funny-crown-01.webp","name":"funny-crown","cat":"funny","w":465,"h":350},{"file":"funny-crown-02.webp","name":"funny-crown","cat":"funny","w":350,"h":350},{"file":"funny-crown-03.webp","name":"funny-crown","cat":"funny","w":350,"h":350},{"file":"funny-facepalm-02.webp","name":"funny-facepalm","cat":"funny","w":512,"h":286},{"file":"funny-facepalm-03.webp","name":"funny-facepalm","cat":"funny","w":512,"h":512},{"file":"funny-facepalm-04.webp","name":"funny-facepalm","cat":"funny","w":453,"h":512},{"file":"funny-glasses-02.webp","name":"funny-glasses","cat":"funny","w":485,"h":512},{"file":"funny-glasses-03.webp","name":"funny-glasses","cat":"funny","w":410,"h":512},{"file":"funny-laughing-emoji-01.webp","name":"funny-laughing-emoji","cat":"funny","w":512,"h":341},{"file":"funny-laughing-emoji-02.webp","name":"funny-laughing-emoji","cat":"funny","w":506,"h":512},{"file":"funny-laughing-emoji-03.webp","name":"funny-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-meme-face-03.webp","name":"funny-meme-face","cat":"funny","w":308,"h":320},{"file":"funny-meme-face-05.webp","name":"funny-meme-face","cat":"funny","w":512,"h":505},{"file":"funny-meme-face-06.webp","name":"funny-meme-face","cat":"funny","w":431,"h":512},{"file":"funny-moustache-01.webp","name":"funny-moustache","cat":"funny","w":480,"h":480},{"file":"funny-moustache-02.webp","name":"funny-moustache","cat":"funny","w":413,"h":320},{"file":"funny-moustache-03.webp","name":"funny-moustache","cat":"funny","w":512,"h":347},{"file":"funny-nerd-boy-01.webp","name":"funny-nerd-boy","cat":"funny","w":300,"h":455},{"file":"funny-party-confetti-01.webp","name":"funny-party-confetti","cat":"funny","w":350,"h":350},{"file":"funny-party-confetti-02.webp","name":"funny-party-confetti","cat":"funny","w":350,"h":350},{"file":"funny-party-confetti-03.webp","name":"funny-party-confetti","cat":"funny","w":512,"h":512},{"file":"funny-party-hat-01.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-party-hat-02.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-party-hat-03.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-pizza-01.webp","name":"funny-pizza","cat":"funny","w":512,"h":341},{"file":"funny-pizza-02.webp","name":"funny-pizza","cat":"funny","w":350,"h":350},{"file":"funny-pizza-03.webp","name":"funny-pizza","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-01.webp","name":"funny-popcorn","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-02.webp","name":"funny-popcorn","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-03.webp","name":"funny-popcorn","cat":"funny","w":465,"h":350},{"file":"funny-sunglasses-01.webp","name":"funny-sunglasses","cat":"funny","w":350,"h":350},{"file":"funny-sunglasses-02.webp","name":"funny-sunglasses","cat":"funny","w":350,"h":350},{"file":"funny-sunglasses-03.webp","name":"funny-sunglasses","cat":"funny","w":512,"h":478},{"file":"funny-troll-face-02.webp","name":"funny-troll-face","cat":"funny","w":342,"h":280},{"file":"funny-troll-face-03.webp","name":"funny-troll-face","cat":"funny","w":512,"h":384},{"file":"funny-troll-face-04.webp","name":"funny-troll-face","cat":"funny","w":512,"h":416},{"file":"general-arrow-01.webp","name":"general-arrow","cat":"general","w":512,"h":252},{"file":"general-arrow-02.webp","name":"general-arrow","cat":"general","w":512,"h":411},{"file":"general-arrow-03.webp","name":"general-arrow","cat":"general","w":512,"h":415},{"file":"general-balloon-01.webp","name":"general-balloon","cat":"general","w":512,"h":512},{"file":"general-balloon-02.webp","name":"general-balloon","cat":"general","w":512,"h":341},{"file":"general-balloon-03.webp","name":"general-balloon","cat":"general","w":400,"h":400},{"file":"general-check-01.webp","name":"general-check","cat":"general","w":480,"h":480},{"file":"general-check-02.webp","name":"general-check","cat":"general","w":512,"h":341},{"file":"general-check-03.webp","name":"general-check","cat":"general","w":512,"h":512},{"file":"general-cross-01.webp","name":"general-cross","cat":"general","w":512,"h":413},{"file":"general-cross-02.webp","name":"general-cross","cat":"general","w":350,"h":350},{"file":"general-cross-03.webp","name":"general-cross","cat":"general","w":512,"h":466},{"file":"general-exclamation-01.webp","name":"general-exclamation","cat":"general","w":320,"h":320},{"file":"general-exclamation-02.webp","name":"general-exclamation","cat":"general","w":360,"h":350},{"file":"general-exclamation-03.webp","name":"general-exclamation","cat":"general","w":394,"h":439},{"file":"general-fire-01.webp","name":"general-fire","cat":"general","w":512,"h":512},{"file":"general-fire-02.webp","name":"general-fire","cat":"general","w":512,"h":293},{"file":"general-fire-03.webp","name":"general-fire","cat":"general","w":350,"h":350},{"file":"general-gift-box-01.webp","name":"general-gift-box","cat":"general","w":476,"h":512},{"file":"general-gift-box-03.webp","name":"general-gift-box","cat":"general","w":446,"h":512},{"file":"general-gift-box-04.webp","name":"general-gift-box","cat":"general","w":512,"h":512},{"file":"general-heart-01.webp","name":"general-heart","cat":"general","w":355,"h":320},{"file":"general-heart-02.webp","name":"general-heart","cat":"general","w":345,"h":280},{"file":"general-heart-03.webp","name":"general-heart","cat":"general","w":350,"h":350},{"file":"general-lightning-01.webp","name":"general-lightning","cat":"general","w":350,"h":350},{"file":"general-lightning-02.webp","name":"general-lightning","cat":"general","w":320,"h":512},{"file":"general-lightning-03.webp","name":"general-lightning","cat":"general","w":350,"h":350},{"file":"general-music-note-01.webp","name":"general-music-note","cat":"general","w":350,"h":350},{"file":"general-music-note-02.webp","name":"general-music-note","cat":"general","w":512,"h":287},{"file":"general-music-note-03.webp","name":"general-music-note","cat":"general","w":512,"h":377},{"file":"general-question-mark-01.webp","name":"general-question-mark","cat":"general","w":512,"h":507},{"file":"general-question-mark-02.webp","name":"general-question-mark","cat":"general","w":345,"h":350},{"file":"general-question-mark-03.webp","name":"general-question-mark","cat":"general","w":345,"h":350},{"file":"general-speech-bubble-01.webp","name":"general-speech-bubble","cat":"general","w":482,"h":350},{"file":"general-speech-bubble-02.webp","name":"general-speech-bubble","cat":"general","w":512,"h":512},{"file":"general-speech-bubble-03.webp","name":"general-speech-bubble","cat":"general","w":512,"h":293},{"file":"general-star-01.webp","name":"general-star","cat":"general","w":350,"h":350},{"file":"general-star-02.webp","name":"general-star","cat":"general","w":512,"h":190},{"file":"general-star-03.webp","name":"general-star","cat":"general","w":350,"h":350},{"file":"winter-aurora-01.webp","name":"winter-aurora","cat":"winter","w":512,"h":512},{"file":"winter-aurora-02.webp","name":"winter-aurora","cat":"winter","w":350,"h":350},{"file":"winter-aurora-03.webp","name":"winter-aurora","cat":"winter","w":350,"h":350},{"file":"winter-beanie-01.webp","name":"winter-beanie","cat":"winter","w":512,"h":512},{"file":"winter-beanie-02.webp","name":"winter-beanie","cat":"winter","w":350,"h":350},{"file":"winter-beanie-03.webp","name":"winter-beanie","cat":"winter","w":420,"h":512},{"file":"winter-candy-cane-01.webp","name":"winter-candy-cane","cat":"winter","w":350,"h":350},{"file":"winter-candy-cane-02.webp","name":"winter-candy-cane","cat":"winter","w":512,"h":171},{"file":"winter-candy-cane-03.webp","name":"winter-candy-cane","cat":"winter","w":512,"h":512},{"file":"winter-christmas-tree-01.webp","name":"winter-christmas-tree","cat":"winter","w":347,"h":512},{"file":"winter-christmas-tree-02.webp","name":"winter-christmas-tree","cat":"winter","w":293,"h":512},{"file":"winter-christmas-tree-03.webp","name":"winter-christmas-tree","cat":"winter","w":512,"h":512},{"file":"winter-cocoa-01.webp","name":"winter-cocoa","cat":"winter","w":465,"h":350},{"file":"winter-cocoa-02.webp","name":"winter-cocoa","cat":"winter","w":350,"h":350},{"file":"winter-cocoa-03.webp","name":"winter-cocoa","cat":"winter","w":350,"h":350},{"file":"winter-ice-skate-01.webp","name":"winter-ice-skate","cat":"winter","w":347,"h":280},{"file":"winter-ice-skate-02.webp","name":"winter-ice-skate","cat":"winter","w":512,"h":293},{"file":"winter-ice-skate-03.webp","name":"winter-ice-skate","cat":"winter","w":349,"h":280},{"file":"winter-igloo-01.webp","name":"winter-igloo","cat":"winter","w":512,"h":253},{"file":"winter-igloo-02.webp","name":"winter-igloo","cat":"winter","w":512,"h":512},{"file":"winter-igloo-03.webp","name":"winter-igloo","cat":"winter","w":512,"h":341},{"file":"winter-mittens-01.webp","name":"winter-mittens","cat":"winter","w":512,"h":413},{"file":"winter-mittens-02.webp","name":"winter-mittens","cat":"winter","w":350,"h":350},{"file":"winter-mittens-03.webp","name":"winter-mittens","cat":"winter","w":350,"h":350},{"file":"winter-pine-tree-01.webp","name":"winter-pine-tree","cat":"winter","w":512,"h":341},{"file":"winter-pine-tree-02.webp","name":"winter-pine-tree","cat":"winter","w":386,"h":512},{"file":"winter-pine-tree-03.webp","name":"winter-pine-tree","cat":"winter","w":265,"h":350},{"file":"winter-reindeer-03.webp","name":"winter-reindeer","cat":"winter","w":512,"h":512},{"file":"winter-reindeer-04.webp","name":"winter-reindeer","cat":"winter","w":333,"h":350},{"file":"winter-reindeer-05.webp","name":"winter-reindeer","cat":"winter","w":500,"h":512},{"file":"winter-scarf-01.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-scarf-02.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-scarf-03.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-snowball-01.webp","name":"winter-snowball","cat":"winter","w":512,"h":467},{"file":"winter-snowball-02.webp","name":"winter-snowball","cat":"winter","w":512,"h":467},{"file":"winter-snowball-03.webp","name":"winter-snowball","cat":"winter","w":512,"h":436},{"file":"winter-snowflake-01.webp","name":"winter-snowflake","cat":"winter","w":383,"h":350},{"file":"winter-snowflake-02.webp","name":"winter-snowflake","cat":"winter","w":512,"h":293},{"file":"winter-snowflake-03.webp","name":"winter-snowflake","cat":"winter","w":350,"h":350},{"file":"winter-snowman-01.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"winter-snowman-02.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"winter-snowman-03.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"funny-rage-face-forever-alone.webp","name":"funny-rage-face-forever-alone","cat":"funny","w":425,"h":512},{"file":"funny-rage-face-me-gusta.webp","name":"funny-rage-face-me-gusta","cat":"funny","w":512,"h":512},{"file":"funny-rage-face-poker-face.webp","name":"funny-rage-face-poker-face","cat":"funny","w":308,"h":496},{"file":"funny-rage-face-determined.webp","name":"funny-rage-face-determined","cat":"funny","w":512,"h":375},{"file":"funny-rage-face-shocked.webp","name":"funny-rage-face-shocked","cat":"funny","w":488,"h":512},{"file":"funny-rage-face-suspicious.webp","name":"funny-rage-face-suspicious","cat":"funny","w":512,"h":512},{"file":"funny-rage-face-mind-blown.webp","name":"funny-rage-face-mind-blown","cat":"funny","w":512,"h":512},{"file":"funny-crying-laughing-emoji.webp","name":"funny-crying-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-rage-face-y-u-no.webp","name":"funny-rage-face-y-u-no","cat":"funny","w":457,"h":512},{"file":"funny-rage-face-okay-guy.webp","name":"funny-rage-face-okay-guy","cat":"funny","w":443,"h":512},{"file":"funny-rage-face-cereal-guy.webp","name":"funny-rage-face-cereal-guy","cat":"funny","w":512,"h":441},{"file":"funny-rage-face-derp.webp","name":"funny-rage-face-derp","cat":"funny","w":503,"h":512},{"file":"funny-rage-face-lol-guy.webp","name":"funny-rage-face-lol-guy","cat":"funny","w":416,"h":512},{"file":"funny-rage-face-challenge-accepted.webp","name":"funny-rage-face-challenge-accepted","cat":"funny","w":380,"h":512},{"file":"funny-rage-face-fuck-yeah.webp","name":"funny-rage-face-fuck-yeah","cat":"funny","w":512,"h":495},{"file":"funny-rage-face-awesome.webp","name":"funny-rage-face-awesome","cat":"funny","w":418,"h":478},{"file":"funny-rage-face-are-you-serious.webp","name":"funny-rage-face-are-you-serious","cat":"funny","w":300,"h":400},{"file":"funny-winking-emoji.webp","name":"funny-winking-emoji","cat":"funny","w":512,"h":512},{"file":"funny-tongue-out-emoji.webp","name":"funny-tongue-out-emoji","cat":"funny","w":512,"h":512},{"file":"funny-dizzy-emoji.webp","name":"funny-dizzy-emoji","cat":"funny","w":288,"h":288},{"file":"funny-silly-face-emoji.webp","name":"funny-silly-face-emoji","cat":"funny","w":512,"h":512},{"file":"funny-clown-face-emoji.webp","name":"funny-clown-face-emoji","cat":"funny","w":320,"h":308},{"file":"funny-devil-emoji.webp","name":"funny-devil-emoji","cat":"funny","w":512,"h":512},{"file":"funny-angel-emoji.webp","name":"funny-angel-emoji","cat":"funny","w":512,"h":403},{"file":"funny-robot-face-emoji.webp","name":"funny-robot-face-emoji","cat":"funny","w":360,"h":350},{"file":"funny-ghost-emoji.webp","name":"funny-ghost-emoji","cat":"funny","w":512,"h":512},{"file":"funny-poop-emoji.webp","name":"funny-poop-emoji","cat":"funny","w":411,"h":423},{"file":"funny-monkey-see-no-evil.webp","name":"funny-monkey-see-no-evil","cat":"funny","w":512,"h":512},{"file":"funny-monkey-hear-no-evil.webp","name":"funny-monkey-hear-no-evil","cat":"funny","w":512,"h":512},{"file":"funny-monkey-speak-no-evil.webp","name":"funny-monkey-speak-no-evil","cat":"funny","w":512,"h":512},{"file":"funny-cat-laughing-emoji.webp","name":"funny-cat-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-pepe-sad.webp","name":"funny-pepe-sad","cat":"funny","w":436,"h":512},{"file":"funny-pig-face-emoji.webp","name":"funny-pig-face-emoji","cat":"funny","w":512,"h":384},{"file":"funny-alien-face-emoji.webp","name":"funny-alien-face-emoji","cat":"funny","w":366,"h":388},{"file":"funny-skull-emoji.webp","name":"funny-skull-emoji","cat":"funny","w":512,"h":512},{"file":"funny-donut.webp","name":"funny-donut","cat":"funny","w":512,"h":483},{"file":"funny-taco.webp","name":"funny-taco","cat":"funny","w":512,"h":334},{"file":"funny-burger.webp","name":"funny-burger","cat":"funny","w":512,"h":404},{"file":"funny-cowboy-hat.webp","name":"funny-cowboy-hat","cat":"funny","w":512,"h":212},{"file":"funny-pirate-hat.webp","name":"funny-pirate-hat","cat":"funny","w":512,"h":422},{"file":"funny-wizard-hat.webp","name":"funny-wizard-hat","cat":"funny","w":486,"h":380},{"file":"funny-viking-helmet.webp","name":"funny-viking-helmet","cat":"funny","w":417,"h":459},{"file":"funny-top-hat.webp","name":"funny-top-hat","cat":"funny","w":504,"h":438},{"file":"funny-beer-mug.webp","name":"funny-beer-mug","cat":"funny","w":363,"h":512},{"file":"funny-rocket.webp","name":"funny-rocket","cat":"funny","w":334,"h":341},{"file":"general-burst-pow.webp","name":"general-burst-pow","cat":"general","w":480,"h":422},{"file":"general-burst-boom.webp","name":"general-burst-boom","cat":"general","w":512,"h":380},{"file":"general-burst-wow.webp","name":"general-burst-wow","cat":"general","w":512,"h":296},{"file":"general-burst-omg.webp","name":"general-burst-omg","cat":"general","w":341,"h":308},{"file":"general-burst-lol.webp","name":"general-burst-lol","cat":"general","w":447,"h":315},{"file":"general-burst-bam.webp","name":"general-burst-bam","cat":"general","w":512,"h":374},{"file":"general-burst-zap.webp","name":"general-burst-zap","cat":"general","w":415,"h":308},{"file":"general-burst-bang.webp","name":"general-burst-bang","cat":"general","w":512,"h":449},{"file":"general-burst-wham.webp","name":"general-burst-wham","cat":"general","w":480,"h":425},{"file":"general-burst-splat.webp","name":"general-burst-splat","cat":"general","w":512,"h":498},{"file":"general-symbol-100.webp","name":"general-symbol-100","cat":"general","w":512,"h":512},{"file":"general-diamond.webp","name":"general-diamond","cat":"general","w":512,"h":388},{"file":"general-sparkles.webp","name":"general-sparkles","cat":"general","w":512,"h":512},{"file":"general-zzz.webp","name":"general-zzz","cat":"general","w":353,"h":317},{"file":"general-sweat-drop.webp","name":"general-sweat-drop","cat":"general","w":512,"h":512},{"file":"general-anger-mark.webp","name":"general-anger-mark","cat":"general","w":512,"h":512},{"file":"general-lightbulb.webp","name":"general-lightbulb","cat":"general","w":379,"h":512},{"file":"general-target.webp","name":"general-target","cat":"general","w":477,"h":512},{"file":"general-trophy.webp","name":"general-trophy","cat":"general","w":426,"h":512},{"file":"general-medal.webp","name":"general-medal","cat":"general","w":330,"h":512},{"file":"general-ribbon.webp","name":"general-ribbon","cat":"general","w":336,"h":512},{"file":"general-anchor.webp","name":"general-anchor","cat":"general","w":326,"h":512},{"file":"general-key.webp","name":"general-key","cat":"general","w":512,"h":198},{"file":"general-magnet.webp","name":"general-magnet","cat":"general","w":441,"h":512},{"file":"general-puzzle-piece.webp","name":"general-puzzle-piece","cat":"general","w":512,"h":427},{"file":"general-gear.webp","name":"general-gear","cat":"general","w":512,"h":500},{"file":"general-megaphone.webp","name":"general-megaphone","cat":"general","w":484,"h":512},{"file":"general-bell.webp","name":"general-bell","cat":"general","w":431,"h":512},{"file":"general-rainbow.webp","name":"general-rainbow","cat":"general","w":512,"h":301},{"file":"general-sun.webp","name":"general-sun","cat":"general","w":455,"h":350},{"file":"winter-penguin.webp","name":"winter-penguin","cat":"winter","w":202,"h":226},{"file":"winter-polar-bear.webp","name":"winter-polar-bear","cat":"winter","w":370,"h":316},{"file":"winter-snow-globe.webp","name":"winter-snow-globe","cat":"winter","w":475,"h":512},{"file":"winter-sled.webp","name":"winter-sled","cat":"winter","w":512,"h":203},{"file":"winter-earmuffs.webp","name":"winter-earmuffs","cat":"winter","w":512,"h":493},{"file":"winter-snow-boots.webp","name":"winter-snow-boots","cat":"winter","w":512,"h":427},{"file":"winter-fireplace.webp","name":"winter-fireplace","cat":"winter","w":339,"h":328},{"file":"winter-ski.webp","name":"winter-ski","cat":"winter","w":412,"h":496},{"file":"winter-snowboard.webp","name":"winter-snowboard","cat":"winter","w":495,"h":512},{"file":"winter-gingerbread-house.webp","name":"winter-gingerbread-house","cat":"winter","w":492,"h":512}];
+/* Real PNG element library: generated from manifest.json (500 transparent WebP images). */
+var ELEMENTS=[{"file":"funny-banana-01.webp","name":"funny-banana","cat":"funny","w":512,"h":512},{"file":"funny-banana-02.webp","name":"funny-banana","cat":"funny","w":512,"h":344},{"file":"funny-banana-03.webp","name":"funny-banana","cat":"funny","w":512,"h":264},{"file":"funny-crown-01.webp","name":"funny-crown","cat":"funny","w":465,"h":350},{"file":"funny-crown-02.webp","name":"funny-crown","cat":"funny","w":350,"h":350},{"file":"funny-crown-03.webp","name":"funny-crown","cat":"funny","w":350,"h":350},{"file":"funny-facepalm-02.webp","name":"funny-facepalm","cat":"funny","w":512,"h":286},{"file":"funny-facepalm-03.webp","name":"funny-facepalm","cat":"funny","w":512,"h":512},{"file":"funny-facepalm-04.webp","name":"funny-facepalm","cat":"funny","w":453,"h":512},{"file":"funny-glasses-02.webp","name":"funny-glasses","cat":"funny","w":485,"h":512},{"file":"funny-glasses-03.webp","name":"funny-glasses","cat":"funny","w":410,"h":512},{"file":"funny-laughing-emoji-01.webp","name":"funny-laughing-emoji","cat":"funny","w":512,"h":341},{"file":"funny-laughing-emoji-02.webp","name":"funny-laughing-emoji","cat":"funny","w":506,"h":512},{"file":"funny-laughing-emoji-03.webp","name":"funny-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-meme-face-03.webp","name":"funny-meme-face","cat":"funny","w":308,"h":320},{"file":"funny-meme-face-05.webp","name":"funny-meme-face","cat":"funny","w":512,"h":505},{"file":"funny-meme-face-06.webp","name":"funny-meme-face","cat":"funny","w":431,"h":512},{"file":"funny-moustache-01.webp","name":"funny-moustache","cat":"funny","w":480,"h":480},{"file":"funny-moustache-02.webp","name":"funny-moustache","cat":"funny","w":413,"h":320},{"file":"funny-moustache-03.webp","name":"funny-moustache","cat":"funny","w":512,"h":347},{"file":"funny-nerd-boy-01.webp","name":"funny-nerd-boy","cat":"funny","w":300,"h":455},{"file":"funny-party-confetti-01.webp","name":"funny-party-confetti","cat":"funny","w":350,"h":350},{"file":"funny-party-confetti-02.webp","name":"funny-party-confetti","cat":"funny","w":350,"h":350},{"file":"funny-party-confetti-03.webp","name":"funny-party-confetti","cat":"funny","w":512,"h":512},{"file":"funny-party-hat-01.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-party-hat-02.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-party-hat-03.webp","name":"funny-party-hat","cat":"funny","w":350,"h":350},{"file":"funny-pizza-01.webp","name":"funny-pizza","cat":"funny","w":512,"h":341},{"file":"funny-pizza-02.webp","name":"funny-pizza","cat":"funny","w":350,"h":350},{"file":"funny-pizza-03.webp","name":"funny-pizza","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-01.webp","name":"funny-popcorn","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-02.webp","name":"funny-popcorn","cat":"funny","w":350,"h":350},{"file":"funny-popcorn-03.webp","name":"funny-popcorn","cat":"funny","w":465,"h":350},{"file":"funny-sunglasses-01.webp","name":"funny-sunglasses","cat":"funny","w":350,"h":350},{"file":"funny-sunglasses-02.webp","name":"funny-sunglasses","cat":"funny","w":350,"h":350},{"file":"funny-sunglasses-03.webp","name":"funny-sunglasses","cat":"funny","w":512,"h":478},{"file":"funny-troll-face-02.webp","name":"funny-troll-face","cat":"funny","w":342,"h":280},{"file":"funny-troll-face-03.webp","name":"funny-troll-face","cat":"funny","w":512,"h":384},{"file":"funny-troll-face-04.webp","name":"funny-troll-face","cat":"funny","w":512,"h":416},{"file":"general-arrow-01.webp","name":"general-arrow","cat":"general","w":512,"h":252},{"file":"general-arrow-02.webp","name":"general-arrow","cat":"general","w":512,"h":411},{"file":"general-arrow-03.webp","name":"general-arrow","cat":"general","w":512,"h":415},{"file":"general-balloon-01.webp","name":"general-balloon","cat":"general","w":512,"h":512},{"file":"general-balloon-02.webp","name":"general-balloon","cat":"general","w":512,"h":341},{"file":"general-balloon-03.webp","name":"general-balloon","cat":"general","w":400,"h":400},{"file":"general-check-01.webp","name":"general-check","cat":"general","w":480,"h":480},{"file":"general-check-02.webp","name":"general-check","cat":"general","w":512,"h":341},{"file":"general-check-03.webp","name":"general-check","cat":"general","w":512,"h":512},{"file":"general-cross-01.webp","name":"general-cross","cat":"general","w":512,"h":413},{"file":"general-cross-02.webp","name":"general-cross","cat":"general","w":350,"h":350},{"file":"general-cross-03.webp","name":"general-cross","cat":"general","w":512,"h":466},{"file":"general-exclamation-01.webp","name":"general-exclamation","cat":"general","w":320,"h":320},{"file":"general-exclamation-02.webp","name":"general-exclamation","cat":"general","w":360,"h":350},{"file":"general-exclamation-03.webp","name":"general-exclamation","cat":"general","w":394,"h":439},{"file":"general-fire-01.webp","name":"general-fire","cat":"general","w":512,"h":512},{"file":"general-fire-02.webp","name":"general-fire","cat":"general","w":512,"h":293},{"file":"general-fire-03.webp","name":"general-fire","cat":"general","w":350,"h":350},{"file":"general-gift-box-01.webp","name":"general-gift-box","cat":"general","w":476,"h":512},{"file":"general-gift-box-03.webp","name":"general-gift-box","cat":"general","w":446,"h":512},{"file":"general-gift-box-04.webp","name":"general-gift-box","cat":"general","w":512,"h":512},{"file":"general-heart-01.webp","name":"general-heart","cat":"general","w":355,"h":320},{"file":"general-heart-02.webp","name":"general-heart","cat":"general","w":345,"h":280},{"file":"general-heart-03.webp","name":"general-heart","cat":"general","w":350,"h":350},{"file":"general-lightning-01.webp","name":"general-lightning","cat":"general","w":350,"h":350},{"file":"general-lightning-02.webp","name":"general-lightning","cat":"general","w":320,"h":512},{"file":"general-lightning-03.webp","name":"general-lightning","cat":"general","w":350,"h":350},{"file":"general-music-note-01.webp","name":"general-music-note","cat":"general","w":350,"h":350},{"file":"general-music-note-02.webp","name":"general-music-note","cat":"general","w":512,"h":287},{"file":"general-music-note-03.webp","name":"general-music-note","cat":"general","w":512,"h":377},{"file":"general-question-mark-01.webp","name":"general-question-mark","cat":"general","w":512,"h":507},{"file":"general-question-mark-02.webp","name":"general-question-mark","cat":"general","w":345,"h":350},{"file":"general-question-mark-03.webp","name":"general-question-mark","cat":"general","w":345,"h":350},{"file":"general-speech-bubble-01.webp","name":"general-speech-bubble","cat":"general","w":482,"h":350},{"file":"general-speech-bubble-02.webp","name":"general-speech-bubble","cat":"general","w":512,"h":512},{"file":"general-speech-bubble-03.webp","name":"general-speech-bubble","cat":"general","w":512,"h":293},{"file":"general-star-01.webp","name":"general-star","cat":"general","w":350,"h":350},{"file":"general-star-02.webp","name":"general-star","cat":"general","w":512,"h":190},{"file":"general-star-03.webp","name":"general-star","cat":"general","w":350,"h":350},{"file":"winter-aurora-01.webp","name":"winter-aurora","cat":"winter","w":512,"h":512},{"file":"winter-aurora-02.webp","name":"winter-aurora","cat":"winter","w":350,"h":350},{"file":"winter-aurora-03.webp","name":"winter-aurora","cat":"winter","w":350,"h":350},{"file":"winter-beanie-01.webp","name":"winter-beanie","cat":"winter","w":512,"h":512},{"file":"winter-beanie-02.webp","name":"winter-beanie","cat":"winter","w":350,"h":350},{"file":"winter-beanie-03.webp","name":"winter-beanie","cat":"winter","w":420,"h":512},{"file":"winter-candy-cane-01.webp","name":"winter-candy-cane","cat":"winter","w":350,"h":350},{"file":"winter-candy-cane-02.webp","name":"winter-candy-cane","cat":"winter","w":512,"h":171},{"file":"winter-candy-cane-03.webp","name":"winter-candy-cane","cat":"winter","w":512,"h":512},{"file":"winter-christmas-tree-01.webp","name":"winter-christmas-tree","cat":"winter","w":347,"h":512},{"file":"winter-christmas-tree-02.webp","name":"winter-christmas-tree","cat":"winter","w":293,"h":512},{"file":"winter-christmas-tree-03.webp","name":"winter-christmas-tree","cat":"winter","w":512,"h":512},{"file":"winter-cocoa-01.webp","name":"winter-cocoa","cat":"winter","w":465,"h":350},{"file":"winter-cocoa-02.webp","name":"winter-cocoa","cat":"winter","w":350,"h":350},{"file":"winter-cocoa-03.webp","name":"winter-cocoa","cat":"winter","w":350,"h":350},{"file":"winter-ice-skate-01.webp","name":"winter-ice-skate","cat":"winter","w":347,"h":280},{"file":"winter-ice-skate-02.webp","name":"winter-ice-skate","cat":"winter","w":512,"h":293},{"file":"winter-ice-skate-03.webp","name":"winter-ice-skate","cat":"winter","w":349,"h":280},{"file":"winter-igloo-01.webp","name":"winter-igloo","cat":"winter","w":512,"h":253},{"file":"winter-igloo-02.webp","name":"winter-igloo","cat":"winter","w":512,"h":512},{"file":"winter-igloo-03.webp","name":"winter-igloo","cat":"winter","w":512,"h":341},{"file":"winter-mittens-01.webp","name":"winter-mittens","cat":"winter","w":512,"h":413},{"file":"winter-mittens-02.webp","name":"winter-mittens","cat":"winter","w":350,"h":350},{"file":"winter-mittens-03.webp","name":"winter-mittens","cat":"winter","w":350,"h":350},{"file":"winter-pine-tree-01.webp","name":"winter-pine-tree","cat":"winter","w":512,"h":341},{"file":"winter-pine-tree-02.webp","name":"winter-pine-tree","cat":"winter","w":386,"h":512},{"file":"winter-pine-tree-03.webp","name":"winter-pine-tree","cat":"winter","w":265,"h":350},{"file":"winter-reindeer-03.webp","name":"winter-reindeer","cat":"winter","w":512,"h":512},{"file":"winter-reindeer-04.webp","name":"winter-reindeer","cat":"winter","w":333,"h":350},{"file":"winter-reindeer-05.webp","name":"winter-reindeer","cat":"winter","w":500,"h":512},{"file":"winter-scarf-01.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-scarf-02.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-scarf-03.webp","name":"winter-scarf","cat":"winter","w":350,"h":350},{"file":"winter-snowball-01.webp","name":"winter-snowball","cat":"winter","w":512,"h":467},{"file":"winter-snowball-02.webp","name":"winter-snowball","cat":"winter","w":512,"h":467},{"file":"winter-snowball-03.webp","name":"winter-snowball","cat":"winter","w":512,"h":436},{"file":"winter-snowflake-01.webp","name":"winter-snowflake","cat":"winter","w":383,"h":350},{"file":"winter-snowflake-02.webp","name":"winter-snowflake","cat":"winter","w":512,"h":293},{"file":"winter-snowflake-03.webp","name":"winter-snowflake","cat":"winter","w":350,"h":350},{"file":"winter-snowman-01.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"winter-snowman-02.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"winter-snowman-03.webp","name":"winter-snowman","cat":"winter","w":350,"h":350},{"file":"funny-rage-face-forever-alone.webp","name":"funny-rage-face-forever-alone","cat":"funny","w":425,"h":512},{"file":"funny-rage-face-me-gusta.webp","name":"funny-rage-face-me-gusta","cat":"funny","w":512,"h":512},{"file":"funny-rage-face-poker-face.webp","name":"funny-rage-face-poker-face","cat":"funny","w":308,"h":496},{"file":"funny-rage-face-determined.webp","name":"funny-rage-face-determined","cat":"funny","w":512,"h":375},{"file":"funny-rage-face-shocked.webp","name":"funny-rage-face-shocked","cat":"funny","w":488,"h":512},{"file":"funny-rage-face-suspicious.webp","name":"funny-rage-face-suspicious","cat":"funny","w":512,"h":512},{"file":"funny-rage-face-mind-blown.webp","name":"funny-rage-face-mind-blown","cat":"funny","w":512,"h":512},{"file":"funny-crying-laughing-emoji.webp","name":"funny-crying-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-rage-face-y-u-no.webp","name":"funny-rage-face-y-u-no","cat":"funny","w":457,"h":512},{"file":"funny-rage-face-okay-guy.webp","name":"funny-rage-face-okay-guy","cat":"funny","w":443,"h":512},{"file":"funny-rage-face-cereal-guy.webp","name":"funny-rage-face-cereal-guy","cat":"funny","w":512,"h":441},{"file":"funny-rage-face-derp.webp","name":"funny-rage-face-derp","cat":"funny","w":503,"h":512},{"file":"funny-rage-face-lol-guy.webp","name":"funny-rage-face-lol-guy","cat":"funny","w":416,"h":512},{"file":"funny-rage-face-challenge-accepted.webp","name":"funny-rage-face-challenge-accepted","cat":"funny","w":380,"h":512},{"file":"funny-rage-face-fuck-yeah.webp","name":"funny-rage-face-fuck-yeah","cat":"funny","w":512,"h":495},{"file":"funny-rage-face-awesome.webp","name":"funny-rage-face-awesome","cat":"funny","w":418,"h":478},{"file":"funny-rage-face-are-you-serious.webp","name":"funny-rage-face-are-you-serious","cat":"funny","w":300,"h":400},{"file":"funny-winking-emoji.webp","name":"funny-winking-emoji","cat":"funny","w":512,"h":512},{"file":"funny-tongue-out-emoji.webp","name":"funny-tongue-out-emoji","cat":"funny","w":512,"h":512},{"file":"funny-dizzy-emoji.webp","name":"funny-dizzy-emoji","cat":"funny","w":288,"h":288},{"file":"funny-silly-face-emoji.webp","name":"funny-silly-face-emoji","cat":"funny","w":512,"h":512},{"file":"funny-clown-face-emoji.webp","name":"funny-clown-face-emoji","cat":"funny","w":320,"h":308},{"file":"funny-devil-emoji.webp","name":"funny-devil-emoji","cat":"funny","w":512,"h":512},{"file":"funny-angel-emoji.webp","name":"funny-angel-emoji","cat":"funny","w":512,"h":403},{"file":"funny-robot-face-emoji.webp","name":"funny-robot-face-emoji","cat":"funny","w":360,"h":350},{"file":"funny-ghost-emoji.webp","name":"funny-ghost-emoji","cat":"funny","w":512,"h":512},{"file":"funny-poop-emoji.webp","name":"funny-poop-emoji","cat":"funny","w":411,"h":423},{"file":"funny-monkey-see-no-evil.webp","name":"funny-monkey-see-no-evil","cat":"funny","w":512,"h":512},{"file":"funny-monkey-hear-no-evil.webp","name":"funny-monkey-hear-no-evil","cat":"funny","w":512,"h":512},{"file":"funny-monkey-speak-no-evil.webp","name":"funny-monkey-speak-no-evil","cat":"funny","w":512,"h":512},{"file":"funny-cat-laughing-emoji.webp","name":"funny-cat-laughing-emoji","cat":"funny","w":512,"h":512},{"file":"funny-pepe-sad.webp","name":"funny-pepe-sad","cat":"funny","w":436,"h":512},{"file":"funny-pig-face-emoji.webp","name":"funny-pig-face-emoji","cat":"funny","w":512,"h":384},{"file":"funny-alien-face-emoji.webp","name":"funny-alien-face-emoji","cat":"funny","w":366,"h":388},{"file":"funny-skull-emoji.webp","name":"funny-skull-emoji","cat":"funny","w":512,"h":512},{"file":"funny-donut.webp","name":"funny-donut","cat":"funny","w":512,"h":483},{"file":"funny-taco.webp","name":"funny-taco","cat":"funny","w":512,"h":334},{"file":"funny-burger.webp","name":"funny-burger","cat":"funny","w":512,"h":404},{"file":"funny-cowboy-hat.webp","name":"funny-cowboy-hat","cat":"funny","w":512,"h":212},{"file":"funny-pirate-hat.webp","name":"funny-pirate-hat","cat":"funny","w":512,"h":422},{"file":"funny-wizard-hat.webp","name":"funny-wizard-hat","cat":"funny","w":486,"h":380},{"file":"funny-viking-helmet.webp","name":"funny-viking-helmet","cat":"funny","w":417,"h":459},{"file":"funny-top-hat.webp","name":"funny-top-hat","cat":"funny","w":504,"h":438},{"file":"funny-beer-mug.webp","name":"funny-beer-mug","cat":"funny","w":363,"h":512},{"file":"funny-rocket.webp","name":"funny-rocket","cat":"funny","w":334,"h":341},{"file":"general-burst-pow.webp","name":"general-burst-pow","cat":"general","w":480,"h":422},{"file":"general-burst-boom.webp","name":"general-burst-boom","cat":"general","w":512,"h":380},{"file":"general-burst-wow.webp","name":"general-burst-wow","cat":"general","w":512,"h":296},{"file":"general-burst-omg.webp","name":"general-burst-omg","cat":"general","w":341,"h":308},{"file":"general-burst-lol.webp","name":"general-burst-lol","cat":"general","w":447,"h":315},{"file":"general-burst-bam.webp","name":"general-burst-bam","cat":"general","w":512,"h":374},{"file":"general-burst-zap.webp","name":"general-burst-zap","cat":"general","w":415,"h":308},{"file":"general-burst-bang.webp","name":"general-burst-bang","cat":"general","w":512,"h":449},{"file":"general-burst-wham.webp","name":"general-burst-wham","cat":"general","w":480,"h":425},{"file":"general-burst-splat.webp","name":"general-burst-splat","cat":"general","w":512,"h":498},{"file":"general-symbol-100.webp","name":"general-symbol-100","cat":"general","w":512,"h":512},{"file":"general-diamond.webp","name":"general-diamond","cat":"general","w":512,"h":388},{"file":"general-sparkles.webp","name":"general-sparkles","cat":"general","w":512,"h":512},{"file":"general-zzz.webp","name":"general-zzz","cat":"general","w":353,"h":317},{"file":"general-sweat-drop.webp","name":"general-sweat-drop","cat":"general","w":512,"h":512},{"file":"general-anger-mark.webp","name":"general-anger-mark","cat":"general","w":512,"h":512},{"file":"general-lightbulb.webp","name":"general-lightbulb","cat":"general","w":379,"h":512},{"file":"general-target.webp","name":"general-target","cat":"general","w":477,"h":512},{"file":"general-trophy.webp","name":"general-trophy","cat":"general","w":426,"h":512},{"file":"general-medal.webp","name":"general-medal","cat":"general","w":330,"h":512},{"file":"general-ribbon.webp","name":"general-ribbon","cat":"general","w":336,"h":512},{"file":"general-anchor.webp","name":"general-anchor","cat":"general","w":326,"h":512},{"file":"general-key.webp","name":"general-key","cat":"general","w":512,"h":198},{"file":"general-magnet.webp","name":"general-magnet","cat":"general","w":441,"h":512},{"file":"general-puzzle-piece.webp","name":"general-puzzle-piece","cat":"general","w":512,"h":427},{"file":"general-gear.webp","name":"general-gear","cat":"general","w":512,"h":500},{"file":"general-megaphone.webp","name":"general-megaphone","cat":"general","w":484,"h":512},{"file":"general-bell.webp","name":"general-bell","cat":"general","w":431,"h":512},{"file":"general-rainbow.webp","name":"general-rainbow","cat":"general","w":512,"h":301},{"file":"general-sun.webp","name":"general-sun","cat":"general","w":455,"h":350},{"file":"winter-penguin.webp","name":"winter-penguin","cat":"winter","w":202,"h":226},{"file":"winter-polar-bear.webp","name":"winter-polar-bear","cat":"winter","w":370,"h":316},{"file":"winter-snow-globe.webp","name":"winter-snow-globe","cat":"winter","w":475,"h":512},{"file":"winter-sled.webp","name":"winter-sled","cat":"winter","w":512,"h":203},{"file":"winter-earmuffs.webp","name":"winter-earmuffs","cat":"winter","w":512,"h":493},{"file":"winter-snow-boots.webp","name":"winter-snow-boots","cat":"winter","w":512,"h":427},{"file":"winter-fireplace.webp","name":"winter-fireplace","cat":"winter","w":339,"h":328},{"file":"winter-ski.webp","name":"winter-ski","cat":"winter","w":412,"h":496},{"file":"winter-snowboard.webp","name":"winter-snowboard","cat":"winter","w":495,"h":512},{"file":"winter-gingerbread-house.webp","name":"winter-gingerbread-house","cat":"winter","w":492,"h":512},{"file":"faces-halo-smile-01.webp","name":"faces-halo-smile","cat":"faces","w":512,"h":512},{"file":"faces-squint-laugh-01.webp","name":"faces-squint-laugh","cat":"faces","w":512,"h":512},{"file":"faces-big-eyes-grin-01.webp","name":"faces-big-eyes-grin","cat":"faces","w":512,"h":512},{"file":"faces-sweat-smile-01.webp","name":"faces-sweat-smile","cat":"faces","w":512,"h":512},{"file":"faces-smiling-eyes-01.webp","name":"faces-smiling-eyes","cat":"faces","w":512,"h":512},{"file":"faces-wink-01.webp","name":"faces-wink","cat":"faces","w":512,"h":512},{"file":"faces-smirk-01.webp","name":"faces-smirk","cat":"faces","w":512,"h":512},{"file":"faces-yum-01.webp","name":"faces-yum","cat":"faces","w":512,"h":512},{"file":"faces-cool-sunglasses-01.webp","name":"faces-cool-sunglasses","cat":"faces","w":512,"h":512},{"file":"faces-heart-eyes-01.webp","name":"faces-heart-eyes","cat":"faces","w":512,"h":512},{"file":"faces-relieved-01.webp","name":"faces-relieved","cat":"faces","w":512,"h":512},{"file":"faces-downcast-sweat-01.webp","name":"faces-downcast-sweat","cat":"faces","w":512,"h":512},{"file":"faces-kissing-01.webp","name":"faces-kissing","cat":"faces","w":512,"h":512},{"file":"faces-expressionless-01.webp","name":"faces-expressionless","cat":"faces","w":512,"h":512},{"file":"faces-confused-01.webp","name":"faces-confused","cat":"faces","w":512,"h":512},{"file":"faces-unamused-01.webp","name":"faces-unamused","cat":"faces","w":512,"h":512},{"file":"faces-pensive-01.webp","name":"faces-pensive","cat":"faces","w":512,"h":512},{"file":"faces-blowing-kiss-01.webp","name":"faces-blowing-kiss","cat":"faces","w":512,"h":512},{"file":"faces-kissing-closed-eyes-01.webp","name":"faces-kissing-closed-eyes","cat":"faces","w":512,"h":512},{"file":"faces-wink-tongue-01.webp","name":"faces-wink-tongue","cat":"faces","w":512,"h":512},{"file":"faces-disappointed-01.webp","name":"faces-disappointed","cat":"faces","w":512,"h":512},{"file":"faces-kissing-smiling-eyes-01.webp","name":"faces-kissing-smiling-eyes","cat":"faces","w":512,"h":512},{"file":"faces-worried-01.webp","name":"faces-worried","cat":"faces","w":512,"h":512},{"file":"faces-pouting-01.webp","name":"faces-pouting","cat":"faces","w":512,"h":512},{"file":"faces-angry-01.webp","name":"faces-angry","cat":"faces","w":512,"h":512},{"file":"faces-steam-nose-01.webp","name":"faces-steam-nose","cat":"faces","w":512,"h":512},{"file":"faces-sad-relieved-01.webp","name":"faces-sad-relieved","cat":"faces","w":512,"h":512},{"file":"faces-frowning-open-mouth-01.webp","name":"faces-frowning-open-mouth","cat":"faces","w":512,"h":512},{"file":"faces-persevering-01.webp","name":"faces-persevering","cat":"faces","w":512,"h":512},{"file":"faces-crying-01.webp","name":"faces-crying","cat":"faces","w":512,"h":512},{"file":"faces-open-mouth-01.webp","name":"faces-open-mouth","cat":"faces","w":512,"h":512},{"file":"faces-tired-01.webp","name":"faces-tired","cat":"faces","w":512,"h":512},{"file":"faces-fearful-01.webp","name":"faces-fearful","cat":"faces","w":512,"h":512},{"file":"faces-loudly-crying-01.webp","name":"faces-loudly-crying","cat":"faces","w":512,"h":512},{"file":"faces-weary-01.webp","name":"faces-weary","cat":"faces","w":512,"h":512},{"file":"faces-sleepy-01.webp","name":"faces-sleepy","cat":"faces","w":512,"h":512},{"file":"faces-hushed-01.webp","name":"faces-hushed","cat":"faces","w":512,"h":512},{"file":"faces-astonished-01.webp","name":"faces-astonished","cat":"faces","w":512,"h":512},{"file":"faces-sleeping-01.webp","name":"faces-sleeping","cat":"faces","w":512,"h":512},{"file":"faces-medical-mask-01.webp","name":"faces-medical-mask","cat":"faces","w":512,"h":512},{"file":"faces-dizzy-x-eyes-01.webp","name":"faces-dizzy-x-eyes","cat":"faces","w":512,"h":512},{"file":"faces-screaming-fear-01.webp","name":"faces-screaming-fear","cat":"faces","w":512,"h":512},{"file":"faces-flushed-01.webp","name":"faces-flushed","cat":"faces","w":512,"h":512},{"file":"faces-cat-grin-01.webp","name":"faces-cat-grin","cat":"faces","w":512,"h":512},{"file":"faces-cat-heart-eyes-01.webp","name":"faces-cat-heart-eyes","cat":"faces","w":512,"h":512},{"file":"faces-cat-smile-01.webp","name":"faces-cat-smile","cat":"faces","w":512,"h":512},{"file":"faces-cat-wry-01.webp","name":"faces-cat-wry","cat":"faces","w":512,"h":512},{"file":"faces-cat-pouting-01.webp","name":"faces-cat-pouting","cat":"faces","w":512,"h":512},{"file":"faces-cat-crying-01.webp","name":"faces-cat-crying","cat":"faces","w":512,"h":512},{"file":"faces-cat-kiss-01.webp","name":"faces-cat-kiss","cat":"faces","w":512,"h":512},{"file":"faces-cat-scream-01.webp","name":"faces-cat-scream","cat":"faces","w":512,"h":512},{"file":"faces-slightly-frowning-01.webp","name":"faces-slightly-frowning","cat":"faces","w":512,"h":512},{"file":"faces-rolling-eyes-01.webp","name":"faces-rolling-eyes","cat":"faces","w":512,"h":512},{"file":"faces-zipper-mouth-01.webp","name":"faces-zipper-mouth","cat":"faces","w":512,"h":512},{"file":"faces-thermometer-face-01.webp","name":"faces-thermometer-face","cat":"faces","w":512,"h":512},{"file":"reactions-ok-hand-01.webp","name":"reactions-ok-hand","cat":"reactions","w":512,"h":512},{"file":"reactions-thumbs-down-01.webp","name":"reactions-thumbs-down","cat":"reactions","w":512,"h":512},{"file":"reactions-clapping-01.webp","name":"reactions-clapping","cat":"reactions","w":512,"h":512},{"file":"reactions-folded-hands-01.webp","name":"reactions-folded-hands","cat":"reactions","w":512,"h":512},{"file":"reactions-flexed-biceps-01.webp","name":"reactions-flexed-biceps","cat":"reactions","w":512,"h":512},{"file":"reactions-raising-hands-01.webp","name":"reactions-raising-hands","cat":"reactions","w":512,"h":512},{"file":"reactions-waving-01.webp","name":"reactions-waving","cat":"reactions","w":512,"h":512},{"file":"reactions-thumbs-up-01.webp","name":"reactions-thumbs-up","cat":"reactions","w":512,"h":512},{"file":"reactions-victory-hand-01.webp","name":"reactions-victory-hand","cat":"reactions","w":512,"h":512},{"file":"reactions-writing-hand-01.webp","name":"reactions-writing-hand","cat":"reactions","w":512,"h":512},{"file":"reactions-love-you-01.webp","name":"reactions-love-you","cat":"reactions","w":512,"h":512},{"file":"reactions-oncoming-fist-01.webp","name":"reactions-oncoming-fist","cat":"reactions","w":512,"h":512},{"file":"reactions-crossed-fingers-01.webp","name":"reactions-crossed-fingers","cat":"reactions","w":512,"h":512},{"file":"reactions-handshake-01.webp","name":"reactions-handshake","cat":"reactions","w":512,"h":512},{"file":"reactions-raised-fist-01.webp","name":"reactions-raised-fist","cat":"reactions","w":512,"h":512},{"file":"reactions-raised-hand-01.webp","name":"reactions-raised-hand","cat":"reactions","w":512,"h":512},{"file":"reactions-horns-01.webp","name":"reactions-horns","cat":"reactions","w":512,"h":512},{"file":"reactions-call-me-01.webp","name":"reactions-call-me","cat":"reactions","w":512,"h":512},{"file":"reactions-pinching-hand-01.webp","name":"reactions-pinching-hand","cat":"reactions","w":512,"h":512},{"file":"reactions-pinched-fingers-01.webp","name":"reactions-pinched-fingers","cat":"reactions","w":512,"h":512},{"file":"reactions-pointing-left-01.webp","name":"reactions-pointing-left","cat":"reactions","w":512,"h":512},{"file":"reactions-pointing-down-01.webp","name":"reactions-pointing-down","cat":"reactions","w":512,"h":512},{"file":"reactions-pointing-right-01.webp","name":"reactions-pointing-right","cat":"reactions","w":512,"h":512},{"file":"reactions-pointing-up-backhand-01.webp","name":"reactions-pointing-up-backhand","cat":"reactions","w":512,"h":512},{"file":"reactions-splayed-hand-01.webp","name":"reactions-splayed-hand","cat":"reactions","w":512,"h":512},{"file":"reactions-vulcan-salute-01.webp","name":"reactions-vulcan-salute","cat":"reactions","w":512,"h":512},{"file":"reactions-beating-heart-01.webp","name":"reactions-beating-heart","cat":"reactions","w":512,"h":512},{"file":"reactions-two-hearts-01.webp","name":"reactions-two-hearts","cat":"reactions","w":512,"h":512},{"file":"reactions-broken-heart-01.webp","name":"reactions-broken-heart","cat":"reactions","w":512,"h":512},{"file":"reactions-sparkling-heart-01.webp","name":"reactions-sparkling-heart","cat":"reactions","w":512,"h":512},{"file":"reactions-growing-heart-01.webp","name":"reactions-growing-heart","cat":"reactions","w":512,"h":512},{"file":"reactions-heart-arrow-01.webp","name":"reactions-heart-arrow","cat":"reactions","w":512,"h":512},{"file":"reactions-confetti-ball-01.webp","name":"reactions-confetti-ball","cat":"reactions","w":512,"h":512},{"file":"reactions-collision-01.webp","name":"reactions-collision","cat":"reactions","w":512,"h":512},{"file":"reactions-heart-decoration-01.webp","name":"reactions-heart-decoration","cat":"reactions","w":512,"h":512},{"file":"symbols-green-heart-01.webp","name":"symbols-green-heart","cat":"symbols","w":512,"h":512},{"file":"symbols-white-heart-01.webp","name":"symbols-white-heart","cat":"symbols","w":512,"h":512},{"file":"symbols-waxing-crescent-01.webp","name":"symbols-waxing-crescent","cat":"symbols","w":512,"h":512},{"file":"symbols-waxing-gibbous-01.webp","name":"symbols-waxing-gibbous","cat":"symbols","w":512,"h":512},{"file":"symbols-first-quarter-01.webp","name":"symbols-first-quarter","cat":"symbols","w":512,"h":512},{"file":"symbols-waning-gibbous-01.webp","name":"symbols-waning-gibbous","cat":"symbols","w":512,"h":512},{"file":"symbols-last-quarter-01.webp","name":"symbols-last-quarter","cat":"symbols","w":512,"h":512},{"file":"symbols-waning-crescent-01.webp","name":"symbols-waning-crescent","cat":"symbols","w":512,"h":512},{"file":"symbols-crescent-moon-01.webp","name":"symbols-crescent-moon","cat":"symbols","w":512,"h":512},{"file":"symbols-aries-01.webp","name":"symbols-aries","cat":"symbols","w":512,"h":512},{"file":"symbols-shooting-star-01.webp","name":"symbols-shooting-star","cat":"symbols","w":512,"h":512},{"file":"symbols-gemini-01.webp","name":"symbols-gemini","cat":"symbols","w":512,"h":512},{"file":"symbols-taurus-01.webp","name":"symbols-taurus","cat":"symbols","w":512,"h":512},{"file":"symbols-full-moon-face-01.webp","name":"symbols-full-moon-face","cat":"symbols","w":512,"h":512},{"file":"symbols-cancer-01.webp","name":"symbols-cancer","cat":"symbols","w":512,"h":512},{"file":"symbols-leo-01.webp","name":"symbols-leo","cat":"symbols","w":512,"h":512},{"file":"symbols-capricorn-01.webp","name":"symbols-capricorn","cat":"symbols","w":512,"h":512},{"file":"symbols-aquarius-01.webp","name":"symbols-aquarius","cat":"symbols","w":512,"h":512},{"file":"symbols-scorpio-01.webp","name":"symbols-scorpio","cat":"symbols","w":512,"h":512},{"file":"symbols-sagittarius-01.webp","name":"symbols-sagittarius","cat":"symbols","w":512,"h":512},{"file":"symbols-virgo-01.webp","name":"symbols-virgo","cat":"symbols","w":512,"h":512},{"file":"symbols-pisces-01.webp","name":"symbols-pisces","cat":"symbols","w":512,"h":512},{"file":"symbols-libra-01.webp","name":"symbols-libra","cat":"symbols","w":512,"h":512},{"file":"symbols-foggy-01.webp","name":"symbols-foggy","cat":"symbols","w":512,"h":512},{"file":"symbols-sunrise-mountains-01.webp","name":"symbols-sunrise-mountains","cat":"symbols","w":512,"h":512},{"file":"symbols-sunrise-01.webp","name":"symbols-sunrise","cat":"symbols","w":512,"h":512},{"file":"symbols-closed-umbrella-01.webp","name":"symbols-closed-umbrella","cat":"symbols","w":512,"h":512},{"file":"symbols-sunset-01.webp","name":"symbols-sunset","cat":"symbols","w":512,"h":512},{"file":"symbols-night-stars-01.webp","name":"symbols-night-stars","cat":"symbols","w":512,"h":512},{"file":"symbols-water-wave-01.webp","name":"symbols-water-wave","cat":"symbols","w":512,"h":512},{"file":"symbols-dusk-city-01.webp","name":"symbols-dusk-city","cat":"symbols","w":512,"h":512},{"file":"symbols-volcano-01.webp","name":"symbols-volcano","cat":"symbols","w":512,"h":512},{"file":"symbols-sun-large-cloud-01.webp","name":"symbols-sun-large-cloud","cat":"symbols","w":512,"h":512},{"file":"symbols-milky-way-01.webp","name":"symbols-milky-way","cat":"symbols","w":512,"h":512},{"file":"symbols-sun-rain-cloud-01.webp","name":"symbols-sun-rain-cloud","cat":"symbols","w":512,"h":512},{"file":"symbols-thermometer-01.webp","name":"symbols-thermometer","cat":"symbols","w":512,"h":512},{"file":"symbols-sun-small-cloud-01.webp","name":"symbols-sun-small-cloud","cat":"symbols","w":512,"h":512},{"file":"symbols-cloud-snow-01.webp","name":"symbols-cloud-snow","cat":"symbols","w":512,"h":512},{"file":"symbols-cloud-rain-01.webp","name":"symbols-cloud-rain","cat":"symbols","w":512,"h":512},{"file":"symbols-cloud-tornado-01.webp","name":"symbols-cloud-tornado","cat":"symbols","w":512,"h":512},{"file":"symbols-cloud-lightning-01.webp","name":"symbols-cloud-lightning","cat":"symbols","w":512,"h":512},{"file":"symbols-fog-01.webp","name":"symbols-fog","cat":"symbols","w":512,"h":512},{"file":"symbols-radioactive-01.webp","name":"symbols-radioactive","cat":"symbols","w":512,"h":512},{"file":"symbols-warning-sign-01.webp","name":"symbols-warning-sign","cat":"symbols","w":512,"h":512},{"file":"symbols-biohazard-01.webp","name":"symbols-biohazard","cat":"symbols","w":512,"h":512},{"file":"symbols-no-entry-01.webp","name":"symbols-no-entry","cat":"symbols","w":512,"h":512},{"file":"symbols-wind-face-01.webp","name":"symbols-wind-face","cat":"symbols","w":512,"h":512},{"file":"symbols-glowing-star-01.webp","name":"symbols-glowing-star","cat":"symbols","w":512,"h":512},{"file":"symbols-coffin-01.webp","name":"symbols-coffin","cat":"symbols","w":512,"h":512},{"file":"symbols-chains-01.webp","name":"symbols-chains","cat":"symbols","w":512,"h":512},{"file":"symbols-star-01.webp","name":"symbols-star","cat":"symbols","w":512,"h":512},{"file":"symbols-skull-crossbones-01.webp","name":"symbols-skull-crossbones","cat":"symbols","w":512,"h":512},{"file":"symbols-sparkle-01.webp","name":"symbols-sparkle","cat":"symbols","w":512,"h":512},{"file":"symbols-white-flower-01.webp","name":"symbols-white-flower","cat":"symbols","w":512,"h":512},{"file":"symbols-six-pointed-star-01.webp","name":"symbols-six-pointed-star","cat":"symbols","w":512,"h":512},{"file":"animals-water-buffalo-01.webp","name":"animals-water-buffalo","cat":"animals","w":512,"h":512},{"file":"animals-tiger-01.webp","name":"animals-tiger","cat":"animals","w":512,"h":512},{"file":"animals-ox-01.webp","name":"animals-ox","cat":"animals","w":512,"h":512},{"file":"animals-mouse-01.webp","name":"animals-mouse","cat":"animals","w":512,"h":512},{"file":"animals-cow-01.webp","name":"animals-cow","cat":"animals","w":512,"h":512},{"file":"animals-rabbit-01.webp","name":"animals-rabbit","cat":"animals","w":512,"h":512},{"file":"animals-crocodile-01.webp","name":"animals-crocodile","cat":"animals","w":512,"h":512},{"file":"animals-cat-01.webp","name":"animals-cat","cat":"animals","w":512,"h":512},{"file":"animals-dragon-01.webp","name":"animals-dragon","cat":"animals","w":512,"h":512},{"file":"animals-snake-01.webp","name":"animals-snake","cat":"animals","w":512,"h":512},{"file":"animals-whale-01.webp","name":"animals-whale","cat":"animals","w":512,"h":512},{"file":"animals-snail-01.webp","name":"animals-snail","cat":"animals","w":512,"h":512},{"file":"animals-ram-01.webp","name":"animals-ram","cat":"animals","w":512,"h":512},{"file":"animals-horse-01.webp","name":"animals-horse","cat":"animals","w":512,"h":512},{"file":"animals-sheep-01.webp","name":"animals-sheep","cat":"animals","w":512,"h":512},{"file":"animals-goat-01.webp","name":"animals-goat","cat":"animals","w":512,"h":512},{"file":"animals-rooster-01.webp","name":"animals-rooster","cat":"animals","w":512,"h":512},{"file":"animals-dog-01.webp","name":"animals-dog","cat":"animals","w":512,"h":512},{"file":"animals-chicken-01.webp","name":"animals-chicken","cat":"animals","w":512,"h":512},{"file":"animals-monkey-01.webp","name":"animals-monkey","cat":"animals","w":512,"h":512},{"file":"animals-boar-01.webp","name":"animals-boar","cat":"animals","w":512,"h":512},{"file":"animals-pig-01.webp","name":"animals-pig","cat":"animals","w":512,"h":512},{"file":"animals-elephant-01.webp","name":"animals-elephant","cat":"animals","w":512,"h":512},{"file":"animals-bug-01.webp","name":"animals-bug","cat":"animals","w":512,"h":512},{"file":"animals-octopus-01.webp","name":"animals-octopus","cat":"animals","w":512,"h":512},{"file":"animals-spiral-shell-01.webp","name":"animals-spiral-shell","cat":"animals","w":512,"h":512},{"file":"animals-honeybee-01.webp","name":"animals-honeybee","cat":"animals","w":512,"h":512},{"file":"animals-ant-01.webp","name":"animals-ant","cat":"animals","w":512,"h":512},{"file":"animals-fish-01.webp","name":"animals-fish","cat":"animals","w":512,"h":512},{"file":"animals-tropical-fish-01.webp","name":"animals-tropical-fish","cat":"animals","w":512,"h":512},{"file":"animals-hatching-chick-01.webp","name":"animals-hatching-chick","cat":"animals","w":512,"h":512},{"file":"animals-turtle-01.webp","name":"animals-turtle","cat":"animals","w":512,"h":512},{"file":"animals-baby-chick-01.webp","name":"animals-baby-chick","cat":"animals","w":512,"h":512},{"file":"animals-front-baby-chick-01.webp","name":"animals-front-baby-chick","cat":"animals","w":512,"h":512},{"file":"animals-penguin-01.webp","name":"animals-penguin","cat":"animals","w":512,"h":512},{"file":"animals-blowfish-01.webp","name":"animals-blowfish","cat":"animals","w":512,"h":512},{"file":"animals-bird-01.webp","name":"animals-bird","cat":"animals","w":512,"h":512},{"file":"animals-koala-01.webp","name":"animals-koala","cat":"animals","w":512,"h":512},{"file":"animals-poodle-01.webp","name":"animals-poodle","cat":"animals","w":512,"h":512},{"file":"animals-cow-face-01.webp","name":"animals-cow-face","cat":"animals","w":512,"h":512},{"file":"animals-tiger-face-01.webp","name":"animals-tiger-face","cat":"animals","w":512,"h":512},{"file":"animals-bactrian-camel-01.webp","name":"animals-bactrian-camel","cat":"animals","w":512,"h":512},{"file":"animals-mouse-face-01.webp","name":"animals-mouse-face","cat":"animals","w":512,"h":512},{"file":"animals-dolphin-01.webp","name":"animals-dolphin","cat":"animals","w":512,"h":512},{"file":"animals-dromedary-camel-01.webp","name":"animals-dromedary-camel","cat":"animals","w":512,"h":512},{"file":"food-hot-dog-01.webp","name":"food-hot-dog","cat":"food","w":512,"h":512},{"file":"food-mushroom-01.webp","name":"food-mushroom","cat":"food","w":512,"h":512},{"file":"food-taco-01.webp","name":"food-taco","cat":"food","w":512,"h":512},{"file":"food-tomato-01.webp","name":"food-tomato","cat":"food","w":512,"h":512},{"file":"food-eggplant-01.webp","name":"food-eggplant","cat":"food","w":512,"h":512},{"file":"food-hot-pepper-01.webp","name":"food-hot-pepper","cat":"food","w":512,"h":512},{"file":"food-burrito-01.webp","name":"food-burrito","cat":"food","w":512,"h":512},{"file":"food-chestnut-01.webp","name":"food-chestnut","cat":"food","w":512,"h":512},{"file":"food-lemon-01.webp","name":"food-lemon","cat":"food","w":512,"h":512},{"file":"food-banana-01.webp","name":"food-banana","cat":"food","w":512,"h":512},{"file":"food-grapes-01.webp","name":"food-grapes","cat":"food","w":512,"h":512},{"file":"food-watermelon-01.webp","name":"food-watermelon","cat":"food","w":512,"h":512},{"file":"food-tangerine-01.webp","name":"food-tangerine","cat":"food","w":512,"h":512},{"file":"food-pineapple-01.webp","name":"food-pineapple","cat":"food","w":512,"h":512},{"file":"food-red-apple-01.webp","name":"food-red-apple","cat":"food","w":512,"h":512},{"file":"food-pear-01.webp","name":"food-pear","cat":"food","w":512,"h":512},{"file":"food-green-apple-01.webp","name":"food-green-apple","cat":"food","w":512,"h":512},{"file":"food-cherries-01.webp","name":"food-cherries","cat":"food","w":512,"h":512},{"file":"food-meat-on-bone-01.webp","name":"food-meat-on-bone","cat":"food","w":512,"h":512},{"file":"food-hamburger-01.webp","name":"food-hamburger","cat":"food","w":512,"h":512},{"file":"food-strawberry-01.webp","name":"food-strawberry","cat":"food","w":512,"h":512},{"file":"food-pizza-01.webp","name":"food-pizza","cat":"food","w":512,"h":512},{"file":"food-peach-01.webp","name":"food-peach","cat":"food","w":512,"h":512},{"file":"food-rice-ball-01.webp","name":"food-rice-ball","cat":"food","w":512,"h":512},{"file":"food-spaghetti-01.webp","name":"food-spaghetti","cat":"food","w":512,"h":512},{"file":"food-steaming-bowl-01.webp","name":"food-steaming-bowl","cat":"food","w":512,"h":512},{"file":"food-cooked-rice-01.webp","name":"food-cooked-rice","cat":"food","w":512,"h":512},{"file":"food-curry-rice-01.webp","name":"food-curry-rice","cat":"food","w":512,"h":512},{"file":"food-bread-01.webp","name":"food-bread","cat":"food","w":512,"h":512},{"file":"food-poultry-leg-01.webp","name":"food-poultry-leg","cat":"food","w":512,"h":512},{"file":"food-french-fries-01.webp","name":"food-french-fries","cat":"food","w":512,"h":512},{"file":"food-sushi-01.webp","name":"food-sushi","cat":"food","w":512,"h":512},{"file":"food-dango-01.webp","name":"food-dango","cat":"food","w":512,"h":512},{"file":"food-oden-01.webp","name":"food-oden","cat":"food","w":512,"h":512},{"file":"food-fish-cake-swirl-01.webp","name":"food-fish-cake-swirl","cat":"food","w":512,"h":512},{"file":"objects-heavy-dollar-01.webp","name":"objects-heavy-dollar","cat":"objects","w":512,"h":512},{"file":"objects-yen-banknote-01.webp","name":"objects-yen-banknote","cat":"objects","w":512,"h":512},{"file":"objects-currency-exchange-01.webp","name":"objects-currency-exchange","cat":"objects","w":512,"h":512},{"file":"objects-credit-card-01.webp","name":"objects-credit-card","cat":"objects","w":512,"h":512},{"file":"objects-euro-banknote-01.webp","name":"objects-euro-banknote","cat":"objects","w":512,"h":512},{"file":"objects-money-wings-01.webp","name":"objects-money-wings","cat":"objects","w":512,"h":512},{"file":"objects-laptop-01.webp","name":"objects-laptop","cat":"objects","w":512,"h":512},{"file":"objects-briefcase-01.webp","name":"objects-briefcase","cat":"objects","w":512,"h":512},{"file":"objects-chart-yen-01.webp","name":"objects-chart-yen","cat":"objects","w":512,"h":512},{"file":"objects-minidisc-01.webp","name":"objects-minidisc","cat":"objects","w":512,"h":512},{"file":"objects-floppy-disk-01.webp","name":"objects-floppy-disk","cat":"objects","w":512,"h":512},{"file":"objects-seat-01.webp","name":"objects-seat","cat":"objects","w":512,"h":512},{"file":"objects-optical-disc-01.webp","name":"objects-optical-disc","cat":"objects","w":512,"h":512},{"file":"objects-dvd-01.webp","name":"objects-dvd","cat":"objects","w":512,"h":512},{"file":"objects-page-up-01.webp","name":"objects-page-up","cat":"objects","w":512,"h":512},{"file":"objects-page-curl-01.webp","name":"objects-page-curl","cat":"objects","w":512,"h":512},{"file":"objects-tear-off-calendar-01.webp","name":"objects-tear-off-calendar","cat":"objects","w":512,"h":512},{"file":"objects-open-folder-01.webp","name":"objects-open-folder","cat":"objects","w":512,"h":512},{"file":"objects-calendar-01.webp","name":"objects-calendar","cat":"objects","w":512,"h":512},{"file":"objects-card-index-01.webp","name":"objects-card-index","cat":"objects","w":512,"h":512},{"file":"objects-chart-increasing-01.webp","name":"objects-chart-increasing","cat":"objects","w":512,"h":512},{"file":"objects-chart-decreasing-01.webp","name":"objects-chart-decreasing","cat":"objects","w":512,"h":512},{"file":"objects-bar-chart-01.webp","name":"objects-bar-chart","cat":"objects","w":512,"h":512},{"file":"objects-paperclip-01.webp","name":"objects-paperclip","cat":"objects","w":512,"h":512},{"file":"objects-pushpin-01.webp","name":"objects-pushpin","cat":"objects","w":512,"h":512},{"file":"objects-clipboard-01.webp","name":"objects-clipboard","cat":"objects","w":512,"h":512},{"file":"objects-round-pushpin-01.webp","name":"objects-round-pushpin","cat":"objects","w":512,"h":512},{"file":"objects-closed-book-01.webp","name":"objects-closed-book","cat":"objects","w":512,"h":512},{"file":"objects-notebook-01.webp","name":"objects-notebook","cat":"objects","w":512,"h":512},{"file":"objects-bookmark-tabs-01.webp","name":"objects-bookmark-tabs","cat":"objects","w":512,"h":512},{"file":"objects-open-book-01.webp","name":"objects-open-book","cat":"objects","w":512,"h":512},{"file":"objects-notebook-cover-01.webp","name":"objects-notebook-cover","cat":"objects","w":512,"h":512},{"file":"objects-ledger-01.webp","name":"objects-ledger","cat":"objects","w":512,"h":512},{"file":"objects-green-book-01.webp","name":"objects-green-book","cat":"objects","w":512,"h":512},{"file":"objects-triangular-ruler-01.webp","name":"objects-triangular-ruler","cat":"objects","w":512,"h":512},{"file":"objects-blue-book-01.webp","name":"objects-blue-book","cat":"objects","w":512,"h":512},{"file":"objects-name-badge-01.webp","name":"objects-name-badge","cat":"objects","w":512,"h":512},{"file":"objects-scroll-01.webp","name":"objects-scroll","cat":"objects","w":512,"h":512},{"file":"objects-books-01.webp","name":"objects-books","cat":"objects","w":512,"h":512},{"file":"objects-telephone-receiver-01.webp","name":"objects-telephone-receiver","cat":"objects","w":512,"h":512},{"file":"objects-memo-01.webp","name":"objects-memo","cat":"objects","w":512,"h":512},{"file":"objects-pager-01.webp","name":"objects-pager","cat":"objects","w":512,"h":512},{"file":"objects-satellite-antenna-01.webp","name":"objects-satellite-antenna","cat":"objects","w":512,"h":512},{"file":"objects-fax-machine-01.webp","name":"objects-fax-machine","cat":"objects","w":512,"h":512},{"file":"objects-package-01.webp","name":"objects-package","cat":"objects","w":512,"h":512},{"file":"winter-snow-capped-mountain-01.webp","name":"winter-snow-capped-mountain","cat":"winter","w":512,"h":512},{"file":"winter-snowman-no-snow-01.webp","name":"winter-snowman-no-snow","cat":"winter","w":512,"h":512},{"file":"winter-fireworks-01.webp","name":"winter-fireworks","cat":"winter","w":512,"h":512},{"file":"winter-wrapped-gift-01.webp","name":"winter-wrapped-gift","cat":"winter","w":512,"h":512},{"file":"winter-santa-claus-01.webp","name":"winter-santa-claus","cat":"winter","w":512,"h":512},{"file":"winter-sparkler-01.webp","name":"winter-sparkler","cat":"winter","w":512,"h":512},{"file":"winter-ice-cube-01.webp","name":"winter-ice-cube","cat":"winter","w":512,"h":512},{"file":"winter-shaved-ice-01.webp","name":"winter-shaved-ice","cat":"winter","w":512,"h":512},{"file":"winter-ice-cream-01.webp","name":"winter-ice-cream","cat":"winter","w":512,"h":512},{"file":"winter-balloon-01.webp","name":"winter-balloon","cat":"winter","w":512,"h":512},{"file":"winter-skis-01.webp","name":"winter-skis","cat":"winter","w":512,"h":512},{"file":"bursts-dizzy-01.webp","name":"bursts-dizzy","cat":"bursts","w":512,"h":512},{"file":"bursts-fire-01.webp","name":"bursts-fire","cat":"bursts","w":512,"h":512},{"file":"bursts-dashing-01.webp","name":"bursts-dashing","cat":"bursts","w":512,"h":512},{"file":"bursts-dash-01.webp","name":"bursts-dash","cat":"bursts","w":512,"h":512},{"file":"bursts-bomb-01.webp","name":"bursts-bomb","cat":"bursts","w":512,"h":512},{"file":"bursts-party-popper-01.webp","name":"bursts-party-popper","cat":"bursts","w":512,"h":512},{"file":"objects-helicopter-01.webp","name":"objects-helicopter","cat":"objects","w":512,"h":512},{"file":"objects-locomotive-01.webp","name":"objects-locomotive","cat":"objects","w":512,"h":512},{"file":"objects-railway-car-01.webp","name":"objects-railway-car","cat":"objects","w":512,"h":512},{"file":"objects-rocket-01.webp","name":"objects-rocket","cat":"objects","w":512,"h":512},{"file":"objects-high-speed-train-01.webp","name":"objects-high-speed-train","cat":"objects","w":512,"h":512},{"file":"objects-bullet-train-01.webp","name":"objects-bullet-train","cat":"objects","w":512,"h":512},{"file":"objects-train-01.webp","name":"objects-train","cat":"objects","w":512,"h":512},{"file":"objects-light-rail-01.webp","name":"objects-light-rail","cat":"objects","w":512,"h":512}];
 </script>
 <script>
-/* ============ DATA: 20 real character stickers + Original pack ============ */
+/* ============ DATA: character stickers + Original pack ============ */
 var STICKERS=[
  {id:"cute",label:"Cute",file:"lofi-sticker-cute.webp",w:423,h:512,search:"cute sweet shy blush hands"},
  {id:"angry",label:"Angry",file:"lofi-sticker-angry.webp",w:370,h:512,search:"angry mad furious rage stomp"},
@@ -939,7 +978,37 @@ var STICKERS=[
  {id:"scared",label:"Scared",file:"lofi-sticker-scared.webp",w:512,h:502,search:"scared afraid panic fear"},
  {id:"love",label:"Love",file:"lofi-sticker-love.webp",w:435,h:512,search:"love hearts adore crush"},
  {id:"dizzy",label:"Dizzy",file:"lofi-sticker-dizzy.webp",w:494,h:512,search:"dizzy confused spinning stars"},
- {id:"ski",label:"Ski",file:"lofi-sticker-ski.webp",w:512,h:476,search:"ski skiing snow sport winter slope"}
+ {id:"ski",label:"Ski",file:"lofi-sticker-ski.webp",w:512,h:476,search:"ski skiing snow sport winter slope"},
+ {id:"dancing",label:"Dancing",file:"lofi-sticker-dancing.webp",w:499,h:512,search:"dancing"},
+ {id:"singing-mic",label:"Singing Mic",file:"lofi-sticker-singing-mic.webp",w:389,h:512,search:"singing mic"},
+ {id:"guitar",label:"Guitar",file:"lofi-sticker-guitar.webp",w:512,h:506,search:"guitar"},
+ {id:"reading",label:"Reading",file:"lofi-sticker-reading.webp",w:400,h:512,search:"reading"},
+ {id:"hot-cocoa",label:"Hot Cocoa",file:"lofi-sticker-hot-cocoa.webp",w:357,h:512,search:"hot cocoa"},
+ {id:"snowman-building",label:"Snowman Building",file:"lofi-sticker-snowman-building.webp",w:437,h:512,search:"snowman building"},
+ {id:"ice-skating",label:"Ice Skating",file:"lofi-sticker-ice-skating.webp",w:472,h:512,search:"ice skating"},
+ {id:"sledding",label:"Sledding",file:"lofi-sticker-sledding.webp",w:435,h:512,search:"sledding"},
+ {id:"waving",label:"Waving",file:"lofi-sticker-waving.webp",w:481,h:512,search:"waving"},
+ {id:"thumbs-up",label:"Thumbs Up",file:"lofi-sticker-thumbs-up.webp",w:453,h:512,search:"thumbs up"},
+ {id:"blowing-kiss",label:"Blowing Kiss",file:"lofi-sticker-blowing-kiss.webp",w:381,h:512,search:"blowing kiss"},
+ {id:"peeking",label:"Peeking",file:"lofi-sticker-peeking.webp",w:512,h:386,search:"peeking"},
+ {id:"shy-hiding",label:"Shy Hiding",file:"lofi-sticker-shy-hiding.webp",w:352,h:512,search:"shy hiding"},
+ {id:"superhero",label:"Superhero",file:"lofi-sticker-superhero.webp",w:512,h:511,search:"superhero"},
+ {id:"detective",label:"Detective",file:"lofi-sticker-detective.webp",w:427,h:512,search:"detective"},
+ {id:"chef",label:"Chef",file:"lofi-sticker-chef.webp",w:371,h:512,search:"chef"},
+ {id:"scientist",label:"Scientist",file:"lofi-sticker-scientist.webp",w:424,h:512,search:"scientist"},
+ {id:"wizard",label:"Wizard",file:"lofi-sticker-wizard.webp",w:450,h:512,search:"wizard"},
+ {id:"pirate",label:"Pirate",file:"lofi-sticker-pirate.webp",w:364,h:512,search:"pirate"},
+ {id:"astronaut",label:"Astronaut",file:"lofi-sticker-astronaut.webp",w:491,h:512,search:"astronaut"},
+ {id:"dj-headphones",label:"DJ Headphones",file:"lofi-sticker-dj-headphones.webp",w:459,h:512,search:"dj headphones"},
+ {id:"photographer",label:"Photographer",file:"lofi-sticker-photographer.webp",w:373,h:512,search:"photographer"},
+ {id:"champ",label:"Champ",file:"lofi-sticker-champ.webp",w:362,h:512,search:"champ"},
+ {id:"meditating",label:"Meditating",file:"lofi-sticker-meditating.webp",w:512,h:502,search:"meditating"},
+ {id:"megaphone-shout",label:"Megaphone Shout",file:"lofi-sticker-megaphone-shout.webp",w:512,h:495,search:"megaphone shout"},
+ {id:"crying",label:"Crying",file:"lofi-sticker-crying.webp",w:379,h:512,search:"crying"},
+ {id:"sneezing",label:"Sneezing",file:"lofi-sticker-sneezing.webp",w:440,h:512,search:"sneezing"},
+ {id:"starry-eyed",label:"Starry Eyed",file:"lofi-sticker-starry-eyed.webp",w:512,h:492,search:"starry eyed"},
+ {id:"tongue-out",label:"Tongue Out",file:"lofi-sticker-tongue-out.webp",w:501,h:512,search:"tongue out"},
+ {id:"hugging",label:"Hugging",file:"lofi-sticker-hugging.webp",w:512,h:479,search:"hugging"}
 ];
 var ORIGINALS=[
  {id:"orig-happy",label:"Happy",file:"lofi-original-happy.webp",w:508,h:512,search:"original face happy classic official"},
@@ -961,7 +1030,37 @@ var ORIGINALS=[
  {id:"orig-love",label:"Love",file:"lofi-original-love.webp",w:512,h:497,search:"original face love hearts adore crush classic official"},
  {id:"orig-dizzy",label:"Dizzy",file:"lofi-original-dizzy.webp",w:437,h:512,search:"original face dizzy confused spinning stars classic official"},
  {id:"orig-simple",label:"Simple",file:"lofi-original-simple.webp",w:511,h:512,search:"original face simple classic plain standing gm gn official"},
- {id:"orig-mischievous",label:"Mischievous",file:"lofi-original-mischievous.webp",w:511,h:512,search:"original face mischievous sneaky cheeky grin classic official"}
+ {id:"orig-mischievous",label:"Mischievous",file:"lofi-original-mischievous.webp",w:511,h:512,search:"original face mischievous sneaky cheeky grin classic official"},
+ {id:"orig-body-standing-wave",label:"Body · Standing Wave",file:"lofi-original-body-standing-wave.webp",w:479,h:512,search:"original body standing wave"},
+ {id:"orig-body-walking",label:"Body · Walking",file:"lofi-original-body-walking.webp",w:359,h:512,search:"original body walking"},
+ {id:"orig-body-jumping-joy",label:"Body · Jumping Joy",file:"lofi-original-body-jumping-joy.webp",w:461,h:512,search:"original body jumping joy"},
+ {id:"orig-body-sitting",label:"Body · Sitting",file:"lofi-original-body-sitting.webp",w:512,h:460,search:"original body sitting"},
+ {id:"orig-body-lying-down",label:"Body · Lying Down",file:"lofi-original-body-lying-down.webp",w:512,h:464,search:"original body lying down"},
+ {id:"orig-body-running",label:"Body · Running",file:"lofi-original-body-running.webp",w:512,h:510,search:"original body running"},
+ {id:"orig-body-dancing-body",label:"Body · Dancing",file:"lofi-original-body-dancing-body.webp",w:467,h:512,search:"original body dancing"},
+ {id:"orig-body-bowing",label:"Body · Bowing",file:"lofi-original-body-bowing.webp",w:409,h:512,search:"original body bowing"},
+ {id:"orig-body-pointing",label:"Body · Pointing",file:"lofi-original-body-pointing.webp",w:494,h:512,search:"original body pointing"},
+ {id:"orig-body-thumbs-up-body",label:"Body · Thumbs Up",file:"lofi-original-body-thumbs-up-body.webp",w:436,h:512,search:"original body thumbs up"},
+ {id:"orig-body-arms-crossed",label:"Body · Arms Crossed",file:"lofi-original-body-arms-crossed.webp",w:342,h:512,search:"original body arms crossed"},
+ {id:"orig-body-hands-on-hips",label:"Body · Hands On Hips",file:"lofi-original-body-hands-on-hips.webp",w:447,h:512,search:"original body hands on hips"},
+ {id:"orig-body-waving-both-arms",label:"Body · Waving Both Arms",file:"lofi-original-body-waving-both-arms.webp",w:512,h:487,search:"original body waving both arms"},
+ {id:"orig-body-holding-heart",label:"Body · Holding Heart",file:"lofi-original-body-holding-heart.webp",w:369,h:512,search:"original body holding heart"},
+ {id:"orig-body-holding-gift",label:"Body · Holding Gift",file:"lofi-original-body-holding-gift.webp",w:341,h:512,search:"original body holding gift"},
+ {id:"orig-body-holding-snowball-body",label:"Body · Holding Snowball",file:"lofi-original-body-holding-snowball-body.webp",w:512,h:490,search:"original body holding snowball"},
+ {id:"orig-body-holding-sign",label:"Body · Holding Sign",file:"lofi-original-body-holding-sign.webp",w:430,h:512,search:"original body holding sign"},
+ {id:"orig-body-holding-mug",label:"Body · Holding Mug",file:"lofi-original-body-holding-mug.webp",w:344,h:512,search:"original body holding mug"},
+ {id:"orig-body-holding-book-body",label:"Body · Holding Book",file:"lofi-original-body-holding-book-body.webp",w:364,h:512,search:"original body holding book"},
+ {id:"orig-body-holding-camera-body",label:"Body · Holding Camera",file:"lofi-original-body-holding-camera-body.webp",w:368,h:512,search:"original body holding camera"},
+ {id:"orig-body-holding-guitar-body",label:"Body · Holding Guitar",file:"lofi-original-body-holding-guitar-body.webp",w:452,h:512,search:"original body holding guitar"},
+ {id:"orig-body-wearing-scarf",label:"Body · Wearing Scarf",file:"lofi-original-body-wearing-scarf.webp",w:391,h:512,search:"original body wearing scarf"},
+ {id:"orig-body-wearing-beanie",label:"Body · Wearing Beanie",file:"lofi-original-body-wearing-beanie.webp",w:311,h:512,search:"original body wearing beanie"},
+ {id:"orig-body-superhero-body",label:"Body · Superhero",file:"lofi-original-body-superhero-body.webp",w:496,h:512,search:"original body superhero"},
+ {id:"orig-body-thinking-body",label:"Body · Thinking",file:"lofi-original-body-thinking-body.webp",w:417,h:512,search:"original body thinking"},
+ {id:"orig-body-sleeping-curled",label:"Body · Sleeping Curled",file:"lofi-original-body-sleeping-curled.webp",w:512,h:437,search:"original body sleeping curled"},
+ {id:"orig-body-sneaking",label:"Body · Sneaking",file:"lofi-original-body-sneaking.webp",w:424,h:512,search:"original body sneaking"},
+ {id:"orig-body-hiding-tree",label:"Body · Hiding Tree",file:"lofi-original-body-hiding-tree.webp",w:507,h:512,search:"original body hiding tree"},
+ {id:"orig-body-ice-skating-body",label:"Body · Ice Skating",file:"lofi-original-body-ice-skating-body.webp",w:510,h:512,search:"original body ice skating"},
+ {id:"orig-body-fishing-body",label:"Body · Fishing",file:"lofi-original-body-fishing-body.webp",w:510,h:512,search:"original body fishing"}
 ];
 function stickerByFile(f){ return STICKERS.concat(ORIGINALS).find(function(s){return s.file===f}) || STICKERS[0]; }
 var BGS=[
@@ -985,7 +1084,95 @@ var SCENES=[
  {name:"Frozen Falls",file:"bg-scene-frozen-falls.webp"},
  {name:"Lantern Path",file:"bg-scene-lantern-path.webp"},
  {name:"Moonlit Night",file:"bg-scene-moonlit-night.webp"},
- {name:"Snowy Bridge",file:"bg-scene-snowy-bridge.webp"}
+ {name:"Snowy Bridge",file:"bg-scene-snowy-bridge.webp"},
+ {name:"Alpine Ridge Sunrise",file:"bg-scene-alpine-ridge-sunrise.webp"},
+ {name:"Aurora Cabin Lights",file:"bg-scene-aurora-cabin-lights.webp"},
+ {name:"Aurora Fjord",file:"bg-scene-aurora-fjord.webp"},
+ {name:"Aurora Icefield",file:"bg-scene-aurora-icefield.webp"},
+ {name:"Aurora Lake",file:"bg-scene-aurora-lake.webp"},
+ {name:"Aurora Mountains",file:"bg-scene-aurora-mountains.webp"},
+ {name:"Aurora Pines",file:"bg-scene-aurora-pines.webp"},
+ {name:"Aurora Stars",file:"bg-scene-aurora-stars.webp"},
+ {name:"Aurora Village",file:"bg-scene-aurora-village.webp"},
+ {name:"Birch Forest Winter",file:"bg-scene-birch-forest-winter.webp"},
+ {name:"Blizzard Pines",file:"bg-scene-blizzard-pines.webp"},
+ {name:"Cabin Aurora Sky",file:"bg-scene-cabin-aurora-sky.webp"},
+ {name:"Cabin Frozen Pond",file:"bg-scene-cabin-frozen-pond.webp"},
+ {name:"Cabin Hillside",file:"bg-scene-cabin-hillside.webp"},
+ {name:"Cabin Lake",file:"bg-scene-cabin-lake.webp"},
+ {name:"Cabin Lights Night",file:"bg-scene-cabin-lights-night.webp"},
+ {name:"Cabin Pines",file:"bg-scene-cabin-pines.webp"},
+ {name:"Cabin Smoke Chimney",file:"bg-scene-cabin-smoke-chimney.webp"},
+ {name:"Dawn Frost Meadow",file:"bg-scene-dawn-frost-meadow.webp"},
+ {name:"Evergreen Grove",file:"bg-scene-evergreen-grove.webp"},
+ {name:"Forest Clearing Snow",file:"bg-scene-forest-clearing-snow.webp"},
+ {name:"Forest Trail Snow",file:"bg-scene-forest-trail-snow.webp"},
+ {name:"Frosted Pines Dawn",file:"bg-scene-frosted-pines-dawn.webp"},
+ {name:"Frosty Meadow Dawn",file:"bg-scene-frosty-meadow-dawn.webp"},
+ {name:"Frozen Falls Dusk",file:"bg-scene-frozen-falls-dusk.webp"},
+ {name:"Frozen Fern Glen",file:"bg-scene-frozen-fern-glen.webp"},
+ {name:"Frozen Lake Sunrise",file:"bg-scene-frozen-lake-sunrise.webp"},
+ {name:"Frozen Lake Sunset",file:"bg-scene-frozen-lake-sunset.webp"},
+ {name:"Frozen Peak Lake",file:"bg-scene-frozen-peak-lake.webp"},
+ {name:"Frozen Pond Reeds",file:"bg-scene-frozen-pond-reeds.webp"},
+ {name:"Frozen Waterfall Blue",file:"bg-scene-frozen-waterfall-blue.webp"},
+ {name:"Full Moon Snowfield",file:"bg-scene-full-moon-snowfield.webp"},
+ {name:"Glacial Lake",file:"bg-scene-glacial-lake.webp"},
+ {name:"Glacier Cave Light",file:"bg-scene-glacier-cave-light.webp"},
+ {name:"Glacier View",file:"bg-scene-glacier-view.webp"},
+ {name:"Golden Hour Pines",file:"bg-scene-golden-hour-pines.webp"},
+ {name:"Ice Arch Lagoon",file:"bg-scene-ice-arch-lagoon.webp"},
+ {name:"Ice Cave Crystals",file:"bg-scene-ice-cave-crystals.webp"},
+ {name:"Ice Fishing Hut",file:"bg-scene-ice-fishing-hut.webp"},
+ {name:"Ice Lake Pines",file:"bg-scene-ice-lake-pines.webp"},
+ {name:"Ice Sculpture Park",file:"bg-scene-ice-sculpture-park.webp"},
+ {name:"Icicle Grotto",file:"bg-scene-icicle-grotto.webp"},
+ {name:"Lake Ice Skaters View",file:"bg-scene-lake-ice-skaters-view.webp"},
+ {name:"Lake Mist Winter",file:"bg-scene-lake-mist-winter.webp"},
+ {name:"Lantern Path Snow",file:"bg-scene-lantern-path-snow.webp"},
+ {name:"Log Cabin Dawn",file:"bg-scene-log-cabin-dawn.webp"},
+ {name:"Misty Winter Woods",file:"bg-scene-misty-winter-woods.webp"},
+ {name:"Moonlit Pines",file:"bg-scene-moonlit-pines.webp"},
+ {name:"Moonrise Mountains",file:"bg-scene-moonrise-mountains.webp"},
+ {name:"Mountain Cabin View",file:"bg-scene-mountain-cabin-view.webp"},
+ {name:"Mountain Valley Snow",file:"bg-scene-mountain-valley-snow.webp"},
+ {name:"Night Frozen River",file:"bg-scene-night-frozen-river.webp"},
+ {name:"Path To Cabin Lights",file:"bg-scene-path-to-cabin-lights.webp"},
+ {name:"Peak Above Clouds",file:"bg-scene-peak-above-clouds.webp"},
+ {name:"Pine Forest Snow",file:"bg-scene-pine-forest-snow.webp"},
+ {name:"Pink Sunset Snow",file:"bg-scene-pink-sunset-snow.webp"},
+ {name:"Ridge At Dusk",file:"bg-scene-ridge-at-dusk.webp"},
+ {name:"Snow Capped Redwoods",file:"bg-scene-snow-capped-redwoods.webp"},
+ {name:"Snow Covered Farm",file:"bg-scene-snow-covered-farm.webp"},
+ {name:"Snow Dunes Wind",file:"bg-scene-snow-dunes-wind.webp"},
+ {name:"Snow Flurry Night",file:"bg-scene-snow-flurry-night.webp"},
+ {name:"Snow Laden Spruce",file:"bg-scene-snow-laden-spruce.webp"},
+ {name:"Snow Mountain Pass",file:"bg-scene-snow-mountain-pass.webp"},
+ {name:"Snowfield Sunrise",file:"bg-scene-snowfield-sunrise.webp"},
+ {name:"Snowstorm Village",file:"bg-scene-snowstorm-village.webp"},
+ {name:"Snowy Bridge River",file:"bg-scene-snowy-bridge-river.webp"},
+ {name:"Snowy Hills Rolling",file:"bg-scene-snowy-hills-rolling.webp"},
+ {name:"Snowy Night Lanterns",file:"bg-scene-snowy-night-lanterns.webp"},
+ {name:"Snowy Peak Summit",file:"bg-scene-snowy-peak-summit.webp"},
+ {name:"Snowy Volcano",file:"bg-scene-snowy-volcano.webp"},
+ {name:"Snowy Woods Path",file:"bg-scene-snowy-woods-path.webp"},
+ {name:"Starry Winter Night",file:"bg-scene-starry-winter-night.webp"},
+ {name:"Stone Steps Winter",file:"bg-scene-stone-steps-winter.webp"},
+ {name:"Storm Clouds Peaks",file:"bg-scene-storm-clouds-peaks.webp"},
+ {name:"Sunrise Frozen Lake",file:"bg-scene-sunrise-frozen-lake.webp"},
+ {name:"Sunset Blizzard Edge",file:"bg-scene-sunset-blizzard-edge.webp"},
+ {name:"Village Christmas Tree",file:"bg-scene-village-christmas-tree.webp"},
+ {name:"Village Church Snow",file:"bg-scene-village-church-snow.webp"},
+ {name:"Village Hillside",file:"bg-scene-village-hillside.webp"},
+ {name:"Village Lantern Night",file:"bg-scene-village-lantern-night.webp"},
+ {name:"Village Market Lights",file:"bg-scene-village-market-lights.webp"},
+ {name:"Village River Winter",file:"bg-scene-village-river-winter.webp"},
+ {name:"Village Snowy Rooftops",file:"bg-scene-village-snowy-rooftops.webp"},
+ {name:"Village Square Snow",file:"bg-scene-village-square-snow.webp"},
+ {name:"Whiteout Field",file:"bg-scene-whiteout-field.webp"},
+ {name:"Winter Festival Lights",file:"bg-scene-winter-festival-lights.webp"},
+ {name:"Winter Sunrise Field",file:"bg-scene-winter-sunrise-field.webp"},
+ {name:"Wooden Walkway Snow",file:"bg-scene-wooden-walkway-snow.webp"}
 ];
 function isSceneBg(bg){ return !!(bg&&bg[1]==="scene"); }
 function sceneBgEntry(s){ return [s.name,"scene","assets/"+s.file]; }
@@ -996,7 +1183,12 @@ var FONTS=[
  {css:"'Baloo 2'",label:"Baloo Rounded",weight:800},
  {css:"'Archivo Black'",label:"Archivo Black · meme",weight:400},
  {css:"'Anton'",label:"Anton · poster",weight:400},
- {css:"'Nunito Sans'",label:"Nunito · clean",weight:800}
+ {css:"'Nunito Sans'",label:"Nunito · clean",weight:800},
+ {css:"'Luckiest Guy'",label:"Luckiest Guy · bold cartoon",weight:400},
+ {css:"'Caveat'",label:"Caveat · handwritten",weight:700},
+ {css:"'Bungee'",label:"Bungee · retro",weight:400},
+ {css:"'Oswald'",label:"Oswald · condensed",weight:600},
+ {css:"'Montserrat'",label:"Montserrat · clean",weight:800}
 ];
 function fontOf(css){ return FONTS.find(function(f){return f.css===css}) || FONTS[0]; }
 var CAPTIONS=["GM","GN Lofi","HODL","When moon?","Lofi to the moon","Still early","WAGMI","Touch grass, then chart","Buy the dip?","50,000 m or nothing"];
@@ -1052,6 +1244,50 @@ function fxFilterCSS(l){
   return parts.join(" ");
 }
 function elByFile(f){ var L=(typeof ELEMENTS!=="undefined"&&ELEMENTS&&ELEMENTS.length)?ELEMENTS:[{file:"general-star-01.webp",name:"general-star",cat:"general",w:350,h:350}]; return L.find(function(e){return e.file===f}) || L[0]; }
+/* ============ TEXT EFFECTS ============
+   A text layer may carry tEffect (one of the TEXT_EFFECTS values). Layers saved
+   before effects existed have no tEffect: they map from their legacy fields so
+   they render exactly as before (outline wins, then the classic hard shadow). */
+var TEXT_EFFECTS=["none","outline","shadow","hardshadow","glow","neon","extrude","highlight","gradient","retro","emboss"];
+function effOf(l){
+  if(l.tEffect&&TEXT_EFFECTS.indexOf(l.tEffect)>-1) return l.tEffect;
+  if(l.tOutline>0) return "outline";
+  if(l.tShadow) return "shadow";
+  return "none";
+}
+function isLegacyFx(l){ return !(l.tEffect&&TEXT_EFFECTS.indexOf(l.tEffect)>-1); }
+function textFxShadowCSS(l,eff){
+  var gc=l.glowColor||"#FFD25A";
+  switch(eff){
+    case "shadow": return isLegacyFx(l)?"0.07em 0.07em 0 rgba(18,36,46,.85)":"0.05em 0.08em 0.14em rgba(18,36,46,.55)";
+    case "hardshadow": return "0.09em 0.09em 0 rgba(18,36,46,.9)";
+    case "glow": return "0 0 0.22em "+gc+", 0 0 0.45em "+gc;
+    case "neon": return "0 0 0.05em #ffffff, 0 0 0.16em "+gc+", 0 0 0.34em "+gc+", 0 0 0.55em "+gc;
+    case "extrude": var p=[]; for(var i=1;i<=6;i++) p.push("0 "+(i*0.035).toFixed(3)+"em 0 rgba(18,36,46,.85)"); p.push("0 0.26em 0.18em rgba(18,36,46,.35)"); return p.join(", ");
+    case "retro": return "0.055em 0.055em 0 #FF5A9E, 0.11em 0.11em 0 #FFD25A";
+    case "emboss": return "-0.03em -0.035em 0 rgba(255,255,255,.8), 0.045em 0.05em 0 rgba(18,36,46,.55)";
+  }
+  return "";
+}
+function applyTextFxDOM(t,l){
+  var eff=effOf(l), fsPx=l.size/100*stage.clientWidth;
+  t.style.color=l.color;
+  if(eff==="outline"){
+    var ow=l.tOutline>0?l.tOutline:14;
+    t.style.webkitTextStroke=(fsPx*ow/100)+"px "+(l.tOutlineColor||"#12242E");
+    t.style.paintOrder="stroke fill";
+    if(isLegacyFx(l)&&l.tShadow) t.style.textShadow="0.07em 0.07em 0 rgba(18,36,46,.85)";
+  } else {
+    var sh=textFxShadowCSS(l,eff); if(sh) t.style.textShadow=sh;
+  }
+  if(eff==="highlight"){ t.style.background=l.bgC||"#FFD25A"; t.style.padding="0.16em 0.34em"; t.style.borderRadius="0.14em"; }
+  else if(l.bgC){ t.style.background=l.bgC; t.style.padding="0.16em 0.34em"; t.style.borderRadius="0.14em"; }
+  if(eff==="gradient"){
+    t.style.background="linear-gradient(180deg,"+l.color+" 0%, "+(l.glowColor||"#FFD25A")+" 100%)";
+    t.style.webkitBackgroundClip="text"; t.style.backgroundClip="text";
+    t.style.color="transparent"; t.style.webkitTextFillColor="transparent";
+  }
+}
 function layerEl(l,idx){
   var d=document.createElement('div');
   d.className='layer'+(l.id===selId?' selected':''); d.dataset.id=l.id;
@@ -1069,10 +1305,8 @@ function layerEl(l,idx){
   if(l.type==='text'){
     var t=document.createElement('div'); t.className='txt'; t.textContent=l.text;
     var fo=fontOf(l.font); t.style.fontFamily=l.font; t.style.fontWeight=fo.weight;
-    t.style.color=l.color; t.style.fontSize=(l.size/100*stage.clientWidth)+'px';
-    if(l.tOutline>0){ t.style.webkitTextStroke=(l.size/100*stage.clientWidth*l.tOutline/100)+'px '+l.tOutlineColor; t.style.paintOrder='stroke fill'; }
-    if(l.tShadow) t.style.textShadow='0.07em 0.07em 0 rgba(18,36,46,.85)';
-    if(l.bgC){ t.style.background=l.bgC; t.style.padding='0.16em 0.34em'; t.style.borderRadius='0.14em'; }
+    t.style.fontSize=(l.size/100*stage.clientWidth)+'px';
+    applyTextFxDOM(t,l);
     wrap.appendChild(t);
   }
   d.appendChild(wrap);
@@ -1182,6 +1416,7 @@ function syncInspector(){
     document.getElementById('inspOutline').value=l.tOutline;
     document.getElementById('inspOutlineColor').value=l.tOutlineColor;
     document.getElementById('inspShadow').checked=!!l.tShadow;
+    document.getElementById('inspEffect').value=effOf(l);
     document.querySelectorAll('#inspBgSeg button').forEach(function(b){ b.classList.toggle('on',b.dataset.bg===(l.bgC||'')); });
   } else ts.style.display='none';
 }
@@ -1194,7 +1429,7 @@ document.getElementById('fxGlowColor').addEventListener('input',function(e){ var
 document.getElementById('fxOutline').addEventListener('input',function(e){ var l=getSel(); if(l){ l.outline=+e.target.value; render(); }});
 document.getElementById('fxOutlineColor').addEventListener('input',function(e){ var l=getSel(); if(l){ l.outlineColor=e.target.value; render(); }});
 document.getElementById('fxFilter').addEventListener('change',function(e){ var l=getSel(); if(l){ l.filter=e.target.value; render(); }});
-['scaleRange','rotRange','opRange','fxShadow','fxGlow','fxGlowColor','fxOutline','fxOutlineColor','fxFilter','inspText','inspFont','inspSize','inspColor','inspOutline','inspOutlineColor','inspShadow'].forEach(function(id){ bindSnap(document.getElementById(id)); });
+['scaleRange','rotRange','opRange','fxShadow','fxGlow','fxGlowColor','fxOutline','fxOutlineColor','fxFilter','inspText','inspFont','inspSize','inspColor','inspOutline','inspOutlineColor','inspShadow','inspEffect'].forEach(function(id){ bindSnap(document.getElementById(id)); });
 document.getElementById('inspText').addEventListener('input',function(e){ var l=getSel(); if(l&&l.type==='text'){ l.text=e.target.value; l.name='Text · '+l.text.slice(0,18); render(); }});
 document.getElementById('inspFont').addEventListener('change',function(e){ var l=getSel(); if(l){ l.font=e.target.value; render(); }});
 document.getElementById('inspSize').addEventListener('input',function(e){ var l=getSel(); if(l){ l.size=+e.target.value; render(); }});
@@ -1202,6 +1437,7 @@ document.getElementById('inspColor').addEventListener('input',function(e){ var l
 document.getElementById('inspOutline').addEventListener('input',function(e){ var l=getSel(); if(l){ l.tOutline=+e.target.value; render(); }});
 document.getElementById('inspOutlineColor').addEventListener('input',function(e){ var l=getSel(); if(l){ l.tOutlineColor=e.target.value; render(); }});
 document.getElementById('inspShadow').addEventListener('change',function(e){ var l=getSel(); if(l){ l.tShadow=e.target.checked; render(); }});
+document.getElementById('inspEffect').addEventListener('change',function(e){ var l=getSel(); if(l&&l.type==='text'){ l.tEffect=e.target.value; render(); }});
 document.getElementById('inspBgSeg').addEventListener('click',function(e){ if(e.target.tagName!=='BUTTON')return; var l=getSel(); if(!l)return; stashSnap(); l.bgC=e.target.dataset.bg||''; commitSnap(); render(); });
 document.getElementById('delBtn').onclick=function(){ var l=getSel(); if(!l)return; pushUndo(); layers=layers.filter(function(x){return x.id!==l.id}); selId=null; render(); };
 document.getElementById('dupBtn').onclick=function(){ var l=getSel(); if(!l)return; var cp=JSON.parse(JSON.stringify(l)); delete cp.id; cp.x=Math.min(90,cp.x+7); cp.y=Math.min(90,cp.y+7); cp.name=l.name+' copy'; addLayer(baseLayer(cp)); };
@@ -1244,8 +1480,16 @@ function resetStudio(){
   document.querySelectorAll('#frameGrid .frame-btn').forEach(function(b,i){ b.classList.toggle('on',FRAMES[i]==='None'); });
   var ss=document.getElementById('stickerSearch'); if(ss) ss.value='';
   if(typeof stickerQ!=='undefined') stickerQ='';
+  if(typeof stickerTab!=='undefined') stickerTab='all';
   var es=document.getElementById('elSearch'); if(es) es.value='';
   if(typeof elQ!=='undefined') elQ='';
+  if(typeof elCat!=='undefined') elCat='all';
+  if(typeof elShown!=='undefined') elShown={};
+  if(typeof elementsBuilt!=='undefined'&&elementsBuilt&&typeof buildElChips==='function') buildElChips();
+  if(typeof bgTab!=='undefined') bgTab='scenes';
+  document.querySelectorAll('#bgTabs button').forEach(function(b){ b.classList.toggle('on',b.dataset.bgtab==='scenes'); });
+  var bsw=document.getElementById('bgScenesWrap'); if(bsw) bsw.style.display='';
+  var bcw=document.getElementById('bgColorsWrap'); if(bcw) bcw.style.display='none';
   if(typeof libraryBuilt!=='undefined'&&libraryBuilt&&typeof drawStickers==='function') drawStickers();
   if(typeof elementsBuilt!=='undefined'&&elementsBuilt&&typeof drawElements==='function') drawElements();
   syncBgUI(); applyBg(); applyZoom(); render();
@@ -1297,44 +1541,73 @@ function stickerCard(s,pack){
   d.onclick=add; d.onkeydown=function(e){ if(e.key==='Enter')add(); };
   return d;
 }
+var stickerTab='all';
 function drawStickers(){
   var q=stickerQ;
+  var showChar=stickerTab!=='original', showOrig=stickerTab!=='character';
+  document.getElementById('charPack').style.display=showChar?'':'none';
+  document.getElementById('origPack').style.display=showOrig?'':'none';
+  document.querySelectorAll('#stickerTabs button').forEach(function(b){
+    b.classList.toggle('on',b.dataset.stab===stickerTab);
+    if(b.dataset.stab==='character') b.textContent='Character · '+STICKERS.length;
+    if(b.dataset.stab==='original') b.textContent='Original · '+ORIGINALS.length;
+  });
   var cg=document.getElementById('stickerGrid'); cg.innerHTML='';
   var og=document.getElementById('origGrid'); og.innerHTML='';
   var n1=0,n2=0;
-  STICKERS.forEach(function(s){ if(!q||(s.label+' '+s.search).toLowerCase().indexOf(q)>-1){ cg.appendChild(stickerCard(s,'character')); n1++; } });
-  ORIGINALS.forEach(function(s){ if(!q||(s.label+' '+s.search).toLowerCase().indexOf(q)>-1){ og.appendChild(stickerCard(s,'original')); n2++; } });
+  if(showChar) STICKERS.forEach(function(s){ if(!q||(s.label+' '+s.search).toLowerCase().indexOf(q)>-1){ cg.appendChild(stickerCard(s,'character')); n1++; } });
+  if(showOrig) ORIGINALS.forEach(function(s){ if(!q||(s.label+' '+s.search).toLowerCase().indexOf(q)>-1){ og.appendChild(stickerCard(s,'original')); n2++; } });
   document.getElementById('charCount').textContent=STICKERS.length+' stickers';
   document.getElementById('origCount').textContent=ORIGINALS.length+' faces';
   document.getElementById('stickerCount').textContent=q?('Showing '+n1+' character + '+n2+' original for “'+q+'”'):(STICKERS.length+' character + '+ORIGINALS.length+' original');
 }
+document.getElementById('stickerTabs').addEventListener('click',function(e){ if(e.target.tagName!=='BUTTON')return; stickerTab=e.target.dataset.stab; drawStickers(); });
 document.getElementById('stickerSearch').addEventListener('input',function(e){ stickerQ=e.target.value.trim().toLowerCase(); drawStickers(); });
 
 /* ============ LIBRARY UI: ELEMENTS (real PNG library, grouped by category) ============ */
 var elQ='';
-var EL_CATS=[["funny","Funny"],["general","General"],["winter","Winter"]];
+var elCat='all';
+var EL_PAGE=60;
+var elShown={};
+var EL_CATS=[["funny","Funny"],["general","General"],["winter","Winter"],["faces","Faces"],["reactions","Reactions"],["symbols","Symbols"],["bursts","Bursts"],["animals","Animals"],["food","Food"],["objects","Objects"]];
 function elCatCount(c){ return ELEMENTS.filter(function(e){return e.cat===c}).length; }
 function elLabel(e){
-  var base=e.name.replace(/^(funny|general|winter)-/,'').replace(/-/g,' ');
+  var base=e.name.replace(/^(funny|general|winter|faces|reactions|symbols|bursts|animals|food|objects)-/,'').replace(/-/g,' ');
   base=base.charAt(0).toUpperCase()+base.slice(1);
   var m=e.file.match(/-(\d+)\.webp$/);
   return (m&&+m[1]>1)?base+' '+ (+m[1]):base;
 }
+function buildElChips(){
+  var box=document.getElementById('elChips'); box.innerHTML='';
+  var all=document.createElement('button'); all.className='chip'+(elCat==='all'?' on':''); all.dataset.cat='all';
+  all.innerHTML='All <span class="n">'+ELEMENTS.length+'</span>';
+  all.onclick=function(){ elCat='all'; elShown={}; buildElChips(); drawElements(); };
+  box.appendChild(all);
+  EL_CATS.forEach(function(c){
+    var b=document.createElement('button'); b.className='chip'+(elCat===c[0]?' on':''); b.dataset.cat=c[0];
+    b.innerHTML=c[1]+' <span class="n">'+elCatCount(c[0])+'</span>';
+    b.onclick=function(){ elCat=c[0]; elShown={}; buildElChips(); drawElements(); };
+    box.appendChild(b);
+  });
+}
 function drawElements(){
   var box=document.getElementById('elGroups'); box.innerHTML='';
-  var shown=0;
-  EL_CATS.forEach(function(c){
+  var shown=0, matched=0;
+  var cats=(elCat==='all')?EL_CATS:EL_CATS.filter(function(c){ return c[0]===elCat; });
+  cats.forEach(function(c){
     var total=elCatCount(c[0]);
     var list=ELEMENTS.filter(function(e){ return e.cat===c[0] && (!elQ || (e.name+' '+c[1]).toLowerCase().indexOf(elQ)>-1); });
     if(!list.length) return;
-    shown+=list.length;
+    matched+=list.length;
+    var n=Math.min(elShown[c[0]]||EL_PAGE, list.length);
+    shown+=n;
     var block=document.createElement('div'); block.className='cat-block';
     var head=document.createElement('div'); head.className='cat-head';
     var h=document.createElement('h3'); h.textContent=c[1]; head.appendChild(h);
     var cnt=document.createElement('span'); cnt.textContent=(list.length===total)?(total+' images'):(list.length+' of '+total); head.appendChild(cnt);
     block.appendChild(head);
     var grid=document.createElement('div'); grid.className='el-grid';
-    list.forEach(function(e){
+    list.slice(0,n).forEach(function(e){
       var btn=document.createElement('button'); btn.className='el-btn'; btn.title=elLabel(e)+' · '+c[1];
       var im=document.createElement('img'); im.src='assets/thumbs/'+e.file; im.alt=elLabel(e); im.loading='lazy'; im.decoding='async'; btn.appendChild(im);
       var sp=document.createElement('span'); sp.textContent=elLabel(e); btn.appendChild(sp);
@@ -1342,23 +1615,58 @@ function drawElements(){
       grid.appendChild(btn);
     });
     block.appendChild(grid);
+    if(n<list.length){
+      var more=document.createElement('button'); more.className='show-more'; more.type='button';
+      more.textContent='Show more · '+(list.length-n)+' left in '+c[1];
+      more.onclick=function(){ elShown[c[0]]=n+EL_PAGE; drawElements(); };
+      block.appendChild(more);
+    }
     box.appendChild(block);
   });
-  if(!shown){ var em=document.createElement('div'); em.className='empty'; em.textContent='No elements match “'+elQ+'”.'; box.appendChild(em); }
-  document.getElementById('elCount').textContent=elQ
-    ? ('Showing '+shown+' of '+ELEMENTS.length+' elements')
-    : (ELEMENTS.length+' elements · '+elCatCount('funny')+' funny · '+elCatCount('general')+' general · '+elCatCount('winter')+' winter');
+  if(!matched){ var em=document.createElement('div'); em.className='empty'; em.textContent=elQ?('No elements match “'+elQ+'”.'):'No elements in this category.'; box.appendChild(em); }
+  document.getElementById('elCount').textContent=(elCat!=='all'||elQ)
+    ? ('Showing '+shown+' of '+matched+' matching · '+ELEMENTS.length+' elements total')
+    : (ELEMENTS.length+' elements · '+EL_CATS.map(function(c){ return elCatCount(c[0])+' '+c[1].toLowerCase(); }).join(' · '));
 }
-document.getElementById('elSearch').addEventListener('input',function(e){ elQ=e.target.value.trim().toLowerCase(); drawElements(); });
+document.getElementById('elSearch').addEventListener('input',function(e){ elQ=e.target.value.trim().toLowerCase(); elShown={}; drawElements(); });
 
 /* ============ LIBRARY UI: BACKGROUNDS & FRAMES ============ */
 var sceneEl=document.getElementById('sceneSwatches');
+var SCENE_PAGE=60, sceneShown=0, bgTab='scenes';
 function buildScenes(){
-SCENES.forEach(function(s){ var b=document.createElement('button'); b.className='scene-swatch'; b.title=s.name; b.setAttribute('aria-label','Scene background '+s.name);
-  var im=document.createElement('img'); im.src='assets/thumbs/'+s.file; im.alt=''; im.loading='lazy'; im.decoding='async'; b.appendChild(im);
-  var sp=document.createElement('span'); sp.textContent=s.name; b.appendChild(sp);
-  b.onclick=function(){ pushUndo(); currentBg=sceneBgEntry(s); syncBgUI(); applyBg(); }; sceneEl.appendChild(b); });
+  sceneEl.innerHTML=''; sceneShown=0;
+  document.querySelectorAll('#bgTabs button').forEach(function(b){
+    b.classList.toggle('on',b.dataset.bgtab===bgTab);
+    if(b.dataset.bgtab==='scenes') b.textContent='Winter scenes · '+SCENES.length;
+    if(b.dataset.bgtab==='colors') b.textContent='Colors · '+BGS.length;
+  });
+  document.getElementById('bgScenesWrap').style.display=bgTab==='scenes'?'':'none';
+  document.getElementById('bgColorsWrap').style.display=bgTab==='colors'?'':'none';
+  drawMoreScenes();
 }
+function drawMoreScenes(){
+  var end=Math.min(sceneShown+SCENE_PAGE, SCENES.length);
+  for(var i=sceneShown;i<end;i++){ (function(s){
+    var b=document.createElement('button'); b.className='scene-swatch'; b.title=s.name; b.setAttribute('aria-label','Scene background '+s.name);
+    var im=document.createElement('img'); im.src='assets/thumbs/'+s.file; im.alt=''; im.loading='lazy'; im.decoding='async'; b.appendChild(im);
+    var sp=document.createElement('span'); sp.textContent=s.name; b.appendChild(sp);
+    b.onclick=function(){ pushUndo(); currentBg=sceneBgEntry(s); syncBgUI(); applyBg(); }; sceneEl.appendChild(b);
+  })(SCENES[i]); }
+  sceneShown=end;
+  var moreBox=document.getElementById('sceneMore'); moreBox.innerHTML='';
+  if(sceneShown<SCENES.length){
+    var more=document.createElement('button'); more.className='show-more'; more.type='button';
+    more.textContent='Show more scenes · '+(SCENES.length-sceneShown)+' left';
+    more.onclick=function(){ drawMoreScenes(); syncBgUI(); };
+    moreBox.appendChild(more);
+  }
+  syncBgUI();
+}
+document.getElementById('bgTabs').addEventListener('click',function(e){ if(e.target.tagName!=='BUTTON')return; bgTab=e.target.dataset.bgtab;
+  document.querySelectorAll('#bgTabs button').forEach(function(b){ b.classList.toggle('on',b.dataset.bgtab===bgTab); });
+  document.getElementById('bgScenesWrap').style.display=bgTab==='scenes'?'':'none';
+  document.getElementById('bgColorsWrap').style.display=bgTab==='colors'?'':'none';
+});
 var bgEl=document.getElementById('bgSwatches');
 BGS.forEach(function(bg,i){ var b=document.createElement('button'); b.className='swatch'+(i===0?' on':''); b.style.background='linear-gradient(150deg,'+bg[1]+','+bg[2]+')'; b.title=bg[0]; b.setAttribute('aria-label','Background '+bg[0]);
   b.onclick=function(){ pushUndo(); currentBg=bg; syncBgUI(); applyBg(); }; bgEl.appendChild(b); });
@@ -1410,7 +1718,19 @@ var TEMPLATES=[
    return [mkSticker("lofi-sticker-sideeye.webp",26,44,40), mkSticker("lofi-sticker-ski.webp",74,44,42),
      mkText("Before coffee",26,86,44,{size:5.5,color:'#12242E',tOutline:0,tShadow:false}), mkText("After coffee",74,86,44,{size:5.5,color:'#12242E',tOutline:0,tShadow:false})]; }},
  {name:"Caption Bar",fmt:"Meme format",desc:"White bar on top, reaction below, meme-generator style",bg:12,thumb:"lofi-original-shocked.webp",build:function(){
-   return [mkText("POV: you found Lofi Meme Studio",50,9,96,{size:6,color:'#12242E',tOutline:0,tShadow:false,bgC:'#ffffff'}), mkSticker("lofi-original-shocked.webp",50,56,58)]; }}
+   return [mkText("POV: you found Lofi Meme Studio",50,9,96,{size:6,color:'#12242E',tOutline:0,tShadow:false,bgC:'#ffffff'}), mkSticker("lofi-original-shocked.webp",50,56,58)]; }},
+ {name:"Winter Morning",fmt:"Classic",desc:"Hot cocoa Lofi at a winter sunrise",scene:"bg-scene-winter-sunrise-field.webp",thumb:"bg-scene-winter-sunrise-field.webp",build:function(){
+   return [mkSticker("lofi-sticker-hot-cocoa.webp",50,52,52), mkEl("winter-snowflake-01.webp",10,10,12), mkEl("winter-snowflake-02.webp",90,14,11), mkCapText("GOOD MORNING")]; }},
+ {name:"Snow Day",fmt:"Classic",desc:"Sledding Lofi on a snowy bridge",scene:"bg-scene-snowy-bridge-river.webp",thumb:"bg-scene-snowy-bridge-river.webp",build:function(){
+   return [mkSticker("lofi-sticker-sledding.webp",50,50,56), mkEl("winter-snowflake-01.webp",9,9,12), mkEl("winter-snowflake-02.webp",91,12,12), mkCapText("SNOW DAY!")]; }},
+ {name:"DJ Lofi",fmt:"Classic",desc:"Lofi on the decks, midnight set",bg:2,thumb:"lofi-sticker-dj-headphones.webp",build:function(){
+   return [mkSticker("lofi-sticker-dj-headphones.webp",50,48,56), mkEl("general-music-note-01.webp",10,12,14), mkEl("general-music-note-03.webp",90,12,14), mkEl("general-music-note-02.webp",88,80,12), mkText("DJ LOFI",50,88,70)]; }},
+ {name:"Chef's Special",fmt:"Classic",desc:"Chef Lofi serves up something tasty",bg:3,thumb:"lofi-sticker-chef.webp",build:function(){
+   return [mkSticker("lofi-sticker-chef.webp",50,48,56), mkEl("funny-donut.webp",12,12,16), mkEl("funny-pizza-01.webp",88,12,16), mkText("CHEF LOFI",50,88,70)]; }},
+ {name:"Detective Mode",fmt:"Classic",desc:"Detective Lofi cracks the case in the misty woods",scene:"bg-scene-misty-winter-woods.webp",thumb:"bg-scene-misty-winter-woods.webp",build:function(){
+   return [mkSticker("lofi-sticker-detective.webp",50,50,54), mkEl("general-question-mark-01.webp",10,10,13), mkEl("general-star-01.webp",90,12,12), mkCapText("CASE CLOSED")]; }},
+ {name:"Snowman Squad",fmt:"Meme format",desc:"Two-panel winter build-off",bg:10,thumb:"lofi-sticker-snowman-building.webp",build:function(){
+   return [mkSticker("lofi-sticker-snowman-building.webp",26,44,40), mkSticker("lofi-sticker-hot-cocoa.webp",74,44,40), mkText("WHEN IT SNOWS",50,10,92,{font:"'Archivo Black'",size:8,tOutline:26}), mkText("LOFI BUILDS",50,91,92,{font:"'Archivo Black'",size:8,tOutline:26})]; }}
 ];
 /* Preview of a template's exact composition: same background and layers the editor loads,
    placed with the editor's own geometry (centre x/y %, width %, rotation, caption style),
@@ -1532,14 +1852,30 @@ async function renderPNG(W){
         var fo=fontOf(l.font), fs=l.size/100*W;
         ctx.font=fo.weight+' '+fs+'px '+l.font+',sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
         var lines=wrapLines(ctx,l.text,wpx), lh=fs*1.14, totalH=lines.length*lh;
-        if(l.bgC){ ctx.fillStyle=l.bgC; var bw=0,bh=totalH+fs*0.36;
+        var eff=effOf(l), legacy=isLegacyFx(l), gc=l.glowColor||'#FFD25A';
+        var hlC=(eff==='highlight')?(l.bgC||'#FFD25A'):l.bgC;
+        if(hlC){ ctx.fillStyle=hlC; var bw=0,bh=totalH+fs*0.36;
           lines.forEach(function(ln){ bw=Math.max(bw,ctx.measureText(ln).width); });
           roundRect(ctx,-bw/2-fs*0.34,-totalH/2-fs*0.18,bw+fs*0.68,bh,fs*0.14); ctx.fill(); }
         if(l.shadow>0){ ctx.save(); ctx.shadowColor='rgba(8,25,35,.5)'; ctx.shadowBlur=l.shadow*1.1*scale; ctx.shadowOffsetY=l.shadow*0.8*scale; }
+        var grad=null;
+        if(eff==='gradient'){ grad=ctx.createLinearGradient(0,-totalH/2,0,totalH/2); grad.addColorStop(0,l.color); grad.addColorStop(1,gc); }
         lines.forEach(function(ln,li){ var y=(li-(lines.length-1)/2)*lh;
-          if(l.tOutline>0){ ctx.lineWidth=fs*l.tOutline/100; ctx.strokeStyle=l.tOutlineColor; ctx.lineJoin='round'; ctx.strokeText(ln,0,y); }
-          else if(l.tShadow){ ctx.save(); ctx.fillStyle='rgba(18,36,46,.85)'; ctx.fillText(ln,fs*0.05,y+fs*0.05); ctx.restore(); }
-          ctx.fillStyle=l.color; ctx.fillText(ln,0,y); });
+          /* effect under-passes (drawn behind the main fill) */
+          if(eff==='extrude'){ ctx.fillStyle='rgba(18,36,46,.85)'; for(var ei=6;ei>=1;ei--){ ctx.fillText(ln,0,y+fs*0.035*ei); } ctx.fillStyle='rgba(18,36,46,.35)'; ctx.fillText(ln,0,y+fs*0.26); }
+          else if(eff==='retro'){ ctx.fillStyle='#FFD25A'; ctx.fillText(ln,fs*0.11,y+fs*0.11); ctx.fillStyle='#FF5A9E'; ctx.fillText(ln,fs*0.055,y+fs*0.055); }
+          else if(eff==='hardshadow'){ ctx.fillStyle='rgba(18,36,46,.9)'; ctx.fillText(ln,fs*0.09,y+fs*0.09); }
+          else if(eff==='emboss'){ ctx.fillStyle='rgba(255,255,255,.8)'; ctx.fillText(ln,-fs*0.03,y-fs*0.035); ctx.fillStyle='rgba(18,36,46,.55)'; ctx.fillText(ln,fs*0.045,y+fs*0.05); }
+          else if(eff==='shadow'&&legacy&&l.tShadow){ ctx.fillStyle='rgba(18,36,46,.85)'; ctx.fillText(ln,fs*0.07,y+fs*0.07); }
+          /* main pass */
+          ctx.save();
+          if(eff==='glow'){ ctx.shadowColor=gc; ctx.shadowBlur=fs*0.4; }
+          else if(eff==='neon'){ ctx.shadowColor=gc; ctx.shadowBlur=fs*0.55; }
+          else if(eff==='shadow'&&!legacy){ ctx.shadowColor='rgba(18,36,46,.55)'; ctx.shadowBlur=fs*0.14; ctx.shadowOffsetX=fs*0.05; ctx.shadowOffsetY=fs*0.08; }
+          if(eff==='outline'){ var ow=l.tOutline>0?l.tOutline:14; ctx.lineWidth=fs*ow/100; ctx.strokeStyle=l.tOutlineColor||'#12242E'; ctx.lineJoin='round'; ctx.strokeText(ln,0,y); }
+          ctx.fillStyle=grad||l.color; ctx.fillText(ln,0,y);
+          if(eff==='glow'||eff==='neon') ctx.fillText(ln,0,y);
+          ctx.restore(); });
         if(l.shadow>0) ctx.restore();
         if(l.glow>0){ ctx.save(); ctx.shadowColor=l.glowColor; ctx.shadowBlur=l.glow*1.4*scale; ctx.fillStyle=l.color;
           lines.forEach(function(ln,li){ ctx.fillText(ln,0,(li-(lines.length-1)/2)*lh); }); ctx.restore(); }
@@ -1576,10 +1912,11 @@ document.getElementById('shareBtn').addEventListener('click',async function(){
    only when the studio view first opens, never on the landing page.
    Every section builds independently: if one part ever fails, the rest of the
    studio, including the editor itself, still opens. The heavy Elements grid
-   (205 images) is built even later, the first time its tab is opened. ============ */
+   (500 images) is built even later, the first time its tab is opened. ============ */
 var libraryBuilt=false, elementsBuilt=false;
 function ensureElements(){
   if(elementsBuilt) return; elementsBuilt=true;
+  try{ buildElChips(); }catch(e){}
   try{ drawElements(); }catch(e){}
 }
 function ensureStudio(){
@@ -1651,6 +1988,9 @@ function initEditor(){
     window.scrollTo(0,0);
   }
   /* Details: real counts from the libraries, no image grids on the landing page */
+  document.getElementById('lpStickers').textContent=STICKERS.length;
+  document.getElementById('lpOriginals').textContent=ORIGINALS.length;
+  document.getElementById('lpTemplates').textContent=TEMPLATES.length;
   document.getElementById('dStickers').textContent=STICKERS.length;
   document.getElementById('dOriginals').textContent=ORIGINALS.length;
   document.getElementById('dElements').textContent=ELEMENTS.length;
