@@ -485,6 +485,10 @@ input[type=range]{cursor:pointer}
 .pf-stats{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 2px}
 .pf-stats .stat{flex:1;min-width:100px}
 .pf-sec{font-size:17px;margin:24px 0 10px}
+.pf-bio{font-size:13.5px;color:var(--ink);font-weight:600;margin:4px 0 0;line-height:1.5;overflow-wrap:anywhere}
+.pf-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 12px}
+.pf-tab{font:inherit;font-weight:800;font-size:14px;background:var(--surface);border:var(--bd2);padding:8px 14px;cursor:pointer;box-shadow:var(--sh-xs)}
+.pf-tab.on{background:var(--yellow);box-shadow:3px 3px 0 var(--ink)}
 .pf-sec::before{content:"";display:inline-block;width:11px;height:11px;background:var(--accent);border:2px solid var(--ink);margin-right:10px}
 .pf-grid{grid-template-columns:repeat(3,1fr)}
 @media(max-width:640px){.pf-grid{grid-template-columns:repeat(2,1fr)}}
@@ -528,7 +532,10 @@ input[type=range]{cursor:pointer}
 .nft-chip-av{position:absolute;left:27px;bottom:-7px;z-index:2;background:var(--ink);color:#fff;border:2px solid #fff;font-size:8.5px;font-weight:900;letter-spacing:.05em;padding:1px 4px;text-transform:uppercase;pointer-events:none;line-height:1.3}
 .pf-ava{position:relative}
 .nft-chip-pf{position:absolute;right:0;bottom:0;background:var(--ink);color:#fff;font-size:9px;font-weight:900;padding:2px 6px;letter-spacing:.06em;text-transform:uppercase}
-.pf-edit{max-width:460px}
+.pf-edit{max-width:560px}
+.pf-group{border:var(--bd2);background:#fff;padding:14px;margin-top:14px}
+.pf-group>h4{font-family:"Archivo",sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px}
+.pf-group .field:last-of-type{margin-bottom:0}
 .pf-note{font-size:13px;color:var(--muted);font-weight:700;margin:0 0 10px;line-height:1.55}
 .pf-sui-addr{font-size:13.5px;font-weight:700;overflow-wrap:anywhere;background:var(--ice-light);border:var(--bd2);padding:10px 12px;margin:0;line-height:1.5}
 .pf-pic-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
@@ -579,6 +586,7 @@ input[type=range]{cursor:pointer}
 <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="round"><path d="M13.5 5.5L20 12l-6.5 6.5v-4.2C7 14.3 4.8 16.6 3.5 20c-.3-6.8 3-11 10-11.7z"/></symbol>
 <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/></symbol>
 <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="round"><path d="M14 4h6.5v16H14M10.5 8L6 12l4.5 4M6 12h11"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h11v2.5"/><rect x="3" y="7.5" width="18" height="12"/><circle cx="16.8" cy="13.5" r="1.4" fill="currentColor" stroke="none"/></symbol>
 </defs></svg>
 <header class="lp-header">
     <div class="lp-header-in">
@@ -902,6 +910,8 @@ input[type=range]{cursor:pointer}
           <h3 id="pfName">Maker</h3>
           <p class="pf-email" id="pfEmail"></p>
           <p class="pf-joined" id="pfJoined"></p>
+          <p class="pf-joined" id="pfWalletLine"></p>
+          <p class="pf-bio" id="pfBio" hidden></p>
         </div>
       </div>
       <div class="pf-stats">
@@ -909,25 +919,44 @@ input[type=range]{cursor:pointer}
         <div class="stat"><b id="pfStatVotes">0</b><span>Votes received</span></div>
         <div class="stat"><b id="pfStatLiked">0</b><span>Liked</span></div>
       </div>
-      <h3 class="pf-sec">Edit profile</h3>
+      <h3 class="pf-sec">Account settings</h3>
       <div class="pf-edit">
-        <div class="field"><label for="pfNameInput">Display name</label><input type="text" id="pfNameInput" maxlength="40" placeholder="Your display name"></div>
-        <button class="btn ghost" type="button" id="pfSaveName">Save name</button>
-        <div class="field" style="margin-top:16px"><label>Profile picture</label>
-          <p class="pf-note">Pick one of your published memes to use as your profile picture. It is free. If that meme is minted, your picture gets an NFT badge.</p>
+        <div class="pf-group">
+          <h4>Name &amp; bio</h4>
+          <div class="field"><label for="pfNameInput">Display name</label><input type="text" id="pfNameInput" maxlength="40" placeholder="Your display name"></div>
+          <button class="btn ghost" type="button" id="pfSaveName">Save name</button>
+          <div class="field" style="margin-top:16px"><label for="pfBioInput">Bio</label><textarea id="pfBioInput" maxlength="200" rows="2" placeholder="A line about you"></textarea></div>
+          <button class="btn ghost" type="button" id="pfSaveBio">Save bio</button>
+        </div>
+        <div class="pf-group">
+          <h4>Profile picture</h4>
+          <p class="pf-note">Pick one of your published memes. It is saved to your account and shows everywhere you sign in.</p>
           <div class="pf-pic-grid" id="pfPicGrid"></div>
           <button class="btn ghost" type="button" id="pfPicRemove">Use default picture</button>
         </div>
-        <div class="field" style="margin-top:16px"><label>Linked Sui address</label>
-          <p class="pf-sui-addr" id="pfSuiAddr">No Sui wallet linked to this account.</p>
+        <div class="pf-group">
+          <h4>Linked wallet</h4>
+          <p class="pf-note" id="pfWalletState">No wallet linked yet.</p>
+          <p class="pf-sui-addr" id="pfSuiAddr" hidden></p>
+          <div class="cf-btns" style="margin-top:8px;justify-content:flex-start">
+            <button class="btn ghost" type="button" id="pfWalletConnect">Link wallet</button>
+            <button class="btn ghost" type="button" id="pfWalletCopy" hidden>Copy address</button>
+            <button class="btn ghost" type="button" id="pfWalletDisconnect" hidden>Unlink wallet</button>
+          </div>
+          <p class="pf-note" style="margin-top:10px">One wallet can be linked to one account only.</p>
         </div>
       </div>
-      <h3 class="pf-sec">My memes</h3>
+      <div class="pf-tabs" role="tablist">
+        <button class="pf-tab on" type="button" id="pfTabMine" role="tab">My memes</button>
+        <button class="pf-tab" type="button" id="pfTabMinted" role="tab">Minted</button>
+        <button class="pf-tab" type="button" id="pfTabLiked" role="tab">Liked</button>
+      </div>
       <p class="gal-status" id="pfMineStatus"></p>
       <div class="gallery pf-grid" id="pfMine"></div>
-      <h3 class="pf-sec">Liked memes</h3>
-      <p class="gal-status" id="pfLikedStatus"></p>
-      <div class="gallery pf-grid" id="pfLiked"></div>
+      <p class="gal-status" id="pfMintedStatus" hidden></p>
+      <div class="gallery pf-grid" id="pfMinted" hidden></div>
+      <p class="gal-status" id="pfLikedStatus" hidden></p>
+      <div class="gallery pf-grid" id="pfLiked" hidden></div>
     </div>
   </div>
 </div>
@@ -966,10 +995,11 @@ input[type=range]{cursor:pointer}
 <div class="lb" id="authModal" hidden role="dialog" aria-modal="true" aria-label="Sign in">
   <div class="cf-card auth-card">
     <button class="lb-close auth-x" type="button" id="authClose" aria-label="Close sign in">✕</button>
-    <h3>Sign in</h3>
+    <h3>Your account</h3>
+    <p class="auth-sub">Your account is your email. Your memes, votes and profile are saved to it and follow you on any device.</p>
     <button class="google-btn" type="button" id="googleBtn"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg><span>Continue with Google</span></button>
-    <button class="sui-btn" type="button" id="suiBtn"><svg viewBox="0 0 25.7862 32.9607" aria-hidden="true" focusable="false"><path fill="#4DA2FF" fill-rule="evenodd" clip-rule="evenodd" d="M20.6338 13.746C21.9783 15.434 22.7822 17.5688 22.7822 19.8911C22.7822 22.2133 21.9538 24.4133 20.5741 26.1108L20.4546 26.2575L20.4233 26.0714C20.3962 25.9139 20.3649 25.7537 20.3283 25.5934C19.637 22.5569 17.3854 19.9535 13.6794 17.8445C11.1765 16.424 9.74383 14.7156 9.36766 12.7723C9.12457 11.5161 9.30519 10.2545 9.6542 9.17352C10.0032 8.09389 10.522 7.18808 10.9633 6.64352L12.4056 4.8808C12.6581 4.57117 13.1321 4.57117 13.3847 4.8808L20.6352 13.746H20.6338ZM22.914 11.9846L13.2502 0.169807C13.0656 -0.0556256 12.7206 -0.0556256 12.5359 0.169807L2.87358 11.9846L2.84235 12.024C1.06469 14.2308 0 17.0351 0 20.088C0 27.1972 5.77296 32.9607 12.8931 32.9607C20.0132 32.9607 25.7862 27.1972 25.7862 20.088C25.7862 17.0351 24.7215 14.2308 22.9438 12.0254L22.9126 11.986L22.914 11.9846ZM5.1863 13.708L6.05 12.6501L6.0758 12.8456C6.09617 13.0004 6.12198 13.1552 6.15185 13.3114C6.71136 16.2461 8.70901 18.6919 12.0484 20.5864C14.9519 22.2391 16.6426 24.139 17.1288 26.2222C17.3325 27.0913 17.3678 27.9469 17.2795 28.6951L17.2741 28.7413L17.232 28.7617C15.9215 29.4013 14.448 29.7612 12.8917 29.7612C7.43111 29.7612 3.00395 25.3422 3.00395 19.8897C3.00395 17.5485 3.82012 15.3987 5.18358 13.7053L5.1863 13.708Z"/></svg><span>Continue with Sui</span></button>
-    <p class="sui-note">No transaction. Only a signature to prove you own the address.</p>
+    <button class="sui-btn" type="button" id="suiBtn"><svg viewBox="0 0 25.7862 32.9607" aria-hidden="true" focusable="false"><path fill="#4DA2FF" fill-rule="evenodd" clip-rule="evenodd" d="M20.6338 13.746C21.9783 15.434 22.7822 17.5688 22.7822 19.8911C22.7822 22.2133 21.9538 24.4133 20.5741 26.1108L20.4546 26.2575L20.4233 26.0714C20.3962 25.9139 20.3649 25.7537 20.3283 25.5934C19.637 22.5569 17.3854 19.9535 13.6794 17.8445C11.1765 16.424 9.74383 14.7156 9.36766 12.7723C9.12457 11.5161 9.30519 10.2545 9.6542 9.17352C10.0032 8.09389 10.522 7.18808 10.9633 6.64352L12.4056 4.8808C12.6581 4.57117 13.1321 4.57117 13.3847 4.8808L20.6352 13.746H20.6338ZM22.914 11.9846L13.2502 0.169807C13.0656 -0.0556256 12.7206 -0.0556256 12.5359 0.169807L2.87358 11.9846L2.84235 12.024C1.06469 14.2308 0 17.0351 0 20.088C0 27.1972 5.77296 32.9607 12.8931 32.9607C20.0132 32.9607 25.7862 27.1972 25.7862 20.088C25.7862 17.0351 24.7215 14.2308 22.9438 12.0254L22.9126 11.986L22.914 11.9846ZM5.1863 13.708L6.05 12.6501L6.0758 12.8456C6.09617 13.0004 6.12198 13.1552 6.15185 13.3114C6.71136 16.2461 8.70901 18.6919 12.0484 20.5864C14.9519 22.2391 16.6426 24.139 17.1288 26.2222C17.3325 27.0913 17.3678 27.9469 17.2795 28.6951L17.2741 28.7413L17.232 28.7617C15.9215 29.4013 14.448 29.7612 12.8917 29.7612C7.43111 29.7612 3.00395 25.3422 3.00395 19.8897C3.00395 17.5485 3.82012 15.3987 5.18358 13.7053L5.1863 13.708Z"/></svg><span>Link a wallet</span></button>
+    <p class="sui-note">Optional — link a Sui wallet to your account for minting. One wallet links to one account.</p>
     <div class="auth-or">or</div>
     <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></div>
     <div class="field"><label for="authPass">Password</label><input type="password" id="authPass" autocomplete="current-password" placeholder="Password"></div>
@@ -979,8 +1009,15 @@ input[type=range]{cursor:pointer}
     </div>
     <p class="auth-err" id="authErr" hidden></p>
     <p class="auth-note" id="authPreviewNote" hidden>Sign-in works on the live site (lofi-meme-studio.vercel.app). This preview address is not approved for sign-in, so sign-in is blocked here.</p>
-    <div id="suiPicker" hidden>
-      <button class="btn ghost sui-back" type="button" id="suiBack">Back</button>
+  </div>
+</div>
+
+<div class="lb" id="walletModal" hidden role="dialog" aria-modal="true" aria-label="Link wallet">
+  <div class="cf-card auth-card">
+    <button class="lb-close auth-x" type="button" id="walletClose" aria-label="Close wallet link">✕</button>
+    <h3>Link wallet</h3>
+    <p class="auth-sub">Connect your Sui wallet and sign a short message to prove it is yours. Nothing is sent and no funds move. The wallet is linked to your account — one wallet can be linked to one account only.</p>
+    <div id="suiPicker">
       <p class="sui-picker-title" id="suiPickerTitle">Choose a wallet</p>
       <div id="suiWalletList"></div>
       <div id="suiNoWallet" hidden>
@@ -989,6 +1026,9 @@ input[type=range]{cursor:pointer}
         <p class="sui-note">No wallet yet? <a href="https://slush.app" target="_blank" rel="noopener">Get Slush</a></p>
       </div>
       <p class="auth-err" id="suiPickerErr" hidden></p>
+      <div class="cf-btns" style="justify-content:flex-start;margin-top:6px">
+        <button class="btn ghost sui-back" type="button" id="suiBack">Cancel</button>
+      </div>
     </div>
   </div>
 </div>
@@ -998,7 +1038,7 @@ input[type=range]{cursor:pointer}
     <button class="lb-close auth-x" type="button" id="pubClose" aria-label="Close publish">✕</button>
     <h3>Publish to gallery</h3>
     <div class="field"><label for="pubTitle">Title</label><input type="text" id="pubTitle" maxlength="80" placeholder="Give your meme a title"></div>
-    <p class="pf-note">Publishing is free. You can also mint this meme as an NFT on Sui testnet straight after publishing — minting is optional, and testnet minting is free too.</p>
+    <p class="pf-note">Publishing is free. Minting as an NFT afterwards is optional.</p>
     <p class="auth-err" id="pubErr" hidden></p>
     <div class="cf-btns">
       <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
@@ -2249,18 +2289,38 @@ match /memes/{memeId} {
 
 // Sui identity (account fix): the Sui address is the stable account key.
 // users/{address} is the public profile record (display name + joined date)
-// for a Sui account; suiLinks/{address} records which Firebase uid
-// currently holds that address (written at every Sui sign-in, after the
-// wallet signature is verified in the app), so meme ownership above can
-// follow the address across sign-out + sign-in.
+// for a Sui account; suiLinks/{address} records which account holds that
+// address (written when a wallet is linked, after the wallet signature is
+// verified in the app), so meme ownership above can follow the address
+// across sign-out + sign-in.
 match /users/{address} {
   allow read: if true;
-  allow write: if request.auth != null;
+  allow write: if request.auth != null
+    && exists(/databases/$(database)/documents/suiLinks/$(address))
+    && get(/databases/$(database)/documents/suiLinks/$(address)).data.uid == request.auth.uid;
 }
 match /suiLinks/{address} {
   allow read: if false;
-  allow write: if request.auth != null
-    && request.resource.data.uid == request.auth.uid;
+  // One wallet, one account: a link held by a signed-in account (email
+  // set) can only be rewritten by that same account. A link left by an
+  // anonymous wallet session (no email) may be claimed by the account
+  // that links the wallet. Only the holding account can unlink (delete).
+  allow create, update: if request.auth != null
+    && request.resource.data.uid == request.auth.uid
+    && (!exists(/databases/$(database)/documents/suiLinks/$(address))
+      || resource.data.uid == request.auth.uid
+      || !('email' in resource.data)
+      || resource.data.email == '');
+  allow delete: if request.auth != null
+    && resource.data.uid == request.auth.uid;
+}
+
+// Account record: the account is the email sign-in. accounts/{uid} holds
+// the bio, the profile picture choice and the linked wallet address, so
+// they follow the user to any device they sign in on. Owner-only.
+match /accounts/{uid} {
+  allow read: if request.auth != null && request.auth.uid == uid;
+  allow write: if request.auth != null && request.auth.uid == uid;
 }
 ============================================================================= -->
 <script>
@@ -2339,7 +2399,7 @@ function authErrorText(err){
 }
 function dbErrorText(err){
   var code=(err&&err.code)||"";
-  if(code==="permission-denied") return "The database rules do not allow this yet. The memes rules need to be added in the Firebase console (Firestore Database, then Rules). They are listed in the build notes for this update.";
+  if(code==="permission-denied") return "That could not be saved right now. Please try again later.";
   if(code==="unavailable") return "The database is unreachable right now. Try again in a moment.";
   if(code==="not-found") return "That meme is no longer there.";
   return (err&&err.message)||"Something went wrong. Try again.";
@@ -2385,7 +2445,11 @@ function renderAuth(){
     var sep=document.createElement('div'); sep.className="am-sep";
     var out=document.createElement('button'); out.type="button"; out.className="am-item danger"; out.setAttribute('role','menuitem'); out.innerHTML='<svg class="ic"><use href="#i-out"/></svg>Sign out';
     out.addEventListener('click',function(){ menu.hidden=true; av.setAttribute('aria-expanded','false'); signOutAll(); });
-    items.appendChild(prof); items.appendChild(mine); items.appendChild(sep); items.appendChild(out);
+    var waddr=linkedSuiAddress();
+    var wit=document.createElement('button'); wit.type="button"; wit.className="am-item"; wit.setAttribute('role','menuitem');
+    wit.innerHTML='<svg class="ic"><use href="#i-wallet"/></svg>'+(waddr?('Wallet · '+shortSuiAddr(waddr)):'Link wallet');
+    wit.addEventListener('click',function(){ menu.hidden=true; av.setAttribute('aria-expanded','false'); if(waddr){ openProfile(); } else if(IS_PREVIEW||!fbAuth){ toast('Wallet linking works on the live site: '+LIVE_HOST); } else { showSuiPicker(); } });
+    items.appendChild(prof); items.appendChild(mine); items.appendChild(wit); items.appendChild(sep); items.appendChild(out);
     menu.appendChild(items);
     av.addEventListener('click',function(e){ e.stopPropagation();
       document.querySelectorAll('.auth-menu').forEach(function(x){ if(x!==menu) x.hidden=true; });
@@ -2426,13 +2490,57 @@ function closeProfile(){
   window.scrollTo(0,0);
 }
 document.getElementById('profileBack').addEventListener('click',closeProfile);
+/* ---------- Account record: accounts/{uid} ----------
+   The account is the email sign-in (Google or email/password). Everything
+   that belongs to the person is saved on the account record in Firestore —
+   bio, profile picture choice and the linked wallet address — so it is
+   there on any device they sign in on, not just this one. A copy is cached
+   on this device only so the header and profile render instantly; the
+   server record always wins when it loads. */
+var ACCT_CACHE_KEY="lofi_meme_account_v1";
+var acctProfile=null, accountWallet="";
+function cacheAccountProfile(){
+  try{
+    if(fbUser&&acctProfile) localStorage.setItem(ACCT_CACHE_KEY,JSON.stringify({uid:fbUser.uid,data:acctProfile}));
+    else if(fbUser) localStorage.removeItem(ACCT_CACHE_KEY);
+  }catch(e){}
+}
+function readCachedAccount(){
+  try{ var c=JSON.parse(localStorage.getItem(ACCT_CACHE_KEY)||"null"); return (c&&fbUser&&c.uid===fbUser.uid&&c.data)?c.data:null; }
+  catch(e){ return null; }
+}
+function applyAccountProfile(){
+  accountWallet=(acctProfile&&acctProfile.walletAddress)||"";
+  renderAuth();
+  if(profileIsOpen()) renderProfile();
+}
+function loadAccountProfile(){
+  if(!fbUser){ acctProfile=null; accountWallet=""; return; }
+  var cached=readCachedAccount();
+  if(cached){ acctProfile=cached; applyAccountProfile(); }
+  if(!fbDb) return;
+  fbDb.collection('accounts').doc(fbUser.uid).get().then(function(s){
+    acctProfile=s.exists?(s.data()||{}):(acctProfile||{});
+    cacheAccountProfile(); applyAccountProfile();
+    /* The linked wallet address restores this account's wallet memes too. */
+    if(accountWallet){ myLoaded=false; loadMyMemes(); }
+  }).catch(function(){});
+}
+function saveAccountProfile(patch){
+  if(!fbUser) return Promise.resolve(false);
+  acctProfile=Object.assign({},acctProfile||{},patch);
+  cacheAccountProfile(); applyAccountProfile();
+  if(!fbDb) return Promise.resolve(false);
+  return fbDb.collection('accounts').doc(fbUser.uid).set(patch,{merge:true})
+    .then(function(){ return true; }).catch(function(){ return false; });
+}
 /* ---------- Profile picture: one of your own published memes ----------
-   The choice is kept on this device (same storage the Sui session uses):
-   { uid, memeId, image, minted }. It is free, needs no transaction, and
-   shows wherever your picture shows: header avatar, account menu and the
-   profile page. If the chosen meme is minted, an NFT badge sits on it. */
+   The choice is saved on the account record (above), so the same picture
+   shows on every device: header avatar, account menu and the profile
+   page. If the chosen meme is minted, an NFT badge sits on it. */
 var PF_PIC_KEY="lofi_meme_profile_pic_v1";
 function loadProfilePic(){
+  if(acctProfile&&acctProfile.pic&&acctProfile.pic.image) return acctProfile.pic;
   try{ var p=JSON.parse(localStorage.getItem(PF_PIC_KEY)||"null"); return (p&&fbUser&&p.uid===fbUser.uid&&p.image)?p:null; }
   catch(e){ return null; }
 }
@@ -2448,22 +2556,32 @@ function profilePicMinted(){
 }
 function setProfilePic(m){
   if(!fbUser) return;
-  try{ localStorage.setItem(PF_PIC_KEY,JSON.stringify({uid:fbUser.uid,memeId:m.id,image:m.image,minted:!!m.minted})); }catch(e){}
+  var pic={memeId:m.id,image:m.image,minted:!!m.minted};
+  try{ localStorage.setItem(PF_PIC_KEY,JSON.stringify({uid:fbUser.uid,memeId:pic.memeId,image:pic.image,minted:pic.minted})); }catch(e){}
+  saveAccountProfile({pic:pic});
   renderAuth(); renderProfile(); toast('Profile picture updated.');
 }
 function clearProfilePic(){
   try{ localStorage.removeItem(PF_PIC_KEY); }catch(e){}
+  saveAccountProfile({pic:null});
   renderAuth(); renderProfile(); toast('Profile picture reset.');
 }
 function renderProfileEdit(){
   if(!fbUser) return;
   var ni=document.getElementById('pfNameInput');
   if(ni&&document.activeElement!==ni) ni.value=fbUser.displayName||"";
+  var bi=document.getElementById('pfBioInput');
+  if(bi&&document.activeElement!==bi) bi.value=(acctProfile&&acctProfile.bio)||"";
+  var addr=linkedSuiAddress();
   var sa=document.getElementById('pfSuiAddr');
-  if(sa){
-    var addr=linkedSuiAddress();
-    sa.textContent=addr?addr:"No Sui wallet linked to this account.";
-  }
+  if(sa){ sa.hidden=!addr; if(addr) sa.textContent=addr; }
+  var st=document.getElementById('pfWalletState');
+  if(st) st.textContent=addr?("Linked to this account"+(suiWalletName?(" · "+suiWalletName):"")+(suiAddress?" · connected now":"")):"No wallet linked yet.";
+  var bc=document.getElementById('pfWalletConnect'); if(bc) bc.hidden=!!addr;
+  var cp=document.getElementById('pfWalletCopy'); if(cp) cp.hidden=!addr;
+  var dc=document.getElementById('pfWalletDisconnect'); if(dc) dc.hidden=!addr;
+  var wl=document.getElementById('pfWalletLine');
+  if(wl) wl.textContent=addr?("Wallet linked · "+shortSuiAddr(addr)):"No wallet linked";
   var grid=document.getElementById('pfPicGrid'); if(!grid) return;
   grid.innerHTML="";
   var pic=loadProfilePic();
@@ -2495,6 +2613,49 @@ document.getElementById('pfSaveName').addEventListener('click',function(){
   }).catch(function(err){ toast(authErrorText(err)); });
 });
 document.getElementById('pfPicRemove').addEventListener('click',function(){ clearProfilePic(); });
+document.getElementById('pfSaveBio').addEventListener('click',function(){
+  if(!fbUser) return;
+  var v=document.getElementById('pfBioInput').value.trim();
+  saveAccountProfile({bio:v}).then(function(ok){
+    renderProfile();
+    toast(ok?'Bio saved to your account.':'Bio saved on this device.');
+  });
+});
+document.getElementById('pfWalletCopy').addEventListener('click',function(){
+  var addr=linkedSuiAddress(); if(!addr) return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(addr).then(function(){ toast('Wallet address copied.'); }).catch(function(){ toast(addr); });
+  } else toast(addr);
+});
+document.getElementById('pfWalletConnect').addEventListener('click',function(){
+  if(!fbUser){ openAuth(); return; }
+  if(IS_PREVIEW||!fbAuth){ toast('Wallet linking works on the live site: '+LIVE_HOST); return; }
+  showSuiPicker();
+});
+document.getElementById('pfWalletDisconnect').addEventListener('click',function(){ unlinkWallet(); });
+/* Unlinking removes the address from this account (the suiLinks claim and
+   the account record) and disconnects the wallet on this device. NFTs and
+   memes stay exactly where they are; the wallet can be linked again. */
+function unlinkWallet(){
+  var addr=linkedSuiAddress(); if(!addr||!fbUser) return;
+  askConfirm('Unlink this wallet from your account? Your NFTs stay in the wallet, and you can link it again any time.',function(){
+    var w=suiWallet;
+    if(w&&w.features&&w.features["standard:disconnect"]){
+      try{ var r=w.features["standard:disconnect"].disconnect(); if(r&&r.catch) r.catch(function(){}); }catch(e){}
+    }
+    clearSuiSession();
+    var finish=function(){
+      saveAccountProfile({walletAddress:""});
+      renderAuth(); renderProfile(); toast('Wallet unlinked.');
+    };
+    if(fbDb){
+      fbDb.collection('suiLinks').doc(addr).get().then(function(s){
+        if(s.exists&&(s.data()||{}).uid===fbUser.uid) return fbDb.collection('suiLinks').doc(addr).delete();
+        return null;
+      }).catch(function(){}).then(finish);
+    } else finish();
+  });
+}
 
 function renderProfile(){
   if(!profileIsOpen()||!fbUser) return;
@@ -2511,6 +2672,9 @@ function renderProfile(){
   if(suiProf&&suiProf.joinedAt){ joined="Joined "+fmtDate(new Date(suiProf.joinedAt)); }
   else { try{ if(fbUser.metadata&&fbUser.metadata.creationTime) joined="Joined "+fmtDate(new Date(fbUser.metadata.creationTime)); }catch(e){} }
   document.getElementById('pfJoined').textContent=joined;
+  var bioTxt=(acctProfile&&acctProfile.bio)||"";
+  var bioEl=document.getElementById('pfBio');
+  if(bioEl){ bioEl.textContent=bioTxt; bioEl.hidden=!bioTxt; }
   var mine=myMemes.slice().sort(function(a,b){ return b.createdAt-a.createdAt; });
   var votesReceived=mine.reduce(function(s,m){ return s+(m.votes||0); },0);
   var byId={};
@@ -2665,6 +2829,7 @@ function fetchSuiProfile(address){
    may have been replaced, but the address is the identity, not the uid. */
 function linkedSuiAddress(){
   if(suiAddress) return suiAddress;
+  if(accountWallet) return accountWallet;
   var sess=loadSuiSession();
   if(!sess) return "";
   if(fbUser&&sess.uid===fbUser.uid) return sess.address;
@@ -2723,34 +2888,37 @@ function suiCapableWallets(){
   return out;
 }
 function showSuiPicker(){
-  document.getElementById('suiPicker').hidden=false;
-  document.getElementById('googleBtn').hidden=true;
-  document.getElementById('suiBtn').hidden=true;
-  var sn=document.getElementById('suiBtn').nextElementSibling; if(sn) sn.hidden=true;
-  var or=document.querySelector('#authModal .auth-or'); if(or) or.hidden=true;
-  document.getElementById('authEmail').closest('.field').hidden=true;
-  document.getElementById('authPass').closest('.field').hidden=true;
-  var row=document.getElementById('authPass').closest('.field').nextElementSibling;
-  if(row) row.hidden=true;
-  document.getElementById('authPreviewNote').hidden=true;
+  var wm=document.getElementById('walletModal');
+  wm.hidden=false; document.body.style.overflow="hidden";
   document.getElementById('suiWalletList').innerHTML="";
   document.getElementById('suiNoWallet').hidden=true;
   document.getElementById('suiPickerErr').hidden=true;
   document.getElementById('suiPickerTitle').textContent="Choose a wallet";
   document.getElementById('suiBack').focus();
+  refreshSuiPicker();
+  pollSuiLibs();
+}
+/* The Sui libraries load in the background; while the wallet modal is
+   open, keep checking briefly so the wallet list fills in as soon as they
+   arrive, and settle on the clear fallback if they never do. */
+function pollSuiLibs(){
+  if(suiLibs()||suiLibsFailed||window.LofiSuiLibsFailed) return;
+  var waited=0;
+  var iv=setInterval(function(){
+    waited++;
+    if(document.getElementById('walletModal').hidden){ clearInterval(iv); return; }
+    if(suiLibs()||suiLibsFailed||window.LofiSuiLibsFailed||waited>=20){
+      clearInterval(iv);
+      if(!suiLibs()&&!suiLibsFailed&&!window.LofiSuiLibsFailed) suiLibsFailed=true;
+      refreshSuiPicker();
+    }
+  },500);
 }
 function hideSuiPicker(){
   if(suiWalletWatchOff) suiWalletWatchOff();
-  document.getElementById('suiPicker').hidden=true;
-  document.getElementById('googleBtn').hidden=false;
-  document.getElementById('suiBtn').hidden=false;
-  var sn=document.getElementById('suiBtn').nextElementSibling; if(sn) sn.hidden=false;
-  var or=document.querySelector('#authModal .auth-or'); if(or) or.hidden=false;
-  document.getElementById('authEmail').closest('.field').hidden=false;
-  document.getElementById('authPass').closest('.field').hidden=false;
-  var row=document.getElementById('authPass').closest('.field').nextElementSibling;
-  if(row) row.hidden=false;
-  document.getElementById('authPreviewNote').hidden=!IS_PREVIEW;
+  var wm=document.getElementById('walletModal');
+  if(wm) wm.hidden=true;
+  if(authModal.hidden&&document.getElementById('pubModal').hidden&&document.getElementById('mintModal').hidden) document.body.style.overflow="";
 }
 function showSuiPickerErr(msg){
   var e=document.getElementById('suiPickerErr'); e.textContent=msg; e.hidden=false;
@@ -2773,8 +2941,8 @@ function suiWatchWallets(){
    empty: detected wallets, or the Slush deep link + Get Slush fallback, or
    (when the libraries failed to load) a clear error above that fallback. */
 function refreshSuiPicker(){
-  var picker=document.getElementById('suiPicker');
-  if(!picker||picker.hidden) return;
+  var wm=document.getElementById('walletModal');
+  if(!wm||wm.hidden) return;
   var title=document.getElementById('suiPickerTitle');
   var listEl=document.getElementById('suiWalletList');
   var noW=document.getElementById('suiNoWallet');
@@ -2825,27 +2993,14 @@ function renderSuiWalletChoices(list){
   });
 }
 document.getElementById('suiBack').addEventListener('click',hideSuiPicker);
+document.getElementById('walletClose').addEventListener('click',hideSuiPicker);
+document.getElementById('walletModal').addEventListener('click',function(e){ if(e.target===this) hideSuiPicker(); });
 document.getElementById('suiBtn').addEventListener('click',function(){
   authErr.hidden=true;
   if(IS_PREVIEW){ showAuthErr("Sign-in works on the live site: "+LIVE_HOST); return; }
   if(!fbAuth){ showAuthErr("Sign-in is unavailable on this address. Sign-in works on the live site: "+LIVE_HOST); return; }
+  closeAuth();
   showSuiPicker();
-  refreshSuiPicker();
-  if(!suiLibs()&&!suiLibsFailed&&!window.LofiSuiLibsFailed){
-    /* Libraries still loading: the picker already shows the Slush options,
-       so it is never empty; poll briefly so the wallet list fills in as
-       soon as the libraries arrive, and settle on the error message plus
-       the Slush options if they never do. */
-    var waited=0;
-    var iv=setInterval(function(){
-      waited++;
-      if(suiLibs()||suiLibsFailed||window.LofiSuiLibsFailed||waited>=20){
-        clearInterval(iv);
-        if(!suiLibs()&&!suiLibsFailed&&!window.LofiSuiLibsFailed) suiLibsFailed=true;
-        refreshSuiPicker();
-      }
-    },500);
-  }
 });
 function suiSubscribeChange(wallet){
   if(suiUnsubscribeChange){ try{ suiUnsubscribeChange(); }catch(e){} suiUnsubscribeChange=null; }
@@ -2883,6 +3038,60 @@ function suiVerifySignature(messageText, signature, address){
     .then(function(res){ return !!(res&&res.valid); })
     .catch(function(){ return offline(); });
 }
+/* One wallet, one account. suiLinks/{address} records which account a
+   wallet is linked to. A link held by a signed-in account (email set) can
+   never be taken by a different account; a link left behind by an
+   anonymous wallet session (no email) may be claimed by the account that
+   signs in and links the wallet — that is how a wallet user moves their
+   memes onto their email account. walletLinkRefusal is the single rule
+   both the pre-check and the atomic claim below enforce: given the
+   existing link record (or null) and the account asking, it returns the
+   refusal message, or "" when the link may proceed. */
+function walletLinkRefusal(d,user){
+  if(!d) return "";
+  if(user&&d.uid===user.uid) return "";
+  if(d.email){
+    if(!user) return "This wallet is linked to an account. Sign in with Google or email for that account — the wallet and its memes come with it.";
+    if(!user.email) return "This wallet is linked to an account. Sign in with that account to use it.";
+    if(d.email!==user.email) return "This wallet is already linked to another account. Unlink it from that account first, or sign in with that account.";
+  }
+  return "";
+}
+function checkWalletLink(address){
+  if(!fbDb) return Promise.resolve({ok:true});
+  return fbDb.collection('suiLinks').doc(address).get().then(function(s){
+    if(!s.exists) return {ok:true};
+    var msg=walletLinkRefusal(s.data()||{},fbUser);
+    return msg?{ok:false,msg:msg}:{ok:true};
+  }).catch(function(){
+    /* The check itself failed (offline, database unreachable): refuse
+       rather than link blind — a wallet must never land on two accounts
+       just because the ownership check could not run. */
+    return {ok:false,msg:"We could not check whether this wallet is already linked to another account. Check your connection and try again."};
+  });
+}
+/* The claim itself: a Firestore transaction, so the ownership check and
+   the write are atomic. A plain check-then-write left two holes: two
+   accounts linking the same wallet at the same moment could both pass
+   the check and both write, and a claim write that failed was silently
+   swallowed while the account record still showed the wallet as linked.
+   Here the link only exists once this transaction commits, and the
+   caller saves nothing to the account until it does. */
+function claimWalletLink(address,user){
+  if(!fbDb) return Promise.resolve({ok:true});
+  var ref=fbDb.collection('suiLinks').doc(address);
+  return fbDb.runTransaction(function(tx){
+    return tx.get(ref).then(function(s){
+      var msg=walletLinkRefusal(s.exists?(s.data()||{}):null,user);
+      if(msg) throw {code:"sui/linked-elsewhere",message:msg};
+      tx.set(ref,{uid:user.uid,email:user.email||""});
+    });
+  }).then(function(){ return {ok:true}; })
+    .catch(function(err){
+      if(err&&err.code==="sui/linked-elsewhere") return {ok:false,msg:err.message};
+      return {ok:false,msg:"The wallet could not be linked. Check your connection and try again."};
+    });
+}
 function suiFinishSignIn(address, wallet){
   /* Restore the account for this address first: the users record (the
      users/{address} document, mirrored in the on-device registry) carries
@@ -2892,28 +3101,45 @@ function suiFinishSignIn(address, wallet){
      and its memes never change. */
   var wasSignedIn=!!fbUser;
   var localProf=suiProfileFor(address);
-  return fetchSuiProfile(address).then(function(remoteProf){
+  return checkWalletLink(address).then(function(chk){
+    if(!chk.ok){ showSuiPickerErr(chk.msg); throw {code:"sui/linked-elsewhere",message:chk.msg}; }
+    return fetchSuiProfile(address);
+  }).then(function(remoteProf){
     var prof=remoteProf||localProf;
     var finishWith=function(user){
       var dn=(prof&&prof.displayName)||user.displayName||shortSuiAddr(address);
       var joined=(prof&&prof.joinedAt)||(user.metadata&&user.metadata.creationTime?new Date(user.metadata.creationTime).toISOString():new Date().toISOString());
-      recordSuiProfile(address,dn,joined);
-      saveSuiSession({
-        address:address,
-        walletName:wallet.name||"Sui Wallet",
-        uid:user.uid,
-        nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
-        issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
+      /* Claim the address for this account first (one wallet, one
+         account), so the rules can recognise this account as the owner of
+         memes stamped with the address. The claim is the transaction in
+         claimWalletLink: the profile record, the saved session and the
+         account record are written only after the claim commits — if
+         another account holds the wallet, nothing is linked anywhere
+         and the refusal is shown instead of a success message. */
+      return claimWalletLink(address,user).then(function(res){
+        if(!res.ok){
+          clearSuiSession();
+          showSuiPickerErr(res.msg);
+          throw {code:"sui/linked-elsewhere",message:res.msg};
+        }
+        recordSuiProfile(address,dn,joined);
+        saveSuiSession({
+          address:address,
+          walletName:wallet.name||"Sui Wallet",
+          uid:user.uid,
+          nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
+          issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
+        });
+        suiPendingChallenge=null;
+        /* The link is part of the account record too, so the wallet shows
+           as linked on any device the account signs in on. */
+        saveAccountProfile({walletAddress:address});
+        closeAuth(); hideSuiPicker(); renderAuth(); renderProfile();
+        toast(wasSignedIn?"Wallet linked to your account.":"Wallet connected.");
+        resumePendingAfterSignIn();
       });
-      suiPendingChallenge=null;
-      /* Claim the address for this uid, so the database rules can recognise
-         this account as the owner of memes stamped with the address. */
-      if(fbDb){ fbDb.collection('suiLinks').doc(address).set({uid:user.uid}).catch(function(){}); }
-      closeAuth(); renderAuth(); renderProfile();
-      toast(wasSignedIn?"Wallet linked to your account":"Signed in with Sui");
-      resumePendingAfterSignIn();
     };
-    if(fbUser){ finishWith(fbUser); return null; }
+    if(fbUser){ return finishWith(fbUser); }
     return fbAuth.signInAnonymously().then(function(cred){
       var user=cred.user;
       var dn=(prof&&prof.displayName)||shortSuiAddr(address);
@@ -3020,6 +3246,7 @@ function signOutAll(){
 document.addEventListener('keydown',function(e){
   if(e.key!=="Escape") return;
   if(!authModal.hidden) closeAuth();
+  if(!document.getElementById('walletModal').hidden) hideSuiPicker();
   if(!document.getElementById('pubModal').hidden) closePublish();
   if(!document.getElementById('mintModal').hidden) closeMintModal();
 });
@@ -3274,7 +3501,7 @@ function deleteMeme(m){
       renderGallery(); renderProfile(); toast('Meme deleted.');
     }).catch(function(err){
       if(err&&err.code==="permission-denied"&&m.creatorSuiAddress&&fbUser&&m.creatorUid!==fbUser.uid){
-        toast('This meme is yours, but it was published under an earlier sign-in. Deleting it needs the updated database rules from the build notes.');
+        toast('Only the account that published this meme can delete it.');
       } else toast(dbErrorText(err));
     });
   });
@@ -3410,7 +3637,7 @@ function buildMintTx(name,desc,imageUrl,blobId){
 function estimateMintCost(){
   var el=document.getElementById('mintCost');
   el.textContent="Estimating the network fee…";
-  var fallback="Estimated fee: about 0.01 testnet SUI. Walrus storage is paid by the testnet publisher. Testnet tokens are free and have no real value — you approve the exact fee in your wallet.";
+  var fallback="Estimated fee: about 0.01 testnet SUI. Image storage is covered.";
   var libs=suiLibs(), grpc=mintGrpc();
   if(!libs||!libs.Transaction||!grpc||typeof grpc.simulateTransaction!=="function"){ el.textContent=fallback; return; }
   try{
@@ -3426,7 +3653,7 @@ function estimateMintCost(){
       if(!gu) throw new Error("no gas");
       var mist=Number(gu.computationCost||0)+Number(gu.storageCost||0)-Number(gu.storageRebate||0);
       if(!isFinite(mist)||mist<=0) throw new Error("no gas");
-      el.textContent="Estimated fee: about "+(mist/1e9).toFixed(4)+" testnet SUI (simulated). Walrus storage is paid by the testnet publisher. Testnet tokens are free and have no real value — you approve the exact fee in your wallet.";
+      el.textContent="Estimated fee: about "+(mist/1e9).toFixed(4)+" testnet SUI. Image storage is covered.";
     }).catch(function(){ el.textContent=fallback; });
   }catch(e){ el.textContent=fallback; }
 }
@@ -3479,11 +3706,12 @@ function openMintModal(m){
     });
     return;
   }
-  /* No Sui wallet linked to this account yet: sign in with Sui first, then
-     resume straight into this meme's mint modal. */
-  pendingAfterSignIn="mint"; pendingMintMeme=m; openAuth();
-  if(!IS_PREVIEW&&fbAuth){ showSuiPicker(); refreshSuiPicker(); }
-  toast('Sign in with Sui to mint this meme as an NFT.');
+  /* No wallet linked to this account yet: link one first, then resume
+     straight into this meme's mint modal. */
+  pendingAfterSignIn="mint"; pendingMintMeme=m;
+  if(IS_PREVIEW||!fbAuth){ toast('Minting works on the live site: '+LIVE_HOST); return; }
+  showSuiPicker();
+  toast('Link your wallet to mint this meme.');
 }
 function showMintModal(m){
   mintTarget=m;
@@ -3659,9 +3887,9 @@ mintGo.addEventListener('click',function(){
     if(fbDb&&fbUser&&isOwnMeme(m)){
       return fbDb.collection('memes').doc(m.id).update({minted:true, blobId:out.blobId, objectId:out.objectId, digest:out.digest})
         .then(function(){ return note; })
-        .catch(function(){ return "The NFT is minted and in your wallet. The gallery badge could not be saved: the database rules need the mint clause from the build notes pasted in the Firebase console."; });
+        .catch(function(){ return "The NFT is minted and in your wallet."; });
     }
-    if(fbDb&&fbUser) return "The NFT is minted and in your wallet. Its gallery badge is saved from the account that published this meme.";
+    if(fbDb&&fbUser) return "The NFT is minted and in your wallet.";
     return note;
   }).then(function(note){
     mintBusy=false;
@@ -3693,7 +3921,8 @@ if(fbAuth){
     authResolved=true;
     fbUser=u||null;
     myMemes=[]; myLoaded=false; myErr="";
-    if(fbUser){ loadMyMemes(); } else { closeProfile(); }
+    acctProfile=null; accountWallet="";
+    if(fbUser){ loadAccountProfile(); loadMyMemes(); } else { closeProfile(); }
     renderAuth(); renderGallery();
     if(fbUser&&!suiRestoreTried) trySuiRestore();
     resumePendingAfterSignIn();
