@@ -455,6 +455,24 @@ input[type=range]{cursor:pointer}
 .google-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .google-btn svg{width:22px;height:22px;flex:none;display:block}
 .google-btn span{flex:1;text-align:center;margin-right:34px}
+.sui-btn{display:flex;align-items:center;gap:12px;width:100%;background:#fff;color:var(--ink);border:var(--bd2);border-radius:3px;padding:10px 16px;min-height:52px;font-weight:800;font-size:15px;box-shadow:var(--sh-sm);cursor:pointer;transition:transform .1s,box-shadow .1s;margin-top:12px}
+.sui-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.sui-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.sui-btn svg{width:22px;height:22px;flex:none;display:block}
+.sui-btn span{flex:1;text-align:center;margin-right:34px}
+.sui-btn:disabled{opacity:.6;cursor:wait}
+.sui-note{font-size:12.5px;color:var(--muted);font-weight:700;line-height:1.55;margin:10px 0 0;text-align:center}
+.sui-note a{color:var(--ink);text-decoration:underline}
+.sui-picker-title{font-weight:900;font-size:15px;margin:14px 0 10px}
+.sui-picker-empty{font-weight:700;font-size:14px;line-height:1.55;margin:0 0 14px}
+.sui-back{margin-bottom:4px}
+.sui-slush{width:100%;margin-bottom:6px}
+.sui-wallet-opt{display:flex;align-items:center;gap:12px;width:100%;background:#fff;color:var(--ink);border:var(--bd2);border-radius:3px;padding:10px 14px;min-height:52px;font-weight:800;font-size:15px;box-shadow:var(--sh-sm);cursor:pointer;margin-bottom:10px;text-align:left}
+.sui-wallet-opt:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.sui-wallet-opt:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.sui-wallet-opt img{width:24px;height:24px;flex:none;display:block}
+.sui-wallet-opt b{flex:1}
+.sui-wallet-opt .chev{color:var(--muted);font-weight:900}
 .pf-page{background:var(--surface);border:var(--bd);box-shadow:var(--sh);padding:22px}
 .pf-back{margin:2px 0 16px}
 .pf-head{display:flex;align-items:center;gap:14px}
@@ -912,6 +930,8 @@ input[type=range]{cursor:pointer}
     <button class="lb-close auth-x" type="button" id="authClose" aria-label="Close sign in">✕</button>
     <h3>Sign in</h3>
     <button class="google-btn" type="button" id="googleBtn"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg><span>Continue with Google</span></button>
+    <button class="sui-btn" type="button" id="suiBtn"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#4DA2FF" d="M12 2c3.5 4.2 6 7.6 6 10.8A6 6 0 0 1 6 12.8C6 9.6 8.5 6.2 12 2z"/><circle cx="12" cy="13.2" r="2.2" fill="#fff"/></svg><span>Continue with Sui</span></button>
+    <p class="sui-note">No transaction. Only a signature to prove you own the address.</p>
     <div class="auth-or">or</div>
     <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></div>
     <div class="field"><label for="authPass">Password</label><input type="password" id="authPass" autocomplete="current-password" placeholder="Password"></div>
@@ -921,6 +941,17 @@ input[type=range]{cursor:pointer}
     </div>
     <p class="auth-err" id="authErr" hidden></p>
     <p class="auth-note" id="authPreviewNote" hidden>Sign-in works on the live site (lofi-meme-studio.vercel.app). This preview address is not approved for sign-in, so sign-in is blocked here.</p>
+    <div id="suiPicker" hidden>
+      <button class="btn ghost sui-back" type="button" id="suiBack">Back</button>
+      <p class="sui-picker-title" id="suiPickerTitle">Choose a wallet</p>
+      <div id="suiWalletList"></div>
+      <div id="suiNoWallet" hidden>
+        <p class="sui-picker-empty">No Sui wallet found on this device.</p>
+        <a class="btn sui-slush" href="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/" target="_blank" rel="noopener">Open in Slush</a>
+        <p class="sui-note">No wallet yet? <a href="https://slush.app" target="_blank" rel="noopener">Get Slush</a></p>
+      </div>
+      <p class="auth-err" id="suiPickerErr" hidden></p>
+    </div>
   </div>
 </div>
 
@@ -2102,6 +2133,36 @@ match /memes/{memeId} {
     && resource.data.creatorUid == request.auth.uid;
 }
 ============================================================================= -->
+<script>
+/* Sui sign-in libraries: the official @mysten packages are published as ES
+   modules only (no classic/global build), so the pinned esm.sh builds are
+   loaded with dynamic import() from this classic script and exposed on
+   window.LofiSuiLibs for the sign-in code below. Pinned versions:
+   @mysten/wallet-standard@0.22.1, @mysten/sui@3.0.1/verify,
+   @mysten/sui@3.0.1/grpc. On success this dispatches lofi-sui-libs-ready;
+   on failure (CDN blocked, offline) window.LofiSuiLibs is never set,
+   lofi-sui-libs-failed fires, and the page plus the Google/email sign-in
+   keep working exactly as before. */
+(function(){
+  var urls=[
+    "https://esm.sh/@mysten/wallet-standard@0.22.1",
+    "https://esm.sh/@mysten/sui@3.0.1/verify",
+    "https://esm.sh/@mysten/sui@3.0.1/grpc"
+  ];
+  Promise.all(urls.map(function(u){ return import(u); })).then(function(mods){
+    window.LofiSuiLibs={
+      getWallets:mods[0].getWallets,
+      verifyPersonalMessageSignature:mods[1].verifyPersonalMessageSignature,
+      isValidPersonalMessageSignature:mods[1].isValidPersonalMessageSignature,
+      SuiGrpcClient:mods[2].SuiGrpcClient
+    };
+    window.dispatchEvent(new CustomEvent("lofi-sui-libs-ready"));
+  }).catch(function(){
+    window.LofiSuiLibsFailed=true;
+    window.dispatchEvent(new CustomEvent("lofi-sui-libs-failed"));
+  });
+})();
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -2189,7 +2250,7 @@ function renderAuth(){
     mine.addEventListener('click',function(){ menu.hidden=true; av.setAttribute('aria-expanded','false'); goMyMemes(); });
     var sep=document.createElement('div'); sep.className="am-sep";
     var out=document.createElement('button'); out.type="button"; out.className="am-item danger"; out.setAttribute('role','menuitem'); out.innerHTML='<svg class="ic"><use href="#i-out"/></svg>Sign out';
-    out.addEventListener('click',function(){ menu.hidden=true; av.setAttribute('aria-expanded','false'); if(fbAuth) fbAuth.signOut().then(function(){ toast('Signed out of this site.'); }).catch(function(){}); });
+    out.addEventListener('click',function(){ menu.hidden=true; av.setAttribute('aria-expanded','false'); signOutAll(); });
     items.appendChild(prof); items.appendChild(mine); items.appendChild(sep); items.appendChild(out);
     menu.appendChild(items);
     av.addEventListener('click',function(e){ e.stopPropagation();
@@ -2276,6 +2337,7 @@ function openAuth(){
   document.getElementById('authPreviewNote').hidden=!IS_PREVIEW;
   authModal.hidden=false; document.body.style.overflow="hidden";
   document.getElementById('googleBtn').focus();
+  hideSuiPicker();
 }
 function closeAuth(){ authModal.hidden=true; document.body.style.overflow=""; }
 document.getElementById('authClose').addEventListener('click',closeAuth);
@@ -2308,6 +2370,261 @@ document.getElementById('emailSignUp').addEventListener('click',function(){
       closeAuth(); toast('Account created. You are signed in.');
     }).catch(function(err){ showAuthErr(authErrorText(err)); });
 });
+
+/* ---------- Sui wallet sign-in (anonymous Firebase identity + verified Sui address) ----------
+   Flow: detect wallets -> connect -> sign a human-readable challenge ->
+   verify the signature (online-first, offline fallback) -> signInAnonymously()
+   -> displayName = short Sui address. Publish/vote/profile then work unchanged
+   via fbUser.uid. Verification here is client-side only: it proves key
+   possession at sign-in time. Ownership of memes/votes stays bound to the
+   anonymous Firebase uid under the Firestore rules (creatorUid == request.auth.uid).
+   No server/custom-token minting in v1 (that needs a backend + Admin secret). */
+var SUI_SESSION_KEY="lofi_meme_sui_session_v1";
+var SUI_SLUSH_BROWSE="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/";
+var suiLibsReady=false, suiLibsFailed=false, suiRestoreTried=false;
+var suiWallet=null, suiAddress="", suiAccount=null, suiUnsubscribeChange=null;
+var suiPendingChallenge=null; /* { text, nonce, issuedAt, expiresAt } - memory only, never localStorage */
+window.addEventListener("lofi-sui-libs-ready",function(){
+  suiLibsReady=true;
+  if(fbUser&&!suiRestoreTried) trySuiRestore();
+  else if(fbUser&&suiRestoreTried&&!suiWallet&&loadSuiSession()){ suiRestoreTried=false; trySuiRestore(); }
+});
+window.addEventListener("lofi-sui-libs-failed",function(){ suiLibsFailed=true; });
+window.addEventListener("load",function(){
+  setTimeout(function(){ if(!suiLibsReady) suiLibsFailed=true; },5000);
+});
+function shortSuiAddr(a){ return a?a.slice(0,6)+"\u2026"+a.slice(-4):""; }
+function suiLibs(){ return (suiLibsReady&&window.LofiSuiLibs)?window.LofiSuiLibs:null; }
+function loadSuiSession(){
+  try{ var s=JSON.parse(localStorage.getItem(SUI_SESSION_KEY)||"null"); return (s&&s.address&&s.uid)?s:null; }
+  catch(e){ return null; }
+}
+function saveSuiSession(sess){
+  try{ localStorage.setItem(SUI_SESSION_KEY,JSON.stringify(sess)); }catch(e){}
+}
+function clearSuiSession(){
+  try{ localStorage.removeItem(SUI_SESSION_KEY); }catch(e){}
+  suiWallet=null; suiAddress=""; suiAccount=null;
+  if(suiUnsubscribeChange){ try{ suiUnsubscribeChange(); }catch(e){} suiUnsubscribeChange=null; }
+}
+function buildSuiChallenge(address){
+  var bytes=new Uint8Array(16); crypto.getRandomValues(bytes);
+  var nonce=Array.prototype.map.call(bytes,function(b){ return ("0"+b.toString(16)).slice(-2); }).join("");
+  var issued=new Date();
+  var expires=new Date(issued.getTime()+5*60*1000);
+  var host=location.hostname;
+  var text=
+    "Sign in to Lofi Meme Studio\n"+
+    "\n"+
+    "Domain: "+host+"\n"+
+    "Address: "+address+"\n"+
+    "Statement: Sign in to Lofi Meme Studio with your Sui wallet. This signature proves you own this address. No transaction is sent and no funds move.\n"+
+    "URI: https://"+host+"/\n"+
+    "Version: 1\n"+
+    "Chain ID: sui:mainnet\n"+
+    "Nonce: "+nonce+"\n"+
+    "Issued At: "+issued.toISOString()+"\n"+
+    "Expiration Time: "+expires.toISOString();
+  return { text:text, nonce:nonce, issuedAt:issued.toISOString(), expiresAt:expires.toISOString() };
+}
+function suiSignErrText(err){
+  var msg=(err&&err.message)||"";
+  if(/reject|cancel|denied|user closed/i.test(msg)) return "The wallet request was cancelled. Try again.";
+  if((err&&err.code)==="sui/verify-failed") return "That signature could not be verified. Try signing in again.";
+  return (err&&err.message)||"Something went wrong. Try again.";
+}
+function suiCapableWallets(){
+  var libs=suiLibs(); if(!libs) return [];
+  var out=[], seen={};
+  libs.getWallets().forEach(function(w){
+    if(!w||!w.features||!w.features["standard:connect"]) return;
+    var chains=w.chains||[];
+    var isSui=chains.some(function(c){ return String(c).indexOf("sui:")===0; });
+    if(!isSui) return;
+    var key=w.name||"Sui Wallet";
+    if(seen[key]) return; seen[key]=true; out.push(w);
+  });
+  return out;
+}
+function showSuiPicker(){
+  document.getElementById('suiPicker').hidden=false;
+  document.getElementById('googleBtn').hidden=true;
+  document.getElementById('suiBtn').hidden=true;
+  var sn=document.getElementById('suiBtn').nextElementSibling; if(sn) sn.hidden=true;
+  var or=document.querySelector('#authModal .auth-or'); if(or) or.hidden=true;
+  document.getElementById('authEmail').closest('.field').hidden=true;
+  document.getElementById('authPass').closest('.field').hidden=true;
+  var row=document.getElementById('authPass').closest('.field').nextElementSibling;
+  if(row) row.hidden=true;
+  document.getElementById('authPreviewNote').hidden=true;
+  document.getElementById('suiWalletList').innerHTML="";
+  document.getElementById('suiNoWallet').hidden=true;
+  document.getElementById('suiPickerErr').hidden=true;
+  document.getElementById('suiPickerTitle').textContent="Choose a wallet";
+  document.getElementById('suiBack').focus();
+}
+function hideSuiPicker(){
+  document.getElementById('suiPicker').hidden=true;
+  document.getElementById('googleBtn').hidden=false;
+  document.getElementById('suiBtn').hidden=false;
+  var sn=document.getElementById('suiBtn').nextElementSibling; if(sn) sn.hidden=false;
+  var or=document.querySelector('#authModal .auth-or'); if(or) or.hidden=false;
+  document.getElementById('authEmail').closest('.field').hidden=false;
+  document.getElementById('authPass').closest('.field').hidden=false;
+  var row=document.getElementById('authPass').closest('.field').nextElementSibling;
+  if(row) row.hidden=false;
+  document.getElementById('authPreviewNote').hidden=!IS_PREVIEW;
+}
+function showSuiPickerErr(msg){
+  var e=document.getElementById('suiPickerErr'); e.textContent=msg; e.hidden=false;
+}
+function renderSuiWalletChoices(list){
+  var box=document.getElementById('suiWalletList'); box.innerHTML="";
+  list.forEach(function(w){
+    var b=document.createElement('button'); b.type="button"; b.className="sui-wallet-opt";
+    if(w.icon){ var im=document.createElement('img'); im.src=w.icon; im.alt=""; b.appendChild(im); }
+    var label=document.createElement('b'); label.textContent=w.name||"Sui Wallet"; b.appendChild(label);
+    var chev=document.createElement('span'); chev.className="chev"; chev.setAttribute('aria-hidden','true'); chev.textContent="\u203a"; b.appendChild(chev);
+    b.addEventListener('click',function(){
+      box.querySelectorAll('button').forEach(function(x){ x.disabled=true; });
+      suiConnectAndSign(w);
+    });
+    box.appendChild(b);
+  });
+}
+document.getElementById('suiBack').addEventListener('click',hideSuiPicker);
+document.getElementById('suiBtn').addEventListener('click',function(){
+  authErr.hidden=true;
+  if(IS_PREVIEW){ showAuthErr("Sign-in works on the live site: "+LIVE_HOST); return; }
+  if(!fbAuth){ showAuthErr("Sign-in is unavailable on this address. Sign-in works on the live site: "+LIVE_HOST); return; }
+  if(suiLibsFailed||(!suiLibsReady&&!suiLibs())){
+    showSuiPicker(); showSuiPickerErr("Sui sign-in could not load. Check your connection and try again.");
+    document.getElementById('suiNoWallet').hidden=false;
+    return;
+  }
+  if(!suiLibs()){ showAuthErr("Sui sign-in is still loading. Try again in a moment."); return; }
+  showSuiPicker();
+  var wallets=suiCapableWallets();
+  if(!wallets.length){
+    document.getElementById('suiPickerTitle').textContent="No wallet found";
+    document.getElementById('suiNoWallet').hidden=false;
+    return;
+  }
+  renderSuiWalletChoices(wallets);
+});
+function suiSubscribeChange(wallet){
+  if(suiUnsubscribeChange){ try{ suiUnsubscribeChange(); }catch(e){} suiUnsubscribeChange=null; }
+  var evts=wallet.features&&wallet.features["standard:events"];
+  if(!evts||typeof evts.on!=="function") return;
+  var un=evts.on("change",function(change){
+    var accts=(change&&change.accounts)||[];
+    if(!accts.length) return;
+    var next=accts[0].address;
+    if(next&&next!==suiAddress){
+      clearSuiSession();
+      if(fbAuth) fbAuth.signOut().catch(function(){});
+      toast("Wallet account changed. Please sign in again.");
+    }
+  });
+  if(typeof un==="function") suiUnsubscribeChange=un;
+}
+function suiVerifySignature(messageText, signature, address){
+  var libs=suiLibs();
+  var grpc=null;
+  try{ grpc=new libs.SuiGrpcClient({network:"mainnet", baseUrl:"https://fullnode.mainnet.sui.io:443"}); }catch(e){ grpc=null; }
+  function offline(){
+    try{
+      var ok=libs.isValidPersonalMessageSignature(messageText, signature, {offline:true, address:address});
+      return Promise.resolve(!!ok);
+    }catch(e){
+      try{
+        var pk=libs.verifyPersonalMessageSignature(messageText, signature, {offline:true, address:address});
+        return Promise.resolve(!!pk&&pk.toSuiAddress()===address);
+      }catch(e2){ return Promise.resolve(false); }
+    }
+  }
+  if(!grpc) return offline();
+  return grpc.verifySignature({personalMessage:messageText, signature:signature, address:address})
+    .then(function(res){ return !!(res&&res.valid); })
+    .catch(function(){ return offline(); });
+}
+function suiFinishSignIn(address, wallet){
+  return fbAuth.signInAnonymously().then(function(cred){
+    var user=cred.user;
+    return user.updateProfile({displayName:shortSuiAddr(address)}).catch(function(){})
+      .then(function(){
+        saveSuiSession({
+          address:address,
+          walletName:wallet.name||"Sui Wallet",
+          uid:user.uid,
+          nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
+          issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
+        });
+        suiPendingChallenge=null;
+        closeAuth(); renderAuth();
+        toast("Signed in with Sui");
+      });
+  }).catch(function(err){
+    showSuiPickerErr(authErrorText(err));
+    throw err;
+  });
+}
+function suiConnectAndSign(wallet){
+  var libs=suiLibs(); if(!libs){ showSuiPickerErr("Sui sign-in could not load. Check your connection and try again."); return; }
+  var connect=wallet.features["standard:connect"];
+  var signFeat=wallet.features["sui:signPersonalMessage"];
+  if(!signFeat){ showSuiPickerErr("This wallet cannot sign messages. Try a different wallet."); return; }
+  connect.connect().then(function(res){
+    var accounts=(res&&res.accounts)||wallet.accounts||[];
+    if(!accounts.length) throw {code:"sui/no-account",message:"No Sui account was returned."};
+    var account=accounts[0];
+    suiWallet=wallet; suiAccount=account; suiAddress=account.address;
+    suiSubscribeChange(wallet);
+    var challenge=buildSuiChallenge(account.address);
+    suiPendingChallenge=challenge;
+    var bytes=new TextEncoder().encode(challenge.text);
+    return signFeat.signPersonalMessage({message:bytes, account:account})
+      .then(function(sig){ return {account:account, challenge:challenge, sig:sig}; });
+  }).then(function(out){
+    if(new Date()>new Date(out.challenge.expiresAt)) throw {code:"sui/expired",message:"Challenge expired."};
+    return suiVerifySignature(out.challenge.text, out.sig.signature, out.account.address)
+      .then(function(ok){
+        if(!ok) throw {code:"sui/verify-failed",message:"Signature did not verify."};
+        return suiFinishSignIn(out.account.address, wallet);
+      });
+  }).catch(function(err){
+    suiPendingChallenge=null;
+    var code=(err&&err.code)||"";
+    if(code.indexOf("auth/")===0){ renderSuiWalletChoices(suiCapableWallets()); return; }
+    if(code==="sui/verify-failed"||code==="sui/expired") showSuiPickerErr("That signature could not be verified. Try signing in again.");
+    else if(code==="sui/no-account") showSuiPickerErr("No Sui account was returned. Try again.");
+    else showSuiPickerErr(suiSignErrText(err));
+    renderSuiWalletChoices(suiCapableWallets());
+  });
+}
+function trySuiRestore(){
+  suiRestoreTried=true;
+  var saved=loadSuiSession();
+  if(!saved){ return; }
+  if(!fbUser||fbUser.uid!==saved.uid){ clearSuiSession(); return; }
+  var libs=suiLibs(); if(!libs){ return; }
+  var wallet=null;
+  suiCapableWallets().forEach(function(w){ if(w.name===saved.walletName) wallet=w; });
+  if(!wallet){ clearSuiSession(); return; }
+  var found=null;
+  (wallet.accounts||[]).forEach(function(a){ if(a.address===saved.address) found=a; });
+  if(!found){ clearSuiSession(); return; }
+  suiWallet=wallet; suiAccount=found; suiAddress=found.address;
+  suiSubscribeChange(wallet);
+}
+function signOutAll(){
+  var w=suiWallet;
+  clearSuiSession();
+  if(w&&w.features&&w.features["standard:disconnect"]){
+    try{ var r=w.features["standard:disconnect"].disconnect(); if(r&&r.catch) r.catch(function(){}); }catch(e){}
+  }
+  if(fbAuth) fbAuth.signOut().then(function(){ toast("Signed out of this site."); }).catch(function(){});
+}
 document.addEventListener('keydown',function(e){
   if(e.key!=="Escape") return;
   if(!authModal.hidden) closeAuth();
@@ -2598,6 +2915,7 @@ if(fbAuth){
     myMemes=[]; myLoaded=false; myErr="";
     if(fbUser){ loadMyMemes(); } else { closeProfile(); }
     renderAuth(); renderGallery();
+    if(fbUser&&!suiRestoreTried) trySuiRestore();
     if(fbUser&&pendingAfterSignIn){
       var p=pendingAfterSignIn; pendingAfterSignIn=null;
       if(p==="publish"&&document.documentElement.dataset.view==="studio"&&layers.length) openPublish();
