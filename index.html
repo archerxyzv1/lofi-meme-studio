@@ -998,10 +998,12 @@ input[type=range]{cursor:pointer}
     <button class="lb-close auth-x" type="button" id="pubClose" aria-label="Close publish">✕</button>
     <h3>Publish to gallery</h3>
     <div class="field"><label for="pubTitle">Title</label><input type="text" id="pubTitle" maxlength="80" placeholder="Give your meme a title"></div>
+    <p class="pf-note">Publishing is free. You can also mint this meme as an NFT on Sui testnet straight after publishing — minting is optional, and testnet minting is free too.</p>
     <p class="auth-err" id="pubErr" hidden></p>
     <div class="cf-btns">
       <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
       <button class="btn" type="button" id="pubGo">Publish</button>
+      <button class="btn dark" type="button" id="pubMintGo">Publish &amp; Mint as NFT</button>
     </div>
   </div>
 </div>
@@ -2223,15 +2225,42 @@ match /memes/{memeId} {
       // Mint (Phase 4): the owner may attach the NFT fields to their own
       // meme after a successful mint, and change nothing else. Without this
       // clause the NFT still mints into the wallet, but the gallery NFT
-      // badge cannot be saved.
-      (request.auth.uid == resource.data.creatorUid
+      // badge cannot be saved. The owner is the publisher's uid, or the
+      // account that currently holds the meme's Sui address (suiLinks) —
+      // a Sui user's anonymous uid changes on re-sign-in, the address
+      // does not.
+      ((request.auth.uid == resource.data.creatorUid
+        || (resource.data.creatorSuiAddress is string
+          && resource.data.creatorSuiAddress != ''
+          && exists(/databases/$(database)/documents/suiLinks/$(resource.data.creatorSuiAddress))
+          && get(/databases/$(database)/documents/suiLinks/$(resource.data.creatorSuiAddress)).data.uid == request.auth.uid))
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['minted', 'blobId', 'objectId', 'digest']))
     );
 
-  // Delete: only the owner.
+  // Delete: only the owner (by uid, or by linked Sui address as above).
   allow delete: if request.auth != null
-    && resource.data.creatorUid == request.auth.uid;
+    && (resource.data.creatorUid == request.auth.uid
+      || (resource.data.creatorSuiAddress is string
+        && resource.data.creatorSuiAddress != ''
+        && exists(/databases/$(database)/documents/suiLinks/$(resource.data.creatorSuiAddress))
+        && get(/databases/$(database)/documents/suiLinks/$(resource.data.creatorSuiAddress)).data.uid == request.auth.uid));
+}
+
+// Sui identity (account fix): the Sui address is the stable account key.
+// users/{address} is the public profile record (display name + joined date)
+// for a Sui account; suiLinks/{address} records which Firebase uid
+// currently holds that address (written at every Sui sign-in, after the
+// wallet signature is verified in the app), so meme ownership above can
+// follow the address across sign-out + sign-in.
+match /users/{address} {
+  allow read: if true;
+  allow write: if request.auth != null;
+}
+match /suiLinks/{address} {
+  allow read: if false;
+  allow write: if request.auth != null
+    && request.resource.data.uid == request.auth.uid;
 }
 ============================================================================= -->
 <script>
@@ -2432,8 +2461,7 @@ function renderProfileEdit(){
   if(ni&&document.activeElement!==ni) ni.value=fbUser.displayName||"";
   var sa=document.getElementById('pfSuiAddr');
   if(sa){
-    var sess=loadSuiSession();
-    var addr=suiAddress||(sess?sess.address:"");
+    var addr=linkedSuiAddress();
     sa.textContent=addr?addr:"No Sui wallet linked to this account.";
   }
   var grid=document.getElementById('pfPicGrid'); if(!grid) return;
@@ -2461,6 +2489,8 @@ document.getElementById('pfSaveName').addEventListener('click',function(){
   var v=document.getElementById('pfNameInput').value.trim();
   if(!v){ toast('Type a display name first.'); return; }
   fbUser.updateProfile({displayName:v}).then(function(){
+    var addr=linkedSuiAddress();
+    if(addr){ var sp=suiProfileFor(addr); recordSuiProfile(addr,v,sp?sp.joinedAt:null); }
     renderAuth(); renderProfile(); toast('Display name saved.');
   }).catch(function(err){ toast(authErrorText(err)); });
 });
@@ -2477,7 +2507,9 @@ function renderProfile(){
   document.getElementById('pfName').textContent=name;
   document.getElementById('pfEmail').textContent=fbUser.email||"";
   var joined="";
-  try{ if(fbUser.metadata&&fbUser.metadata.creationTime) joined="Joined "+fmtDate(new Date(fbUser.metadata.creationTime)); }catch(e){}
+  var suiProf=suiProfileFor(linkedSuiAddress());
+  if(suiProf&&suiProf.joinedAt){ joined="Joined "+fmtDate(new Date(suiProf.joinedAt)); }
+  else { try{ if(fbUser.metadata&&fbUser.metadata.creationTime) joined="Joined "+fmtDate(new Date(fbUser.metadata.creationTime)); }catch(e){} }
   document.getElementById('pfJoined').textContent=joined;
   var mine=myMemes.slice().sort(function(a,b){ return b.createdAt-a.createdAt; });
   var votesReceived=mine.reduce(function(s,m){ return s+(m.votes||0); },0);
@@ -2550,23 +2582,28 @@ document.getElementById('emailSignUp').addEventListener('click',function(){
     }).catch(function(err){ showAuthErr(authErrorText(err)); });
 });
 
-/* ---------- Sui wallet sign-in (anonymous Firebase identity + verified Sui address) ----------
+/* ---------- Sui wallet sign-in (verified Sui address = the stable account key) ----------
    Flow: detect wallets -> connect -> sign a human-readable challenge ->
-   verify the signature (online-first, offline fallback) -> signInAnonymously()
-   -> displayName = short Sui address. Publish/vote/profile then work unchanged
-   via fbUser.uid. Verification here is client-side only: it proves key
-   possession at sign-in time. Ownership of memes/votes stays bound to the
-   anonymous Firebase uid under the Firestore rules (creatorUid == request.auth.uid).
-   No server/custom-token minting in v1 (that needs a backend + Admin secret). */
+   verify the signature (online-first, offline fallback) -> sign in. The
+   anonymous Firebase uid changes on every fresh sign-in, so it is NOT the
+   account key for Sui users: the Sui address is. The profile record
+   (users/{address} + on-device registry), the linked-address session and
+   meme ownership (creatorSuiAddress) are all keyed by the address, so the
+   same wallet always returns the same account and the same memes. If an
+   account is already signed in, the wallet links to it instead of
+   replacing it. Verification here is client-side only: it proves key
+   possession at sign-in time. No server/custom-token minting in v1 (that
+   needs a backend + Admin secret). */
 var SUI_SESSION_KEY="lofi_meme_sui_session_v1";
 var SUI_SLUSH_BROWSE="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/";
 var suiLibsReady=false, suiLibsFailed=false, suiRestoreTried=false;
-var suiWallet=null, suiAddress="", suiAccount=null, suiUnsubscribeChange=null;
+var suiWallet=null, suiAddress="", suiAccount=null, suiUnsubscribeChange=null, suiWalletName="";
 var suiPendingChallenge=null; /* { text, nonce, issuedAt, expiresAt } - memory only, never localStorage */
 window.addEventListener("lofi-sui-libs-ready",function(){
   suiLibsReady=true;
   if(fbUser&&!suiRestoreTried) trySuiRestore();
   else if(fbUser&&suiRestoreTried&&!suiWallet&&loadSuiSession()){ suiRestoreTried=false; trySuiRestore(); }
+  if(fbUser&&suiAddress){ myLoaded=false; loadMyMemes(); if(profileIsOpen()) renderProfile(); }
   refreshSuiPicker();
 });
 window.addEventListener("lofi-sui-libs-failed",function(){ suiLibsFailed=true; refreshSuiPicker(); });
@@ -2584,8 +2621,55 @@ function saveSuiSession(sess){
 }
 function clearSuiSession(){
   try{ localStorage.removeItem(SUI_SESSION_KEY); }catch(e){}
-  suiWallet=null; suiAddress=""; suiAccount=null;
+  suiWallet=null; suiAddress=""; suiAccount=null; suiWalletName="";
   if(suiUnsubscribeChange){ try{ suiUnsubscribeChange(); }catch(e){} suiUnsubscribeChange=null; }
+}
+/* ---------- Sui identity: the Sui address is the stable account key ----------
+   Anonymous Firebase sign-in mints a brand-new uid on every sign-in, so a
+   Sui user's account can never be keyed by uid. Instead the Sui address is
+   the stable key: a per-address profile record (display name + joined date)
+   is kept on this device and mirrored to a users/{address} document, and
+   every meme a Sui user publishes is stamped with creatorSuiAddress, so the
+   profile, ownership and My Memes all survive sign-out + sign-in. */
+var SUI_PROFILES_KEY="lofi_meme_sui_profiles_v1";
+function loadSuiProfiles(){
+  try{ return JSON.parse(localStorage.getItem(SUI_PROFILES_KEY)||"{}")||{}; }catch(e){ return {}; }
+}
+function suiProfileFor(address){
+  if(!address) return null;
+  var all=loadSuiProfiles();
+  return all[address]||null;
+}
+function recordSuiProfile(address,displayName,joinedAt){
+  if(!address) return;
+  var all=loadSuiProfiles();
+  var cur=all[address]||{};
+  all[address]={
+    address:address,
+    displayName:displayName||cur.displayName||shortSuiAddr(address),
+    joinedAt:joinedAt||cur.joinedAt||new Date().toISOString()
+  };
+  try{ localStorage.setItem(SUI_PROFILES_KEY,JSON.stringify(all)); }catch(e){}
+  if(fbDb){ fbDb.collection('users').doc(address).set(all[address],{merge:true}).catch(function(){}); }
+}
+function fetchSuiProfile(address){
+  if(!fbDb||!address) return Promise.resolve(null);
+  return fbDb.collection('users').doc(address).get()
+    .then(function(s){ return s.exists?s.data():null; })
+    .catch(function(){ return null; });
+}
+/* The Sui address linked to the current account, whether or not the wallet
+   is connected right now: the in-memory address first, then the saved
+   session for this account. A saved session whose short address matches the
+   account's display name also counts — after a re-sign-in the anonymous uid
+   may have been replaced, but the address is the identity, not the uid. */
+function linkedSuiAddress(){
+  if(suiAddress) return suiAddress;
+  var sess=loadSuiSession();
+  if(!sess) return "";
+  if(fbUser&&sess.uid===fbUser.uid) return sess.address;
+  if(fbUser&&fbUser.displayName&&shortSuiAddr(sess.address)===fbUser.displayName) return sess.address;
+  return "";
 }
 function buildSuiChallenge(address){
   var bytes=new Uint8Array(16); crypto.getRandomValues(bytes);
@@ -2800,21 +2884,41 @@ function suiVerifySignature(messageText, signature, address){
     .catch(function(){ return offline(); });
 }
 function suiFinishSignIn(address, wallet){
-  return fbAuth.signInAnonymously().then(function(cred){
-    var user=cred.user;
-    return user.updateProfile({displayName:shortSuiAddr(address)}).catch(function(){})
-      .then(function(){
-        saveSuiSession({
-          address:address,
-          walletName:wallet.name||"Sui Wallet",
-          uid:user.uid,
-          nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
-          issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
-        });
-        suiPendingChallenge=null;
-        closeAuth(); renderAuth();
-        toast("Signed in with Sui");
+  /* Restore the account for this address first: the users record (the
+     users/{address} document, mirrored in the on-device registry) carries
+     the display name and joined date, so the same wallet always returns
+     the same profile. If an account is already signed in (Google or
+     email), the wallet is simply linked to it — the signed-in identity
+     and its memes never change. */
+  var wasSignedIn=!!fbUser;
+  var localProf=suiProfileFor(address);
+  return fetchSuiProfile(address).then(function(remoteProf){
+    var prof=remoteProf||localProf;
+    var finishWith=function(user){
+      var dn=(prof&&prof.displayName)||user.displayName||shortSuiAddr(address);
+      var joined=(prof&&prof.joinedAt)||(user.metadata&&user.metadata.creationTime?new Date(user.metadata.creationTime).toISOString():new Date().toISOString());
+      recordSuiProfile(address,dn,joined);
+      saveSuiSession({
+        address:address,
+        walletName:wallet.name||"Sui Wallet",
+        uid:user.uid,
+        nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
+        issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
       });
+      suiPendingChallenge=null;
+      /* Claim the address for this uid, so the database rules can recognise
+         this account as the owner of memes stamped with the address. */
+      if(fbDb){ fbDb.collection('suiLinks').doc(address).set({uid:user.uid}).catch(function(){}); }
+      closeAuth(); renderAuth(); renderProfile();
+      toast(wasSignedIn?"Wallet linked to your account":"Signed in with Sui");
+      resumePendingAfterSignIn();
+    };
+    if(fbUser){ finishWith(fbUser); return null; }
+    return fbAuth.signInAnonymously().then(function(cred){
+      var user=cred.user;
+      var dn=(prof&&prof.displayName)||shortSuiAddr(address);
+      return user.updateProfile({displayName:dn}).catch(function(){}).then(function(){ finishWith(user); });
+    });
   }).catch(function(err){
     showSuiPickerErr(authErrorText(err));
     throw err;
@@ -2829,43 +2933,80 @@ function suiConnectAndSign(wallet){
     var accounts=(res&&res.accounts)||wallet.accounts||[];
     if(!accounts.length) throw {code:"sui/no-account",message:"No Sui account was returned."};
     var account=accounts[0];
-    suiWallet=wallet; suiAccount=account; suiAddress=account.address;
+    suiWallet=wallet; suiAccount=account; suiAddress=account.address; suiWalletName=wallet.name||"";
     suiSubscribeChange(wallet);
-    var challenge=buildSuiChallenge(account.address);
-    suiPendingChallenge=challenge;
-    var bytes=new TextEncoder().encode(challenge.text);
-    return signFeat.signPersonalMessage({message:bytes, account:account})
-      .then(function(sig){ return {account:account, challenge:challenge, sig:sig}; });
-  }).then(function(out){
-    if(new Date()>new Date(out.challenge.expiresAt)) throw {code:"sui/expired",message:"Challenge expired."};
-    return suiVerifySignature(out.challenge.text, out.sig.signature, out.account.address)
-      .then(function(ok){
-        if(!ok) throw {code:"sui/verify-failed",message:"Signature did not verify."};
-        return suiFinishSignIn(out.account.address, wallet);
-      });
+    return suiSignInAttempt(wallet, account, false);
   }).catch(function(err){
     suiPendingChallenge=null;
     var code=(err&&err.code)||"";
     if(code.indexOf("auth/")===0){ renderSuiWalletChoices(suiCapableWallets()); return; }
-    if(code==="sui/verify-failed"||code==="sui/expired") showSuiPickerErr("That signature could not be verified. Try signing in again.");
-    else if(code==="sui/no-account") showSuiPickerErr("No Sui account was returned. Try again.");
+    if(code==="sui/no-account") showSuiPickerErr("No Sui account was returned. Try again.");
     else showSuiPickerErr(suiSignErrText(err));
     renderSuiWalletChoices(suiCapableWallets());
   });
 }
+/* One sign-in attempt: sign a fresh challenge, verify it, finish. If the
+   challenge expired before the signature could be verified (challenges are
+   valid for 5 minutes), a fresh challenge is made and the user is asked to
+   sign the new one — right here in the open dialog, with a message that
+   says the old one expired — instead of failing with a bare error. */
+function suiSignInAttempt(wallet, account, isRetry){
+  var signFeat=wallet.features["sui:signPersonalMessage"];
+  var challenge=buildSuiChallenge(account.address);
+  suiPendingChallenge=challenge;
+  var bytes=new TextEncoder().encode(challenge.text);
+  return signFeat.signPersonalMessage({message:bytes, account:account})
+    .then(function(sig){
+      if(new Date()>new Date(challenge.expiresAt)) throw {code:"sui/expired",message:"Challenge expired."};
+      return suiVerifySignature(challenge.text, sig.signature, account.address)
+        .then(function(ok){
+          if(!ok){
+            if(new Date()>new Date(challenge.expiresAt)) throw {code:"sui/expired",message:"Challenge expired."};
+            throw {code:"sui/verify-failed",message:"Signature did not verify."};
+          }
+          return suiFinishSignIn(account.address, wallet);
+        });
+    })
+    .catch(function(err){
+      var code=(err&&err.code)||"";
+      if(code==="sui/expired"&&!isRetry){
+        showSuiPickerErr("That sign-in message expired — sign-in messages are only valid for 5 minutes. We made a fresh one: please sign the new message in your wallet.");
+        return suiSignInAttempt(wallet, account, true);
+      }
+      suiPendingChallenge=null;
+      if(code==="sui/expired"){
+        showSuiPickerErr("The fresh sign-in message expired too. Tap your wallet below to start again.");
+      } else if(code==="sui/verify-failed"){
+        showSuiPickerErr("That signature could not be verified. Try signing in again.");
+      } else if(code.indexOf("auth/")===0){
+        renderSuiWalletChoices(suiCapableWallets());
+        return;
+      } else {
+        showSuiPickerErr(suiSignErrText(err));
+      }
+      renderSuiWalletChoices(suiCapableWallets());
+    });
+}
 function trySuiRestore(){
   suiRestoreTried=true;
   var saved=loadSuiSession();
-  if(!saved){ return; }
-  if(!fbUser||fbUser.uid!==saved.uid){ clearSuiSession(); return; }
+  if(!saved||!fbUser){ return; }
+  var mine=(saved.uid===fbUser.uid)||(fbUser.displayName&&shortSuiAddr(saved.address)===fbUser.displayName);
+  if(!mine){ clearSuiSession(); return; }
+  /* The link itself is restored from the saved session alone: the profile
+     shows the linked address and My Memes loads by address even before the
+     wallet reconnects. The session is NEVER cleared just because the
+     wallet is not connected in this page load — the wallet reconnects
+     from the Mint button's own click when a transaction needs it. */
+  suiAddress=saved.address; suiWalletName=saved.walletName||"";
   var libs=suiLibs(); if(!libs){ return; }
   var wallet=null;
   suiCapableWallets().forEach(function(w){ if(w.name===saved.walletName) wallet=w; });
-  if(!wallet){ clearSuiSession(); return; }
+  if(!wallet){ return; }
   var found=null;
   (wallet.accounts||[]).forEach(function(a){ if(a.address===saved.address) found=a; });
-  if(!found){ clearSuiSession(); return; }
-  suiWallet=wallet; suiAccount=found; suiAddress=found.address;
+  if(!found){ return; }
+  suiWallet=wallet; suiAccount=found;
   suiSubscribeChange(wallet);
 }
 function signOutAll(){
@@ -2905,6 +3046,7 @@ function normMeme(doc){
   var d=doc.data(); d.id=doc.id;
   d.createdAt=(d.createdAt&&d.createdAt.toDate)?d.createdAt.toDate():new Date();
   d.votes=d.votes||0; d.voterUids=d.voterUids||[]; d.reports=d.reports||0; d.reporterUids=d.reporterUids||[]; d.hidden=!!d.hidden;
+  d.creatorSuiAddress=d.creatorSuiAddress||"";
   d.minted=!!(d.minted||d.objectId); d.blobId=d.blobId||""; d.objectId=d.objectId||""; d.digest=d.digest||"";
   return d;
 }
@@ -2936,14 +3078,33 @@ function loadGallery(){
       renderGallery(); renderProfile();
     });
 }
+/* Ownership: your Firebase uid, or — for Sui accounts — your Sui address.
+   The address is the stable key: it survives sign-out + sign-in even though
+   the anonymous uid does not. */
+function isOwnMeme(m){
+  if(!fbUser||!m) return false;
+  if(m.creatorUid===fbUser.uid) return true;
+  var addr=linkedSuiAddress();
+  return !!(addr&&m.creatorSuiAddress&&m.creatorSuiAddress===addr);
+}
 function loadMyMemes(){
   if(!fbDb||!fbUser){ myMemes=[]; myLoaded=true; myErr=""; renderGallery(); renderProfile(); return; }
-  /* Owner query: every document it can return has creatorUid == the signed-in
-     uid, which the read rule's owner clause allows. */
-  fbDb.collection('memes').where('creatorUid','==',fbUser.uid).get()
-    .then(function(snap){
-      myMemes=[];
-      snap.forEach(function(doc){ myMemes.push(normMeme(doc)); });
+  /* Owner queries: by Firebase uid (the read rule's owner clause), and —
+     for Sui accounts — by Sui address, the stable key that restores the
+     same memes after sign-out + sign-in with the same wallet. Public memes
+     pass the read rule, so the address query can return them; if it is
+     ever denied (a hidden meme among the results), the uid results still
+     load on their own. */
+  var byUid=fbDb.collection('memes').where('creatorUid','==',fbUser.uid).get();
+  var addr=linkedSuiAddress();
+  var byAddr=addr?fbDb.collection('memes').where('creatorSuiAddress','==',addr).get().catch(function(){ return null; }):Promise.resolve(null);
+  Promise.all([byUid,byAddr]).then(function(res){
+      var seen={}, out=[];
+      [res[0],res[1]].forEach(function(snap){
+        if(!snap) return;
+        snap.forEach(function(doc){ if(!seen[doc.id]){ seen[doc.id]=1; out.push(normMeme(doc)); } });
+      });
+      myMemes=out;
       myLoaded=true; myErr=""; renderGallery(); renderProfile();
     })
     .catch(function(err){
@@ -3036,7 +3197,7 @@ function memeCard(m,idx){
   share.innerHTML='<svg class="ic"><use href="#i-share"/></svg>Share';
   share.addEventListener('click',function(){ shareMeme(m); });
   acts.appendChild(share);
-  var own=!!(fbUser&&m.creatorUid===fbUser.uid);
+  var own=isOwnMeme(m);
   if(!own){
     var rep=document.createElement('button'); rep.type="button"; rep.className="g-act";
     rep.innerHTML='<svg class="ic"><use href="#i-flag"/></svg>Report';
@@ -3111,7 +3272,11 @@ function deleteMeme(m){
       pubMemes=pubMemes.filter(function(x){ return x.id!==m.id; });
       myMemes=myMemes.filter(function(x){ return x.id!==m.id; });
       renderGallery(); renderProfile(); toast('Meme deleted.');
-    }).catch(function(err){ toast(dbErrorText(err)); });
+    }).catch(function(err){
+      if(err&&err.code==="permission-denied"&&m.creatorSuiAddress&&fbUser&&m.creatorUid!==fbUser.uid){
+        toast('This meme is yours, but it was published under an earlier sign-in. Deleting it needs the updated database rules from the build notes.');
+      } else toast(dbErrorText(err));
+    });
   });
 }
 function shareMeme(m){
@@ -3150,10 +3315,23 @@ document.getElementById('publishBtn').addEventListener('click',function(){
   if(!fbUser){ pendingAfterSignIn="publish"; openAuth(); toast('Sign in to publish your meme.'); return; }
   openPublish();
 });
-pubGo.addEventListener('click',function(){
+var pubMintGo=document.getElementById('pubMintGo');
+function setPubBusy(busy){
+  pubGo.disabled=busy; pubMintGo.disabled=busy;
+  pubGo.textContent=busy?"Publishing…":"Publish";
+  pubMintGo.textContent=busy?"Publishing…":"Publish & Mint as NFT";
+}
+/* Publish stays free either way. With wantMint, the meme is published free
+   first, then the mint modal opens straight away for the just-published
+   meme; if no Sui wallet is linked yet, the mint flow signs in with Sui
+   first and resumes into that same mint modal. Memes published while a Sui
+   wallet is linked are stamped with creatorSuiAddress — the stable owner
+   key that restores them after sign-out + sign-in. */
+function doPublish(wantMint){
   if(!fbUser||!fbDb) return;
   var title=document.getElementById('pubTitle').value.trim()||"Untitled meme";
-  pubErr.hidden=true; pubGo.disabled=true; pubGo.textContent="Publishing…";
+  pubErr.hidden=true; setPubBusy(true);
+  var dataUrl="";
   renderPNG(540).then(function(cv){
     var scale=Math.min(1,540/Math.max(cv.width,cv.height)), out=cv;
     if(scale<1){
@@ -3161,25 +3339,39 @@ pubGo.addEventListener('click',function(){
       out.width=Math.round(cv.width*scale); out.height=Math.round(cv.height*scale);
       out.getContext('2d').drawImage(cv,0,0,out.width,out.height);
     }
-    var dataUrl=out.toDataURL('image/jpeg',0.8);
+    dataUrl=out.toDataURL('image/jpeg',0.8);
     return fbDb.collection('memes').add({
       image:dataUrl,
       title:title,
       creatorUid:fbUser.uid,
+      creatorSuiAddress:linkedSuiAddress(),
       creatorName:fbUser.displayName||(fbUser.email?fbUser.email.split("@")[0]:"Maker"),
       creatorPhoto:fbUser.photoURL||"",
       createdAt:firebase.firestore.FieldValue.serverTimestamp(),
       votes:0, voterUids:[], reports:0, reporterUids:[], hidden:false
     });
-  }).then(function(){
-    pubGo.disabled=false; pubGo.textContent="Publish";
+  }).then(function(ref){
+    setPubBusy(false);
     closePublish(); toast('Published to the community gallery.');
     loadGallery(); myLoaded=false; loadMyMemes();
+    if(wantMint&&ref){
+      var newMeme={
+        id:ref.id, image:dataUrl, title:title,
+        creatorUid:fbUser.uid, creatorSuiAddress:linkedSuiAddress(),
+        creatorName:fbUser.displayName||(fbUser.email?fbUser.email.split("@")[0]:"Maker"),
+        creatorPhoto:fbUser.photoURL||"", createdAt:new Date(),
+        votes:0, voterUids:[], reports:0, reporterUids:[], hidden:false,
+        minted:false, blobId:"", objectId:"", digest:""
+      };
+      setTimeout(function(){ openMintModal(newMeme); },80);
+    }
   }).catch(function(err){
-    pubGo.disabled=false; pubGo.textContent="Publish";
+    setPubBusy(false);
     pubErr.textContent=dbErrorText(err); pubErr.hidden=false;
   });
-});
+}
+pubGo.addEventListener('click',function(){ doPublish(false); });
+pubMintGo.addEventListener('click',function(){ doPublish(true); });
 
 /* ---------- Mint as NFT (Sui testnet + Walrus storage) ----------
    Minting is an upgrade on your own published meme, never a requirement:
@@ -3237,9 +3429,62 @@ function estimateMintCost(){
     }).catch(function(){ el.textContent=fallback; });
   }catch(e){ el.textContent=fallback; }
 }
+function whenSuiLibs(cb){
+  if(suiLibs()){ cb(true); return; }
+  if(suiLibsFailed||window.LofiSuiLibsFailed){ cb(false); return; }
+  var done=false;
+  var to=setTimeout(function(){ if(!done){ done=true; cb(!!suiLibs()); } },6000);
+  window.addEventListener("lofi-sui-libs-ready",function(){ if(!done){ done=true; clearTimeout(to); cb(true); } });
+  window.addEventListener("lofi-sui-libs-failed",function(){ if(!done){ done=true; clearTimeout(to); cb(false); } });
+}
+/* Reconnect the SAME wallet that was linked at sign-in. Called from the
+   Mint click itself, so the wallet popup opens from the user's gesture.
+   No new sign-in is created: the account and the linked address stay
+   exactly as they are — only the live wallet connection is restored, and
+   the mint then resumes. */
+function reconnectSuiWallet(){
+  var target=linkedSuiAddress();
+  var wallets=suiCapableWallets();
+  var wallet=null;
+  wallets.forEach(function(w){ if(w.name===suiWalletName) wallet=w; });
+  if(!wallet) wallet=wallets[0]||null;
+  if(!wallet) return Promise.reject(new Error("No Sui wallet found on this device."));
+  var connect=wallet.features&&wallet.features["standard:connect"];
+  if(!connect) return Promise.reject(new Error("This wallet cannot connect."));
+  return connect.connect().then(function(res){
+    var accounts=(res&&res.accounts)||wallet.accounts||[];
+    if(!accounts.length) throw new Error("No Sui account was returned.");
+    var account=null;
+    accounts.forEach(function(a){ if(a.address===target) account=a; });
+    if(!account) account=accounts[0];
+    suiWallet=wallet; suiAccount=account; suiAddress=account.address; suiWalletName=wallet.name||"";
+    suiSubscribeChange(wallet);
+    if(fbUser) saveSuiSession({address:suiAddress,walletName:suiWalletName,uid:fbUser.uid,nonce:"",issuedAt:""});
+    return account;
+  });
+}
 function openMintModal(m){
   if(!fbUser){ pendingAfterSignIn="mint"; pendingMintMeme=m; openAuth(); toast('Sign in to mint your meme.'); return; }
-  if(!suiWallet||!suiAddress){ pendingAfterSignIn="mint"; pendingMintMeme=m; openAuth(); toast('Sign in with Sui to mint this meme as an NFT.'); return; }
+  if(suiWallet&&suiAddress){ showMintModal(m); return; }
+  if(linkedSuiAddress()){
+    /* Already signed in with Sui — the sign-in dialog must NOT open again.
+       The wallet connection was lost (for example after a reload), so
+       reconnect the same wallet from this click and resume the mint. */
+    toast('Reconnecting your Sui wallet…');
+    whenSuiLibs(function(ok){
+      if(!ok){ toast('The Sui tools could not load. Check your connection, then tap Mint as NFT again.'); return; }
+      reconnectSuiWallet().then(function(){ showMintModal(m); })
+        .catch(function(){ toast('Wallet reconnect was cancelled. Tap Mint as NFT to try again.'); });
+    });
+    return;
+  }
+  /* No Sui wallet linked to this account yet: sign in with Sui first, then
+     resume straight into this meme's mint modal. */
+  pendingAfterSignIn="mint"; pendingMintMeme=m; openAuth();
+  if(!IS_PREVIEW&&fbAuth){ showSuiPicker(); refreshSuiPicker(); }
+  toast('Sign in with Sui to mint this meme as an NFT.');
+}
+function showMintModal(m){
   mintTarget=m;
   document.getElementById('mintForm').hidden=false;
   document.getElementById('mintBusy').hidden=true;
@@ -3410,7 +3655,7 @@ mintGo.addEventListener('click',function(){
     syncMemeAcross(m);
     renderGallery(); renderProfile();
     var note="";
-    if(fbDb&&fbUser&&m.creatorUid===fbUser.uid){
+    if(fbDb&&fbUser&&isOwnMeme(m)){
       return fbDb.collection('memes').doc(m.id).update({minted:true, blobId:out.blobId, objectId:out.objectId, digest:out.digest})
         .then(function(){ return note; })
         .catch(function(){ return "The NFT is minted and in your wallet. The gallery badge could not be saved: the database rules need the mint clause from the build notes pasted in the Firebase console."; });
@@ -3431,6 +3676,17 @@ mintGo.addEventListener('click',function(){
 });
 
 /* ---------- Auth state ---------- */
+/* Runs a stored post-sign-in action exactly once. Called from the auth
+   state listener and from the Sui sign-in finish — linking a wallet to an
+   already signed-in account fires no auth change, but a pending mint must
+   still resume. */
+function resumePendingAfterSignIn(){
+  if(!fbUser||!pendingAfterSignIn) return;
+  var p=pendingAfterSignIn; pendingAfterSignIn=null;
+  if(p==="publish"&&document.documentElement.dataset.view==="studio"&&layers.length) openPublish();
+  if(p==="mine") setGalTab("mine");
+  if(p==="mint"&&pendingMintMeme){ var mm=pendingMintMeme; pendingMintMeme=null; setTimeout(function(){ openMintModal(mm); },80); }
+}
 if(fbAuth){
   fbAuth.onAuthStateChanged(function(u){
     authResolved=true;
@@ -3439,12 +3695,7 @@ if(fbAuth){
     if(fbUser){ loadMyMemes(); } else { closeProfile(); }
     renderAuth(); renderGallery();
     if(fbUser&&!suiRestoreTried) trySuiRestore();
-    if(fbUser&&pendingAfterSignIn){
-      var p=pendingAfterSignIn; pendingAfterSignIn=null;
-      if(p==="publish"&&document.documentElement.dataset.view==="studio"&&layers.length) openPublish();
-      if(p==="mine") setGalTab("mine");
-      if(p==="mint"&&pendingMintMeme){ var mm=pendingMintMeme; pendingMintMeme=null; setTimeout(function(){ openMintModal(mm); },80); }
-    }
+    resumePendingAfterSignIn();
   });
 }
 if(!fbAuth) authResolved=true; /* no auth service to wait for: show Sign in */
