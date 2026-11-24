@@ -522,6 +522,30 @@ input[type=range]{cursor:pointer}
 .crown-badge .ic{width:15px;height:15px}
 .hidden-badge{position:absolute;top:10px;right:10px;z-index:3;background:var(--ink);color:#fff;border:var(--bd2);padding:5px 9px;font-weight:900;font-size:11px;text-transform:uppercase}
 .g-empty{grid-column:1/-1}
+/* ===== Phase 4: mint as NFT (Sui testnet + Walrus), NFT badges, profile edit ===== */
+.nft-badge{position:absolute;top:10px;right:10px;z-index:3;background:var(--ink);color:#fff;border:var(--bd2);box-shadow:var(--sh-xs);padding:5px 9px;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.auth-user{position:relative}
+.nft-chip-av{position:absolute;left:27px;bottom:-7px;z-index:2;background:var(--ink);color:#fff;border:2px solid #fff;font-size:8.5px;font-weight:900;letter-spacing:.05em;padding:1px 4px;text-transform:uppercase;pointer-events:none;line-height:1.3}
+.pf-ava{position:relative}
+.nft-chip-pf{position:absolute;right:0;bottom:0;background:var(--ink);color:#fff;font-size:9px;font-weight:900;padding:2px 6px;letter-spacing:.06em;text-transform:uppercase}
+.pf-edit{max-width:460px}
+.pf-note{font-size:13px;color:var(--muted);font-weight:700;margin:0 0 10px;line-height:1.55}
+.pf-sui-addr{font-size:13.5px;font-weight:700;overflow-wrap:anywhere;background:var(--ice-light);border:var(--bd2);padding:10px 12px;margin:0;line-height:1.5}
+.pf-pic-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pf-pic{position:relative;width:72px;height:72px;min-height:72px;padding:0;border:var(--bd2);background:#fff;cursor:pointer;overflow:hidden;box-shadow:var(--sh-xs);transition:transform .1s,box-shadow .1s}
+.pf-pic:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.pf-pic:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.pf-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pf-pic.on{outline:3px solid var(--accent);outline-offset:2px}
+.nft-chip-sm{position:absolute;right:0;bottom:0;background:var(--ink);color:#fff;font-size:9px;font-weight:900;padding:2px 5px;letter-spacing:.05em;text-transform:uppercase}
+.mint-preview{width:100%;display:block;border:var(--bd2);margin:0 0 12px;max-height:280px;object-fit:contain;background:#DFF5FB}
+.mint-net{display:inline-block;background:var(--ink);color:#fff;border:var(--bd2);font-weight:900;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;margin:0 0 12px;box-shadow:2px 2px 0 var(--ink)}
+.mint-cost{font-weight:700;font-size:13.5px;line-height:1.55;background:var(--ice-light);border:var(--bd2);padding:10px 12px;margin:12px 0 0}
+.mint-step{font-weight:800;font-size:15px;line-height:1.55;margin:0 0 14px}
+.mint-kv{font-size:13.5px;font-weight:700;overflow-wrap:anywhere;margin:6px 0;line-height:1.5}
+.mint-kv b{font-weight:900}
+.mint-links{display:flex;flex-direction:column;gap:7px;margin:12px 0 4px}
+.mint-links a{font-weight:800;font-size:14px}
 @media(max-width:640px){.auth-name{display:none}.auth-btn{padding:9px 11px;font-size:12.5px}}
 @media(max-width:480px){.lp-header-in{flex-wrap:wrap}.auth-menu{position:fixed;top:64px;right:12px;left:12px;width:auto}}
 </style>
@@ -659,6 +683,7 @@ input[type=range]{cursor:pointer}
       <button class="tab" type="button" data-gtab="week" aria-selected="false">Top this week</button>
       <button class="tab" type="button" data-gtab="all" aria-selected="false">Top all time</button>
       <button class="tab" type="button" data-gtab="mine" aria-selected="false">My memes</button>
+      <button class="tab" type="button" data-gtab="minted" aria-selected="false">Minted</button>
     </div>
     <div class="gal-tools">
       <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="search" id="galSearch" type="search" placeholder="Search memes or makers" aria-label="Search the community gallery"></div>
@@ -884,6 +909,19 @@ input[type=range]{cursor:pointer}
         <div class="stat"><b id="pfStatVotes">0</b><span>Votes received</span></div>
         <div class="stat"><b id="pfStatLiked">0</b><span>Liked</span></div>
       </div>
+      <h3 class="pf-sec">Edit profile</h3>
+      <div class="pf-edit">
+        <div class="field"><label for="pfNameInput">Display name</label><input type="text" id="pfNameInput" maxlength="40" placeholder="Your display name"></div>
+        <button class="btn ghost" type="button" id="pfSaveName">Save name</button>
+        <div class="field" style="margin-top:16px"><label>Profile picture</label>
+          <p class="pf-note">Pick one of your published memes to use as your profile picture. It is free. If that meme is minted, your picture gets an NFT badge.</p>
+          <div class="pf-pic-grid" id="pfPicGrid"></div>
+          <button class="btn ghost" type="button" id="pfPicRemove">Use default picture</button>
+        </div>
+        <div class="field" style="margin-top:16px"><label>Linked Sui address</label>
+          <p class="pf-sui-addr" id="pfSuiAddr">No Sui wallet linked to this account.</p>
+        </div>
+      </div>
       <h3 class="pf-sec">My memes</h3>
       <p class="gal-status" id="pfMineStatus"></p>
       <div class="gallery pf-grid" id="pfMine"></div>
@@ -964,6 +1002,46 @@ input[type=range]{cursor:pointer}
     <div class="cf-btns">
       <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
       <button class="btn" type="button" id="pubGo">Publish</button>
+    </div>
+  </div>
+</div>
+
+<div class="lb" id="mintModal" hidden role="dialog" aria-modal="true" aria-label="Mint as NFT">
+  <div class="cf-card auth-card">
+    <button class="lb-close auth-x" type="button" id="mintClose" aria-label="Close mint">✕</button>
+    <h3>Mint as NFT</h3>
+    <div id="mintForm">
+      <img class="mint-preview" id="mintPreview" alt="Your meme, as it will be minted">
+      <span class="mint-net">Sui Testnet · Free</span>
+      <div class="field"><label for="mintName">NFT name</label><input type="text" id="mintName" maxlength="80" placeholder="Give your NFT a name"></div>
+      <div class="field"><label for="mintDesc">Description</label><input type="text" id="mintDesc" maxlength="200" placeholder="A short description"></div>
+      <p class="mint-cost" id="mintCost">Estimating the network fee…</p>
+      <p class="auth-err" id="mintErr" hidden></p>
+      <div class="cf-btns">
+        <button class="btn ghost" type="button" id="mintCancel">Cancel</button>
+        <button class="btn" type="button" id="mintGo">Mint NFT</button>
+      </div>
+    </div>
+    <div id="mintBusy" hidden>
+      <p class="mint-step" id="mintStep">Preparing your meme…</p>
+      <p class="auth-err" id="mintBusyErr" hidden></p>
+      <div class="cf-btns">
+        <button class="btn ghost" type="button" id="mintBusyClose" hidden>Close</button>
+      </div>
+    </div>
+    <div id="mintResult" hidden>
+      <p class="mint-step">Minted on Sui testnet. The NFT is in your wallet.</p>
+      <p class="mint-kv"><b>Name:</b> <span id="mintResName"></span></p>
+      <p class="mint-kv"><b>Object ID:</b> <span id="mintResObj"></span></p>
+      <div class="mint-links">
+        <a id="mintResTx" href="#" target="_blank" rel="noopener">View transaction on Suiscan</a>
+        <a id="mintResImg" href="#" target="_blank" rel="noopener">View image on Walrus</a>
+        <a id="mintResWallet" href="#" target="_blank" rel="noopener">View in wallet</a>
+      </div>
+      <p class="pf-note" id="mintResNote" hidden></p>
+      <div class="cf-btns">
+        <button class="btn" type="button" id="mintDone">Done</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2141,6 +2219,14 @@ match /memes/{memeId} {
         && request.auth.uid in request.resource.data.reporterUids
         && (request.resource.data.hidden == false
             || request.resource.data.reports >= 3))
+      ||
+      // Mint (Phase 4): the owner may attach the NFT fields to their own
+      // meme after a successful mint, and change nothing else. Without this
+      // clause the NFT still mints into the wallet, but the gallery NFT
+      // badge cannot be saved.
+      (request.auth.uid == resource.data.creatorUid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['minted', 'blobId', 'objectId', 'digest']))
     );
 
   // Delete: only the owner.
@@ -2154,7 +2240,8 @@ match /memes/{memeId} {
    loaded with dynamic import() from this classic script and exposed on
    window.LofiSuiLibs for the sign-in code below. Pinned versions:
    @mysten/wallet-standard@0.22.1, @mysten/sui@3.0.1/verify,
-   @mysten/sui@3.0.1/grpc. On success this dispatches lofi-sui-libs-ready;
+   @mysten/sui@3.0.1/grpc, @mysten/sui@3.0.1/transactions (the Transaction
+   builder, used by the mint-as-NFT flow). On success this dispatches lofi-sui-libs-ready;
    on failure (CDN blocked, offline) window.LofiSuiLibs is never set,
    lofi-sui-libs-failed fires, and the page plus the Google/email sign-in
    keep working exactly as before. */
@@ -2162,14 +2249,16 @@ match /memes/{memeId} {
   var urls=[
     "https://esm.sh/@mysten/wallet-standard@0.22.1",
     "https://esm.sh/@mysten/sui@3.0.1/verify",
-    "https://esm.sh/@mysten/sui@3.0.1/grpc"
+    "https://esm.sh/@mysten/sui@3.0.1/grpc",
+    "https://esm.sh/@mysten/sui@3.0.1/transactions"
   ];
   Promise.all(urls.map(function(u){ return import(u); })).then(function(mods){
     window.LofiSuiLibs={
       getWallets:mods[0].getWallets,
       verifyPersonalMessageSignature:mods[1].verifyPersonalMessageSignature,
       isValidPersonalMessageSignature:mods[1].isValidPersonalMessageSignature,
-      SuiGrpcClient:mods[2].SuiGrpcClient
+      SuiGrpcClient:mods[2].SuiGrpcClient,
+      Transaction:mods[3].Transaction
     };
     window.dispatchEvent(new CustomEvent("lofi-sui-libs-ready"));
   }).catch(function(){
@@ -2245,12 +2334,13 @@ function renderAuth(){
     var name=fbUser.displayName||(fbUser.email?fbUser.email.split("@")[0]:"Maker");
     var wrap=document.createElement('div'); wrap.className="auth-user";
     var av=document.createElement('button'); av.type="button"; av.className="auth-avatar"; av.setAttribute('aria-label','Account menu for '+name); av.setAttribute('aria-haspopup','true'); av.setAttribute('aria-expanded','false');
-    if(fbUser.photoURL){ var im=document.createElement('img'); im.src=fbUser.photoURL; im.alt=""; im.referrerPolicy="no-referrer"; av.appendChild(im); }
+    var purl=profilePhotoURL();
+    if(purl){ var im=document.createElement('img'); im.src=purl; im.alt=""; im.referrerPolicy="no-referrer"; av.appendChild(im); }
     else av.textContent=name.charAt(0).toUpperCase();
     var menu=document.createElement('div'); menu.className="auth-menu"; menu.hidden=true; menu.setAttribute('role','menu');
     var head=document.createElement('div'); head.className="am-head";
     var hav=document.createElement('span'); hav.className="am-ava";
-    if(fbUser.photoURL){ var him=document.createElement('img'); him.src=fbUser.photoURL; him.alt=""; him.referrerPolicy="no-referrer"; hav.appendChild(him); }
+    if(purl){ var him=document.createElement('img'); him.src=purl; him.alt=""; him.referrerPolicy="no-referrer"; hav.appendChild(him); }
     else hav.textContent=name.charAt(0).toUpperCase();
     var hid=document.createElement('div'); hid.className="am-id";
     var hn=document.createElement('div'); hn.className="am-name"; hn.textContent=name;
@@ -2271,7 +2361,9 @@ function renderAuth(){
     av.addEventListener('click',function(e){ e.stopPropagation();
       document.querySelectorAll('.auth-menu').forEach(function(x){ if(x!==menu) x.hidden=true; });
       menu.hidden=!menu.hidden; av.setAttribute('aria-expanded',menu.hidden?'false':'true'); });
-    wrap.appendChild(av); wrap.appendChild(menu);
+    wrap.appendChild(av);
+    if(profilePicMinted()){ var achip=document.createElement('span'); achip.className="nft-chip-av"; achip.textContent="NFT"; wrap.appendChild(achip); }
+    wrap.appendChild(menu);
     slot.appendChild(wrap);
   });
 }
@@ -2305,12 +2397,83 @@ function closeProfile(){
   window.scrollTo(0,0);
 }
 document.getElementById('profileBack').addEventListener('click',closeProfile);
+/* ---------- Profile picture: one of your own published memes ----------
+   The choice is kept on this device (same storage the Sui session uses):
+   { uid, memeId, image, minted }. It is free, needs no transaction, and
+   shows wherever your picture shows: header avatar, account menu and the
+   profile page. If the chosen meme is minted, an NFT badge sits on it. */
+var PF_PIC_KEY="lofi_meme_profile_pic_v1";
+function loadProfilePic(){
+  try{ var p=JSON.parse(localStorage.getItem(PF_PIC_KEY)||"null"); return (p&&fbUser&&p.uid===fbUser.uid&&p.image)?p:null; }
+  catch(e){ return null; }
+}
+function profilePhotoURL(){
+  var p=loadProfilePic();
+  return p?p.image:(fbUser?(fbUser.photoURL||""):"");
+}
+function profilePicMinted(){
+  var p=loadProfilePic(); if(!p) return false;
+  var m=null;
+  myMemes.forEach(function(x){ if(x.id===p.memeId) m=x; });
+  return m?!!m.minted:!!p.minted;
+}
+function setProfilePic(m){
+  if(!fbUser) return;
+  try{ localStorage.setItem(PF_PIC_KEY,JSON.stringify({uid:fbUser.uid,memeId:m.id,image:m.image,minted:!!m.minted})); }catch(e){}
+  renderAuth(); renderProfile(); toast('Profile picture updated.');
+}
+function clearProfilePic(){
+  try{ localStorage.removeItem(PF_PIC_KEY); }catch(e){}
+  renderAuth(); renderProfile(); toast('Profile picture reset.');
+}
+function renderProfileEdit(){
+  if(!fbUser) return;
+  var ni=document.getElementById('pfNameInput');
+  if(ni&&document.activeElement!==ni) ni.value=fbUser.displayName||"";
+  var sa=document.getElementById('pfSuiAddr');
+  if(sa){
+    var sess=loadSuiSession();
+    var addr=suiAddress||(sess?sess.address:"");
+    sa.textContent=addr?addr:"No Sui wallet linked to this account.";
+  }
+  var grid=document.getElementById('pfPicGrid'); if(!grid) return;
+  grid.innerHTML="";
+  var pic=loadProfilePic();
+  var mine=myMemes.slice().sort(function(a,b){ return b.createdAt-a.createdAt; });
+  if(!mine.length){
+    var note=document.createElement('p'); note.className="pf-note";
+    note.textContent=myLoaded?"Publish a meme first, then pick it here as your profile picture.":"Loading your memes…";
+    grid.appendChild(note);
+  }
+  mine.forEach(function(m){
+    var b=document.createElement('button'); b.type="button"; b.className="pf-pic"+(pic&&pic.memeId===m.id?" on":"");
+    b.setAttribute('aria-label','Set "'+(m.title||"Untitled meme")+'" as your profile picture');
+    var im=document.createElement('img'); im.src=m.image; im.alt=""; im.loading="lazy"; b.appendChild(im);
+    if(m.minted){ var chip=document.createElement('span'); chip.className="nft-chip-sm"; chip.textContent="NFT"; b.appendChild(chip); }
+    b.addEventListener('click',function(){ setProfilePic(m); });
+    grid.appendChild(b);
+  });
+  var rm=document.getElementById('pfPicRemove');
+  if(rm) rm.style.display=pic?"":"none";
+}
+document.getElementById('pfSaveName').addEventListener('click',function(){
+  if(!fbUser) return;
+  var v=document.getElementById('pfNameInput').value.trim();
+  if(!v){ toast('Type a display name first.'); return; }
+  fbUser.updateProfile({displayName:v}).then(function(){
+    renderAuth(); renderProfile(); toast('Display name saved.');
+  }).catch(function(err){ toast(authErrorText(err)); });
+});
+document.getElementById('pfPicRemove').addEventListener('click',function(){ clearProfilePic(); });
+
 function renderProfile(){
   if(!profileIsOpen()||!fbUser) return;
   var name=fbUser.displayName||(fbUser.email?fbUser.email.split("@")[0]:"Maker");
   var ava=document.getElementById('pfAva'); ava.innerHTML="";
-  if(fbUser.photoURL){ var im=document.createElement('img'); im.src=fbUser.photoURL; im.alt=""; im.referrerPolicy="no-referrer"; ava.appendChild(im); }
+  var purl=profilePhotoURL();
+  if(purl){ var im=document.createElement('img'); im.src=purl; im.alt=""; im.referrerPolicy="no-referrer"; ava.appendChild(im); }
   else ava.textContent=name.charAt(0).toUpperCase();
+  if(profilePicMinted()){ var pchip=document.createElement('span'); pchip.className="nft-chip-pf"; pchip.textContent="NFT"; ava.appendChild(pchip); }
   document.getElementById('pfName').textContent=name;
   document.getElementById('pfEmail').textContent=fbUser.email||"";
   var joined="";
@@ -2342,6 +2505,7 @@ function renderProfile(){
   else if(!galLoaded&&!liked.length){ ls.textContent="Loading liked memes…"; }
   else if(!liked.length){ ls.textContent=""; var em2=document.createElement('div'); em2.className="empty g-empty"; em2.textContent="You have not liked any memes yet. Tap the heart on a gallery meme to like it."; lg.appendChild(em2); }
   else { ls.textContent=liked.length+(liked.length===1?" meme liked":" memes liked"); liked.forEach(function(m){ lg.appendChild(memeCard(m,-1)); }); }
+  renderProfileEdit();
 }
 
 /* ---------- Sign-in modal ---------- */
@@ -2716,6 +2880,7 @@ document.addEventListener('keydown',function(e){
   if(e.key!=="Escape") return;
   if(!authModal.hidden) closeAuth();
   if(!document.getElementById('pubModal').hidden) closePublish();
+  if(!document.getElementById('mintModal').hidden) closeMintModal();
 });
 
 /* ---------- Public gallery state ---------- */
@@ -2725,7 +2890,7 @@ function byVotes(a,b){ return (b.votes-a.votes)||(b.createdAt-a.createdAt); }
 function setGalTab(t){
   galTab=t;
   document.querySelectorAll('[data-gtab]').forEach(function(b){ b.setAttribute('aria-selected',b.dataset.gtab===t?'true':'false'); });
-  if(t==="mine"&&fbUser&&fbDb&&!myLoaded) loadMyMemes();
+  if((t==="mine"||t==="minted")&&fbUser&&fbDb&&!myLoaded) loadMyMemes();
   renderGallery();
 }
 document.querySelectorAll('[data-gtab]').forEach(function(b){
@@ -2740,6 +2905,7 @@ function normMeme(doc){
   var d=doc.data(); d.id=doc.id;
   d.createdAt=(d.createdAt&&d.createdAt.toDate)?d.createdAt.toDate():new Date();
   d.votes=d.votes||0; d.voterUids=d.voterUids||[]; d.reports=d.reports||0; d.reporterUids=d.reporterUids||[]; d.hidden=!!d.hidden;
+  d.minted=!!(d.minted||d.objectId); d.blobId=d.blobId||""; d.objectId=d.objectId||""; d.digest=d.digest||"";
   return d;
 }
 function loadGallery(){
@@ -2789,6 +2955,12 @@ function currentList(){
   if(galTab==="mine"){
     list=myMemes.slice();
     list.sort(function(a,b){ return b.createdAt-a.createdAt; });
+  } else if(galTab==="minted"){
+    /* Minted memes only: public memes plus your own (your own list can hold
+       minted memes the public query cannot return, e.g. hidden ones). */
+    var seen={}; list=[];
+    pubMemes.concat(myMemes).forEach(function(m){ if(!seen[m.id]){ seen[m.id]=1; if(m.minted) list.push(m); } });
+    list.sort(function(a,b){ return b.createdAt-a.createdAt; });
   } else {
     list=pubMemes.filter(function(m){ return !m.hidden; });
     if(galTab==="today"){ var s=new Date(); s.setHours(0,0,0,0); list=list.filter(function(m){ return m.createdAt>=s; }); list.sort(byVotes); }
@@ -2807,6 +2979,8 @@ function renderGallery(){
     if(!fbUser){ if(st) st.textContent="Sign in to see the memes you have published."; return; }
     if(myErr){ if(st) st.textContent=myErr; return; }
     if(!myLoaded){ if(st) st.textContent="Loading your memes…"; return; }
+  } else if(galTab==="minted"){
+    if(!galLoaded&&!myLoaded){ if(st) st.textContent="Loading minted memes…"; return; }
   } else {
     if(galFailed){ return; }
     if(!galLoaded){ if(st) st.textContent="Loading the community gallery…"; return; }
@@ -2815,6 +2989,7 @@ function renderGallery(){
   if(!list.length){
     if(st) st.textContent=galQ?("No memes match \u201C"+galQ+"\u201D.")
       : galTab==="mine"?"You have not published any memes yet. Make one in the studio and press Publish to gallery."
+      : galTab==="minted"?"No minted memes yet. Publish a meme, then use Mint as NFT on it to see it here."
       : galTab==="today"?"No memes published today yet. Yours could be the first."
       : galTab==="week"?"No memes published in the last 7 days yet."
       : "No memes in the gallery yet. Open the studio, make one and press Publish to gallery.";
@@ -2840,6 +3015,7 @@ function memeCard(m,idx){
     art.appendChild(crown);
   }
   if(m.hidden){ var hb=document.createElement('span'); hb.className="hidden-badge"; hb.textContent="Hidden"; art.appendChild(hb); }
+  if(m.minted){ var nb=document.createElement('span'); nb.className="nft-badge"; nb.textContent="NFT"; if(m.hidden) nb.style.top="44px"; art.appendChild(nb); }
   card.appendChild(art);
   var body=document.createElement('div'); body.className="g-body";
   var title=document.createElement('div'); title.className="g-title"; title.textContent=m.title||"Untitled meme"; body.appendChild(title);
@@ -2868,6 +3044,17 @@ function memeCard(m,idx){
     acts.appendChild(rep);
   }
   if(own){
+    if(m.minted){
+      var view=document.createElement('a'); view.className="g-act"; view.style.textDecoration="none";
+      view.href="https://suiscan.xyz/testnet/object/"+m.objectId; view.target="_blank"; view.rel="noopener";
+      view.textContent="View NFT";
+      acts.appendChild(view);
+    } else {
+      var mint=document.createElement('button'); mint.type="button"; mint.className="g-act";
+      mint.textContent="Mint as NFT";
+      mint.addEventListener('click',function(){ openMintModal(m); });
+      acts.appendChild(mint);
+    }
     var del=document.createElement('button'); del.type="button"; del.className="g-act danger";
     del.innerHTML='<svg class="ic"><use href="#i-trash"/></svg>Delete';
     del.addEventListener('click',function(){ deleteMeme(m); });
@@ -2880,7 +3067,7 @@ function memeCard(m,idx){
 function syncMemeAcross(m){
   [pubMemes,myMemes].forEach(function(arr){
     arr.forEach(function(x){
-      if(x.id===m.id&&x!==m){ x.votes=m.votes; x.voterUids=m.voterUids.slice(); x.reports=m.reports; x.hidden=m.hidden; }
+      if(x.id===m.id&&x!==m){ x.votes=m.votes; x.voterUids=m.voterUids.slice(); x.reports=m.reports; x.hidden=m.hidden; x.minted=m.minted; x.blobId=m.blobId; x.objectId=m.objectId; x.digest=m.digest; }
     });
   });
 }
@@ -2994,6 +3181,255 @@ pubGo.addEventListener('click',function(){
   });
 });
 
+/* ---------- Mint as NFT (Sui testnet + Walrus storage) ----------
+   Minting is an upgrade on your own published meme, never a requirement:
+   publishing, downloading and posting stay free. The flow renders the
+   meme's stored image as a 1080px PNG, uploads it to Walrus (testnet
+   publisher, storage paid by the publisher), then calls the lofi_meme
+   package's mint(name, description, image_url) with the Walrus aggregator
+   URL as image_url. The wallet prompt is the only approval step: nothing
+   is ever submitted automatically, and the estimated fee is shown in the
+   modal before the wallet is asked. On success the blob id, NFT object id
+   and transaction digest are attached to the gallery document. */
+var MINT_CFG={
+  packageId:"0x36460b74c6effff87de5fcfc849f22a1d88d6b039b1b85ad7b1c16988b0a1910",
+  publisher:"https://publisher.walrus-testnet.walrus.space",
+  aggregator:"https://aggregator.walrus-testnet.walrus.space",
+  grpcUrl:"https://fullnode.testnet.sui.io:443",
+  explorer:"https://suiscan.xyz/testnet",
+  epochs:5
+};
+var mintModal=document.getElementById('mintModal'), mintErr=document.getElementById('mintErr'), mintGo=document.getElementById('mintGo');
+var mintTarget=null, pendingMintMeme=null, mintBusy=false;
+function mintGrpc(){
+  var libs=suiLibs(); if(!libs||!libs.SuiGrpcClient) return null;
+  try{ return new libs.SuiGrpcClient({network:"testnet", baseUrl:MINT_CFG.grpcUrl}); }catch(e){ return null; }
+}
+function buildMintTx(name,desc,imageUrl){
+  var libs=suiLibs();
+  var tx=new libs.Transaction();
+  if(typeof tx.setSender==="function"&&suiAddress) tx.setSender(suiAddress);
+  tx.moveCall({
+    target:MINT_CFG.packageId+"::lofi_meme::mint",
+    arguments:[tx.pure.string(name),tx.pure.string(desc),tx.pure.string(imageUrl)]
+  });
+  return tx;
+}
+function estimateMintCost(){
+  var el=document.getElementById('mintCost');
+  el.textContent="Estimating the network fee…";
+  var fallback="Estimated fee: about 0.01 testnet SUI. Walrus storage is paid by the testnet publisher. Testnet tokens are free and have no real value — you approve the exact fee in your wallet.";
+  var libs=suiLibs(), grpc=mintGrpc();
+  if(!libs||!libs.Transaction||!grpc||typeof grpc.simulateTransaction!=="function"){ el.textContent=fallback; return; }
+  try{
+    var tx=buildMintTx(
+      document.getElementById('mintName').value.trim()||"Untitled meme",
+      document.getElementById('mintDesc').value.trim(),
+      MINT_CFG.aggregator+"/v1/blobs/estimate"
+    );
+    grpc.simulateTransaction({transaction:tx}).then(function(res){
+      var gu=null;
+      try{ gu=(res&&res.effects&&res.effects.gasUsed)||(res&&res.gasUsed)||null; }catch(e){}
+      if(!gu) throw new Error("no gas");
+      var mist=Number(gu.computationCost||0)+Number(gu.storageCost||0)-Number(gu.storageRebate||0);
+      if(!isFinite(mist)||mist<=0) throw new Error("no gas");
+      el.textContent="Estimated fee: about "+(mist/1e9).toFixed(4)+" testnet SUI (simulated). Walrus storage is paid by the testnet publisher. Testnet tokens are free and have no real value — you approve the exact fee in your wallet.";
+    }).catch(function(){ el.textContent=fallback; });
+  }catch(e){ el.textContent=fallback; }
+}
+function openMintModal(m){
+  if(!fbUser){ pendingAfterSignIn="mint"; pendingMintMeme=m; openAuth(); toast('Sign in to mint your meme.'); return; }
+  if(!suiWallet||!suiAddress){ pendingAfterSignIn="mint"; pendingMintMeme=m; openAuth(); toast('Sign in with Sui to mint this meme as an NFT.'); return; }
+  mintTarget=m;
+  document.getElementById('mintForm').hidden=false;
+  document.getElementById('mintBusy').hidden=true;
+  document.getElementById('mintResult').hidden=true;
+  mintErr.hidden=true;
+  document.getElementById('mintPreview').src=m.image;
+  document.getElementById('mintName').value=m.title||"Untitled meme";
+  document.getElementById('mintDesc').value="Made with Lofi Meme Studio.";
+  mintGo.disabled=false; mintGo.textContent="Mint NFT";
+  mintModal.hidden=false; document.body.style.overflow="hidden";
+  estimateMintCost();
+}
+function closeMintModal(){ if(mintBusy) return; mintModal.hidden=true; document.body.style.overflow=""; }
+document.getElementById('mintClose').addEventListener('click',closeMintModal);
+document.getElementById('mintCancel').addEventListener('click',closeMintModal);
+document.getElementById('mintDone').addEventListener('click',function(){ mintModal.hidden=true; document.body.style.overflow=""; });
+document.getElementById('mintBusyClose').addEventListener('click',function(){ mintModal.hidden=true; document.body.style.overflow=""; });
+mintModal.addEventListener('click',function(e){ if(e.target===mintModal) closeMintModal(); });
+function mintStep(txt){ document.getElementById('mintStep').textContent=txt; }
+function mintErrorText(err){
+  var msg=(err&&err.message)||"";
+  if(/reject|cancel|denied|user closed/i.test(msg)) return "Mint cancelled in the wallet. Nothing was minted.";
+  return msg||"Something went wrong. Try again.";
+}
+function memePngBlob(m){
+  return new Promise(function(res,rej){
+    var img=new Image();
+    img.onload=function(){
+      try{
+        var W=1080, H=Math.max(1,Math.round(1080*img.naturalHeight/Math.max(1,img.naturalWidth)));
+        var c=document.createElement('canvas'); c.width=W; c.height=H;
+        c.getContext('2d').drawImage(img,0,0,W,H);
+        if(c.toBlob){ c.toBlob(function(b){ if(b) res(b); else rej(new Error("Could not prepare the meme PNG.")); },"image/png"); }
+        else {
+          var bin=atob(c.toDataURL('image/png').split(',')[1]), arr=new Uint8Array(bin.length);
+          for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+          res(new Blob([arr],{type:"image/png"}));
+        }
+      }catch(e){ rej(e); }
+    };
+    img.onerror=function(){ rej(new Error("Could not load the meme image.")); };
+    img.src=m.image;
+  });
+}
+function uploadToWalrus(blob){
+  var url=MINT_CFG.publisher+"/v1/blobs?epochs="+MINT_CFG.epochs+"&permanent=true";
+  var ctrl=("AbortController" in window)?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ try{ ctrl.abort(); }catch(e){} },60000):null;
+  var opts={method:"PUT",body:blob};
+  if(ctrl) opts.signal=ctrl.signal;
+  return fetch(url,opts).then(function(r){
+    if(timer) clearTimeout(timer);
+    if(!r.ok) throw new Error("The Walrus upload failed ("+r.status+"). Nothing was charged. Try again.");
+    return r.json();
+  }).then(function(j){
+    var blobId=(j.newlyCreated&&j.newlyCreated.blobObject&&j.newlyCreated.blobObject.blobId)
+      ||(j.alreadyCertified&&j.alreadyCertified.blobId)||j.blobId||"";
+    if(!blobId) throw new Error("Walrus did not return a blob id. Try again.");
+    return blobId;
+  }).catch(function(err){
+    if(timer) clearTimeout(timer);
+    if(err&&err.name==="AbortError") throw new Error("The Walrus upload timed out. Nothing was charged. Try again.");
+    throw err;
+  });
+}
+function executeMintTx(tx){
+  var feat=suiWallet.features["sui:signAndExecuteTransaction"];
+  if(feat&&typeof feat.signAndExecuteTransaction==="function"){
+    return feat.signAndExecuteTransaction({transaction:tx, account:suiAccount, chain:"sui:testnet"})
+      .then(function(r){ return {digest:(r&&r.digest)||"", raw:r}; });
+  }
+  var signFeat=suiWallet.features["sui:signTransaction"];
+  if(signFeat&&typeof signFeat.signTransaction==="function"){
+    return signFeat.signTransaction({transaction:tx, account:suiAccount, chain:"sui:testnet"})
+      .then(function(signed){
+        var grpc=mintGrpc();
+        if(!grpc) throw new Error("Could not reach the Sui network. Try again.");
+        return grpc.executeTransaction({transaction:signed.bytes, signatures:[signed.signature], include:{effects:true, objectTypes:true}})
+          .then(function(r){
+            var d=(r&&r.digest)||(r&&r.transaction&&r.transaction.digest)||"";
+            return {digest:d, raw:r};
+          });
+      });
+  }
+  return Promise.reject(new Error("This wallet cannot send transactions. Try Slush."));
+}
+function findMintedObjectId(res){
+  try{
+    if(res&&res.objectTypes){
+      for(var id in res.objectTypes){ if(String(res.objectTypes[id]).indexOf("::lofi_meme::Meme")>-1) return id; }
+    }
+    var eff=res&&res.effects;
+    if(eff&&eff.changedObjects){
+      for(var i=0;i<eff.changedObjects.length;i++){
+        var co=eff.changedObjects[i];
+        if(co.objectType&&String(co.objectType).indexOf("::lofi_meme::Meme")>-1) return co.objectId;
+      }
+    }
+    if(eff&&eff.created){
+      for(var j=0;j<eff.created.length;j++){
+        var cr=eff.created[j];
+        if(cr.reference&&cr.reference.objectId) return cr.reference.objectId;
+      }
+    }
+  }catch(e){}
+  return "";
+}
+function waitForMint(digest,firstRes){
+  var fromFirst={objectId:findMintedObjectId(firstRes)};
+  var grpc=mintGrpc();
+  if(!digest||!grpc) return Promise.resolve(fromFirst);
+  var p=null;
+  try{
+    if(typeof grpc.waitForTransaction==="function") p=grpc.waitForTransaction({digest:digest, include:{effects:true, objectTypes:true}});
+    else if(typeof grpc.getTransaction==="function") p=grpc.getTransaction({digest:digest, include:{effects:true, objectTypes:true}});
+  }catch(e){ p=null; }
+  if(!p) return Promise.resolve(fromFirst);
+  return p.then(function(res){ return {objectId:findMintedObjectId(res)||fromFirst.objectId}; })
+    .catch(function(){ return fromFirst; });
+}
+function showMintResult(m,out,note){
+  document.getElementById('mintBusy').hidden=true;
+  document.getElementById('mintResult').hidden=false;
+  document.getElementById('mintResName').textContent=out.name;
+  var objEl=document.getElementById('mintResObj');
+  objEl.textContent=out.objectId?(out.objectId.slice(0,10)+"\u2026"+out.objectId.slice(-6)):"See the transaction link below";
+  objEl.title=out.objectId||"";
+  var txA=document.getElementById('mintResTx');
+  txA.href=out.digest?(MINT_CFG.explorer+"/tx/"+out.digest):(MINT_CFG.explorer+"/object/"+out.objectId);
+  var imgA=document.getElementById('mintResImg'); imgA.href=out.imageUrl;
+  var wA=document.getElementById('mintResWallet');
+  wA.href=MINT_CFG.explorer+"/object/"+out.objectId;
+  wA.style.display=out.objectId?"":"none";
+  var noteEl=document.getElementById('mintResNote');
+  if(note){ noteEl.textContent=note; noteEl.hidden=false; } else noteEl.hidden=true;
+}
+mintGo.addEventListener('click',function(){
+  var m=mintTarget; if(!m||mintBusy) return;
+  var libs=suiLibs();
+  if(!libs||!libs.Transaction){ mintErr.textContent="The Sui tools are still loading. Wait a moment and try again."; mintErr.hidden=false; return; }
+  if(!suiWallet||!suiAddress){ mintErr.textContent="Connect a Sui wallet first."; mintErr.hidden=false; return; }
+  var name=document.getElementById('mintName').value.trim()||"Untitled meme";
+  var desc=document.getElementById('mintDesc').value.trim();
+  mintErr.hidden=true; mintBusy=true;
+  document.getElementById('mintForm').hidden=true;
+  document.getElementById('mintResult').hidden=true;
+  var busy=document.getElementById('mintBusy'); busy.hidden=false;
+  document.getElementById('mintBusyErr').hidden=true;
+  document.getElementById('mintBusyClose').hidden=true;
+  mintStep("Preparing your meme as a 1080px PNG…");
+  var out={name:name};
+  memePngBlob(m).then(function(blob){
+    mintStep("Uploading the image to Walrus…");
+    return uploadToWalrus(blob);
+  }).then(function(blobId){
+    out.blobId=blobId;
+    out.imageUrl=MINT_CFG.aggregator+"/v1/blobs/"+blobId;
+    mintStep("Waiting for your wallet — approve the mint there. Nothing is sent until you approve.");
+    var tx=buildMintTx(name,desc,out.imageUrl);
+    return executeMintTx(tx);
+  }).then(function(r){
+    out.digest=r.digest;
+    mintStep("Confirming on Sui testnet…");
+    return waitForMint(r.digest,r.raw);
+  }).then(function(w){
+    out.objectId=w.objectId||"";
+    m.minted=true; m.blobId=out.blobId; m.objectId=out.objectId; m.digest=out.digest;
+    syncMemeAcross(m);
+    renderGallery(); renderProfile();
+    var note="";
+    if(fbDb&&fbUser&&m.creatorUid===fbUser.uid){
+      return fbDb.collection('memes').doc(m.id).update({minted:true, blobId:out.blobId, objectId:out.objectId, digest:out.digest})
+        .then(function(){ return note; })
+        .catch(function(){ return "The NFT is minted and in your wallet. The gallery badge could not be saved: the database rules need the mint clause from the build notes pasted in the Firebase console."; });
+    }
+    if(fbDb&&fbUser) return "The NFT is minted and in your wallet. Its gallery badge is saved from the account that published this meme.";
+    return note;
+  }).then(function(note){
+    mintBusy=false;
+    showMintResult(m,out,note);
+    toast('Minted as an NFT on Sui testnet.');
+  }).catch(function(err){
+    mintBusy=false;
+    var be=document.getElementById('mintBusyErr');
+    be.textContent=mintErrorText(err); be.hidden=false;
+    document.getElementById('mintBusyClose').hidden=false;
+    mintStep("Mint did not finish.");
+  });
+});
+
 /* ---------- Auth state ---------- */
 if(fbAuth){
   fbAuth.onAuthStateChanged(function(u){
@@ -3007,6 +3443,7 @@ if(fbAuth){
       var p=pendingAfterSignIn; pendingAfterSignIn=null;
       if(p==="publish"&&document.documentElement.dataset.view==="studio"&&layers.length) openPublish();
       if(p==="mine") setGalTab("mine");
+      if(p==="mint"&&pendingMintMeme){ var mm=pendingMintMeme; pendingMintMeme=null; setTimeout(function(){ openMintModal(mm); },80); }
     }
   });
 }
