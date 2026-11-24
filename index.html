@@ -1822,13 +1822,18 @@ TEMPLATES.forEach(function(t){
 }
 
 /* ============ SESSION GALLERY (in the Layer panel) ============ */
+/* The Gallery button first saves the current meme to the session gallery
+   (when there is one on the canvas), then opens the community gallery. */
 document.getElementById('toGalleryBtn').onclick=async function(){
-  if(!layers.length){ toast('Add a sticker first.'); return; }
-  var cv=await renderPNG(540);
-  var im=document.createElement('img'); im.src=cv.toDataURL('image/png'); im.alt='Your Lofi meme, saved this session';
-  var gal=document.getElementById('studioGallery'); gal.insertBefore(im,gal.firstChild);
-  var es=document.getElementById('emptySession'); if(es) es.style.display='none';
-  toast('Added to gallery.');
+  if(layers.length){
+    var cv=await renderPNG(540);
+    var im=document.createElement('img'); im.src=cv.toDataURL('image/png'); im.alt='Your Lofi meme, saved this session';
+    var gal=document.getElementById('studioGallery'); gal.insertBefore(im,gal.firstChild);
+    var es=document.getElementById('emptySession'); if(es) es.style.display='none';
+    toast('Added to gallery.');
+  }
+  if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
+  else location.hash='#/gallery';
 };
 
 /* ============ EXPORT PNG (1080px) ============ */
@@ -1995,6 +2000,14 @@ function initEditor(){
     setHash('#/');
     window.scrollTo(0,0);
   }
+  /* The community gallery is a section of the landing view: switch to the
+     landing view, mark the route as #/gallery, then scroll to the section. */
+  function showGalleryView(){
+    document.documentElement.dataset.view='landing';
+    setHash('#/gallery');
+    setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60);
+  }
+  window.openCommunityGallery=showGalleryView;
   function goStudio(){ showStudio(); }
   document.querySelectorAll('a[href="#/studio"]').forEach(function(a){
     a.addEventListener('click',function(e){ e.preventDefault(); showStudio(); });
@@ -2067,9 +2080,10 @@ function initEditor(){
   });
 
   function syncView(){
-    /* Back/forward and shared #/studio / #/profile links still land in the right view. */
+    /* Back/forward and shared #/studio / #/profile / #/gallery links still land in the right view. */
     if(location.hash==='#/studio'){ showStudio(); return; }
     if(location.hash==='#/profile'){ showProfileView(); return; }
+    if(location.hash==='#/gallery'){ showGalleryView(); return; }
     var v=document.documentElement.dataset.view;
     if((v==='studio'||v==='profile') && (location.hash==='#/'||location.hash===''||location.hash.charAt(1)!=='/')){
       document.documentElement.dataset.view='landing';
@@ -2079,6 +2093,7 @@ function initEditor(){
   window.addEventListener('hashchange',syncView);
   if(location.hash==='#/studio'){ showStudio(); }
   if(location.hash==='#/profile'){ showProfileView(); }
+  if(location.hash==='#/gallery'){ showGalleryView(); }
 })();
 </script>
 
