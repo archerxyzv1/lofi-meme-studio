@@ -3378,8 +3378,8 @@ pubMintGo.addEventListener('click',function(){ doPublish(true); });
    publishing, downloading and posting stay free. The flow renders the
    meme's stored image as a 1080px PNG, uploads it to Walrus (testnet
    publisher, storage paid by the publisher), then calls the lofi_meme
-   package's mint(name, description, image_url) with the Walrus aggregator
-   URL as image_url. The wallet prompt is the only approval step: nothing
+   package's mint(name, description, image_url, blob_id) with the Walrus
+   aggregator URL as image_url and the uploaded blob id as blob_id. The wallet prompt is the only approval step: nothing
    is ever submitted automatically, and the estimated fee is shown in the
    modal before the wallet is asked. On success the blob id, NFT object id
    and transaction digest are attached to the gallery document. */
@@ -3397,13 +3397,13 @@ function mintGrpc(){
   var libs=suiLibs(); if(!libs||!libs.SuiGrpcClient) return null;
   try{ return new libs.SuiGrpcClient({network:"testnet", baseUrl:MINT_CFG.grpcUrl}); }catch(e){ return null; }
 }
-function buildMintTx(name,desc,imageUrl){
+function buildMintTx(name,desc,imageUrl,blobId){
   var libs=suiLibs();
   var tx=new libs.Transaction();
   if(typeof tx.setSender==="function"&&suiAddress) tx.setSender(suiAddress);
   tx.moveCall({
     target:MINT_CFG.packageId+"::lofi_meme::mint",
-    arguments:[tx.pure.string(name),tx.pure.string(desc),tx.pure.string(imageUrl)]
+    arguments:[tx.pure.string(name),tx.pure.string(desc),tx.pure.string(imageUrl),tx.pure.string(blobId)]
   });
   return tx;
 }
@@ -3417,7 +3417,8 @@ function estimateMintCost(){
     var tx=buildMintTx(
       document.getElementById('mintName').value.trim()||"Untitled meme",
       document.getElementById('mintDesc').value.trim(),
-      MINT_CFG.aggregator+"/v1/blobs/estimate"
+      MINT_CFG.aggregator+"/v1/blobs/estimate",
+      "estimate"
     );
     grpc.simulateTransaction({transaction:tx}).then(function(res){
       var gu=null;
@@ -3643,7 +3644,7 @@ mintGo.addEventListener('click',function(){
     out.blobId=blobId;
     out.imageUrl=MINT_CFG.aggregator+"/v1/blobs/"+blobId;
     mintStep("Waiting for your wallet — approve the mint there. Nothing is sent until you approve.");
-    var tx=buildMintTx(name,desc,out.imageUrl);
+    var tx=buildMintTx(name,desc,out.imageUrl,out.blobId);
     return executeMintTx(tx);
   }).then(function(r){
     out.digest=r.digest;
