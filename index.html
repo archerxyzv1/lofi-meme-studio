@@ -930,7 +930,7 @@ input[type=range]{cursor:pointer}
     <button class="lb-close auth-x" type="button" id="authClose" aria-label="Close sign in">✕</button>
     <h3>Sign in</h3>
     <button class="google-btn" type="button" id="googleBtn"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg><span>Continue with Google</span></button>
-    <button class="sui-btn" type="button" id="suiBtn"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#4DA2FF" d="M12 2c3.5 4.2 6 7.6 6 10.8A6 6 0 0 1 6 12.8C6 9.6 8.5 6.2 12 2z"/><circle cx="12" cy="13.2" r="2.2" fill="#fff"/></svg><span>Continue with Sui</span></button>
+    <button class="sui-btn" type="button" id="suiBtn"><svg viewBox="0 0 25.7862 32.9607" aria-hidden="true" focusable="false"><path fill="#4DA2FF" fill-rule="evenodd" clip-rule="evenodd" d="M20.6338 13.746C21.9783 15.434 22.7822 17.5688 22.7822 19.8911C22.7822 22.2133 21.9538 24.4133 20.5741 26.1108L20.4546 26.2575L20.4233 26.0714C20.3962 25.9139 20.3649 25.7537 20.3283 25.5934C19.637 22.5569 17.3854 19.9535 13.6794 17.8445C11.1765 16.424 9.74383 14.7156 9.36766 12.7723C9.12457 11.5161 9.30519 10.2545 9.6542 9.17352C10.0032 8.09389 10.522 7.18808 10.9633 6.64352L12.4056 4.8808C12.6581 4.57117 13.1321 4.57117 13.3847 4.8808L20.6352 13.746H20.6338ZM22.914 11.9846L13.2502 0.169807C13.0656 -0.0556256 12.7206 -0.0556256 12.5359 0.169807L2.87358 11.9846L2.84235 12.024C1.06469 14.2308 0 17.0351 0 20.088C0 27.1972 5.77296 32.9607 12.8931 32.9607C20.0132 32.9607 25.7862 27.1972 25.7862 20.088C25.7862 17.0351 24.7215 14.2308 22.9438 12.0254L22.9126 11.986L22.914 11.9846ZM5.1863 13.708L6.05 12.6501L6.0758 12.8456C6.09617 13.0004 6.12198 13.1552 6.15185 13.3114C6.71136 16.2461 8.70901 18.6919 12.0484 20.5864C14.9519 22.2391 16.6426 24.139 17.1288 26.2222C17.3325 27.0913 17.3678 27.9469 17.2795 28.6951L17.2741 28.7413L17.232 28.7617C15.9215 29.4013 14.448 29.7612 12.8917 29.7612C7.43111 29.7612 3.00395 25.3422 3.00395 19.8897C3.00395 17.5485 3.82012 15.3987 5.18358 13.7053L5.1863 13.708Z"/></svg><span>Continue with Sui</span></button>
     <p class="sui-note">No transaction. Only a signature to prove you own the address.</p>
     <div class="auth-or">or</div>
     <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></div>
@@ -946,7 +946,7 @@ input[type=range]{cursor:pointer}
       <p class="sui-picker-title" id="suiPickerTitle">Choose a wallet</p>
       <div id="suiWalletList"></div>
       <div id="suiNoWallet" hidden>
-        <p class="sui-picker-empty">No Sui wallet found on this device.</p>
+        <p class="sui-picker-empty" id="suiPickerEmpty">No Sui wallet found on this device.</p>
         <a class="btn sui-slush" href="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/" target="_blank" rel="noopener">Open in Slush</a>
         <p class="sui-note">No wallet yet? <a href="https://slush.app" target="_blank" rel="noopener">Get Slush</a></p>
       </div>
@@ -2388,10 +2388,11 @@ window.addEventListener("lofi-sui-libs-ready",function(){
   suiLibsReady=true;
   if(fbUser&&!suiRestoreTried) trySuiRestore();
   else if(fbUser&&suiRestoreTried&&!suiWallet&&loadSuiSession()){ suiRestoreTried=false; trySuiRestore(); }
+  refreshSuiPicker();
 });
-window.addEventListener("lofi-sui-libs-failed",function(){ suiLibsFailed=true; });
+window.addEventListener("lofi-sui-libs-failed",function(){ suiLibsFailed=true; refreshSuiPicker(); });
 window.addEventListener("load",function(){
-  setTimeout(function(){ if(!suiLibsReady) suiLibsFailed=true; },5000);
+  setTimeout(function(){ if(!suiLibsReady){ suiLibsFailed=true; refreshSuiPicker(); } },5000);
 });
 function shortSuiAddr(a){ return a?a.slice(0,6)+"\u2026"+a.slice(-4):""; }
 function suiLibs(){ return (suiLibsReady&&window.LofiSuiLibs)?window.LofiSuiLibs:null; }
@@ -2434,9 +2435,21 @@ function suiSignErrText(err){
   return (err&&err.message)||"Something went wrong. Try again.";
 }
 function suiCapableWallets(){
-  var libs=suiLibs(); if(!libs) return [];
+  var libs=suiLibs(); if(!libs||typeof libs.getWallets!=="function") return [];
   var out=[], seen={};
-  libs.getWallets().forEach(function(w){
+  /* Wallet Standard: getWallets() returns the registry object
+     ({ register, get, on }), NOT an array - the wallet list is
+     registry.get(). Calling .forEach on the registry throws, which used
+     to kill the picker right after it opened and leave it empty. */
+  var all=[];
+  try{
+    var registry=libs.getWallets();
+    if(registry){
+      if(typeof registry.get==="function") all=registry.get()||[];
+      else if(Array.isArray(registry)) all=registry;
+    }
+  }catch(e){ all=[]; }
+  all.forEach(function(w){
     if(!w||!w.features||!w.features["standard:connect"]) return;
     var chains=w.chains||[];
     var isSui=chains.some(function(c){ return String(c).indexOf("sui:")===0; });
@@ -2464,6 +2477,7 @@ function showSuiPicker(){
   document.getElementById('suiBack').focus();
 }
 function hideSuiPicker(){
+  if(suiWalletWatchOff) suiWalletWatchOff();
   document.getElementById('suiPicker').hidden=true;
   document.getElementById('googleBtn').hidden=false;
   document.getElementById('suiBtn').hidden=false;
@@ -2477,6 +2491,61 @@ function hideSuiPicker(){
 }
 function showSuiPickerErr(msg){
   var e=document.getElementById('suiPickerErr'); e.textContent=msg; e.hidden=false;
+}
+/* Wallets can register with the Wallet Standard registry after the picker
+   opens; while it is open, re-render whenever one appears or goes away. */
+var suiWalletWatchOff=null;
+function suiWatchWallets(){
+  if(suiWalletWatchOff) return;
+  var libs=suiLibs(); if(!libs||typeof libs.getWallets!=="function") return;
+  try{
+    var registry=libs.getWallets();
+    if(!registry||typeof registry.on!=="function") return;
+    var offA=registry.on("register",function(){ refreshSuiPicker(); });
+    var offB=registry.on("unregister",function(){ refreshSuiPicker(); });
+    suiWalletWatchOff=function(){ try{ offA(); }catch(e){} try{ offB(); }catch(e){} suiWalletWatchOff=null; };
+  }catch(e){}
+}
+/* Single place that decides what the open picker shows, so it can never sit
+   empty: detected wallets, or the Slush deep link + Get Slush fallback, or
+   (when the libraries failed to load) a clear error above that fallback. */
+function refreshSuiPicker(){
+  var picker=document.getElementById('suiPicker');
+  if(!picker||picker.hidden) return;
+  var title=document.getElementById('suiPickerTitle');
+  var listEl=document.getElementById('suiWalletList');
+  var noW=document.getElementById('suiNoWallet');
+  var emptyEl=document.getElementById('suiPickerEmpty');
+  var errEl=document.getElementById('suiPickerErr');
+  if(suiLibsFailed||window.LofiSuiLibsFailed){
+    title.textContent="Choose a wallet";
+    listEl.innerHTML="";
+    if(emptyEl) emptyEl.textContent="No Sui wallet found on this device.";
+    noW.hidden=false;
+    showSuiPickerErr("Sui sign-in could not load. Check your connection and try again.");
+    return;
+  }
+  if(!suiLibs()){
+    title.textContent="Choose a wallet";
+    listEl.innerHTML="";
+    if(emptyEl) emptyEl.textContent="Looking for a Sui wallet on this device\u2026";
+    noW.hidden=false;
+    errEl.hidden=true;
+    return;
+  }
+  errEl.hidden=true;
+  suiWatchWallets();
+  var wallets=suiCapableWallets();
+  if(!wallets.length){
+    title.textContent="No wallet found";
+    listEl.innerHTML="";
+    if(emptyEl) emptyEl.textContent="No Sui wallet found on this device.";
+    noW.hidden=false;
+    return;
+  }
+  title.textContent="Choose a wallet";
+  noW.hidden=true;
+  renderSuiWalletChoices(wallets);
 }
 function renderSuiWalletChoices(list){
   var box=document.getElementById('suiWalletList'); box.innerHTML="";
@@ -2497,20 +2566,23 @@ document.getElementById('suiBtn').addEventListener('click',function(){
   authErr.hidden=true;
   if(IS_PREVIEW){ showAuthErr("Sign-in works on the live site: "+LIVE_HOST); return; }
   if(!fbAuth){ showAuthErr("Sign-in is unavailable on this address. Sign-in works on the live site: "+LIVE_HOST); return; }
-  if(suiLibsFailed||(!suiLibsReady&&!suiLibs())){
-    showSuiPicker(); showSuiPickerErr("Sui sign-in could not load. Check your connection and try again.");
-    document.getElementById('suiNoWallet').hidden=false;
-    return;
-  }
-  if(!suiLibs()){ showAuthErr("Sui sign-in is still loading. Try again in a moment."); return; }
   showSuiPicker();
-  var wallets=suiCapableWallets();
-  if(!wallets.length){
-    document.getElementById('suiPickerTitle').textContent="No wallet found";
-    document.getElementById('suiNoWallet').hidden=false;
-    return;
+  refreshSuiPicker();
+  if(!suiLibs()&&!suiLibsFailed&&!window.LofiSuiLibsFailed){
+    /* Libraries still loading: the picker already shows the Slush options,
+       so it is never empty; poll briefly so the wallet list fills in as
+       soon as the libraries arrive, and settle on the error message plus
+       the Slush options if they never do. */
+    var waited=0;
+    var iv=setInterval(function(){
+      waited++;
+      if(suiLibs()||suiLibsFailed||window.LofiSuiLibsFailed||waited>=20){
+        clearInterval(iv);
+        if(!suiLibs()&&!suiLibsFailed&&!window.LofiSuiLibsFailed) suiLibsFailed=true;
+        refreshSuiPicker();
+      }
+    },500);
   }
-  renderSuiWalletChoices(wallets);
 });
 function suiSubscribeChange(wallet){
   if(suiUnsubscribeChange){ try{ suiUnsubscribeChange(); }catch(e){} suiUnsubscribeChange=null; }
