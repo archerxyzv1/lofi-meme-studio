@@ -472,10 +472,6 @@ input[type=range]{cursor:pointer}
 .sui-picker-title{font-weight:900;font-size:15px;margin:14px 0 10px}
 .sui-picker-empty{font-weight:700;font-size:14px;line-height:1.55;margin:0 0 14px}
 .sui-back{margin-bottom:4px}
-.sui-wallet-apps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.sui-wallet-app{display:flex;align-items:center;justify-content:center;background:#fff;color:var(--ink);border:var(--bd2);border-radius:3px;padding:11px 10px;font-weight:800;font-size:14px;text-decoration:none;box-shadow:var(--sh-sm);text-align:center;transition:transform .1s,box-shadow .1s}
-.sui-wallet-app:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
-.sui-wallet-app:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .sui-wallet-opt{display:flex;align-items:center;gap:12px;width:100%;background:#fff;color:var(--ink);border:var(--bd2);border-radius:3px;padding:10px 14px;min-height:52px;font-weight:800;font-size:15px;box-shadow:var(--sh-sm);cursor:pointer;margin-bottom:10px;text-align:left}
 .sui-wallet-opt:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
 .sui-wallet-opt:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
@@ -1036,19 +1032,12 @@ input[type=range]{cursor:pointer}
   <div class="cf-card auth-card">
     <button class="lb-close auth-x" type="button" id="walletClose" aria-label="Close wallet link">✕</button>
     <h3>Link wallet</h3>
-    <p class="auth-sub">Connect your Sui wallet and sign a short message to prove it is yours. Nothing is sent and no funds move. The wallet is linked to your account — one wallet can be linked to one account only.</p>
+    <p class="auth-sub">Sign a short message to prove the wallet is yours. No funds move.</p>
     <div id="suiPicker">
       <p class="sui-picker-title" id="suiPickerTitle">Choose a wallet</p>
       <div id="suiWalletList"></div>
       <div id="suiNoWallet" hidden>
-        <p class="sui-picker-empty" id="suiPickerEmpty">No Sui wallet found on this device.</p>
-        <p class="sui-note" style="text-align:left">Any Sui wallet works here — this picker lists every wallet it finds, the same as Connect wallet in the studio. On a phone, a wallet only appears when this page is open inside that wallet app's own browser: open this page in your wallet app, then tap Link wallet again. On a computer, install a Sui wallet extension, then reopen this dialog.</p>
-        <div class="sui-wallet-apps">
-          <a class="sui-wallet-app" href="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/" target="_blank" rel="noopener">Open in Slush</a>
-          <a class="sui-wallet-app" href="https://suiet.app" target="_blank" rel="noopener">Get Suiet</a>
-          <a class="sui-wallet-app" href="https://www.martianwallet.xyz" target="_blank" rel="noopener">Get Martian</a>
-          <a class="sui-wallet-app" href="https://nightly.app" target="_blank" rel="noopener">Get Nightly</a>
-        </div>
+        <p class="sui-picker-empty" id="suiPickerEmpty">No wallet found.</p>
       </div>
       <p class="auth-err" id="suiPickerErr" hidden></p>
       <div class="cf-btns" style="justify-content:flex-start;margin-top:6px">
@@ -3000,9 +2989,9 @@ function suiWatchWallets(){
   }catch(e){}
 }
 /* Single place that decides what the open picker shows, so it can never sit
-   empty: detected wallets (any Sui wallet, via the Wallet Standard), or
-   the no-wallet help with links to open the page in a wallet app or get
-   one, or (when the libraries failed to load) a clear error above that. */
+   empty: detected wallets (any Sui wallet, via the Wallet Standard, each
+   with its own logo), or a plain "No wallet found" line, or (when the
+   libraries failed to load) a clear error above that. */
 function refreshSuiPicker(){
   var wm=document.getElementById('walletModal');
   if(!wm||wm.hidden) return;
@@ -3014,7 +3003,7 @@ function refreshSuiPicker(){
   if(suiLibsFailed||window.LofiSuiLibsFailed){
     title.textContent="Choose a wallet";
     listEl.innerHTML="";
-    if(emptyEl) emptyEl.textContent="No Sui wallet found on this device.";
+    if(emptyEl) emptyEl.textContent="No wallet found.";
     noW.hidden=false;
     showSuiPickerErr("Sui sign-in could not load. Check your connection and try again.");
     return;
@@ -3022,7 +3011,7 @@ function refreshSuiPicker(){
   if(!suiLibs()){
     title.textContent="Choose a wallet";
     listEl.innerHTML="";
-    if(emptyEl) emptyEl.textContent="Looking for a Sui wallet on this device\u2026";
+    if(emptyEl) emptyEl.textContent="Looking for a wallet\u2026";
     noW.hidden=false;
     errEl.hidden=true;
     return;
@@ -3033,7 +3022,7 @@ function refreshSuiPicker(){
   if(!wallets.length){
     title.textContent="No wallet found";
     listEl.innerHTML="";
-    if(emptyEl) emptyEl.textContent="No Sui wallet found on this device.";
+    if(emptyEl) emptyEl.textContent="";
     noW.hidden=false;
     return;
   }
