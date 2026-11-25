@@ -2310,7 +2310,12 @@ match /users/{address} {
     && get(/databases/$(database)/documents/suiLinks/$(address)).data.uid == request.auth.uid;
 }
 match /suiLinks/{address} {
-  allow read: if false;
+  // Get (single document): signed-in accounts only. The wallet flow
+  // fetches exactly one address for its ownership check, so it
+  // establishes its (anonymous) session BEFORE checking — a signed-out
+  // fetch is denied. List/query stays denied: nobody may enumerate
+  // which wallets are linked to which accounts.
+  allow get: if request.auth != null;
   // One wallet, one account: a link held by a signed-in account (email
   // set) can only be rewritten by that same account. A link left by an
   // anonymous wallet session (no email) may be claimed by the account
@@ -3149,49 +3154,67 @@ function suiFinishSignIn(address, wallet){
      and its memes never change. */
   var wasSignedIn=!!fbUser;
   var localProf=suiProfileFor(address);
-  return checkWalletLink(address).then(function(chk){
-    if(!chk.ok){ showSuiPickerErr(chk.msg); throw {code:"sui/linked-elsewhere",message:chk.msg}; }
-    return fetchSuiProfile(address);
-  }).then(function(remoteProf){
-    var prof=remoteProf||localProf;
-    var finishWith=function(user){
-      var dn=(prof&&prof.displayName)||user.displayName||shortSuiAddr(address);
-      var joined=(prof&&prof.joinedAt)||(user.metadata&&user.metadata.creationTime?new Date(user.metadata.creationTime).toISOString():new Date().toISOString());
-      /* Claim the address for this account first (one wallet, one
-         account), so the rules can recognise this account as the owner of
-         memes stamped with the address. The claim is the transaction in
-         claimWalletLink: the profile record, the saved session and the
-         account record are written only after the claim commits — if
-         another account holds the wallet, nothing is linked anywhere
-         and the refusal is shown instead of a success message. */
-      return claimWalletLink(address,user).then(function(res){
-        if(!res.ok){
-          clearSuiSession();
-          showSuiPickerErr(res.msg);
-          throw {code:"sui/linked-elsewhere",message:res.msg};
-        }
-        recordSuiProfile(address,dn,joined);
-        saveSuiSession({
-          address:address,
-          walletName:wallet.name||"Sui Wallet",
-          uid:user.uid,
-          nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
-          issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
-        });
-        suiPendingChallenge=null;
-        /* The link is part of the account record too, so the wallet shows
-           as linked on any device the account signs in on. */
-        saveAccountProfile({walletAddress:address});
-        closeAuth(); hideSuiPicker(); renderAuth(); renderProfile();
-        toast(wasSignedIn?"Wallet linked to your account.":"Wallet connected.");
-        resumePendingAfterSignIn();
+  var finishWith=function(user,prof){
+    var dn=(prof&&prof.displayName)||user.displayName||shortSuiAddr(address);
+    var joined=(prof&&prof.joinedAt)||(user.metadata&&user.metadata.creationTime?new Date(user.metadata.creationTime).toISOString():new Date().toISOString());
+    /* Claim the address for this account first (one wallet, one
+       account), so the rules can recognise this account as the owner of
+       memes stamped with the address. The claim is the transaction in
+       claimWalletLink: the profile record, the saved session and the
+       account record are written only after the claim commits — if
+       another account holds the wallet, nothing is linked anywhere
+       and the refusal is shown instead of a success message. */
+    return claimWalletLink(address,user).then(function(res){
+      if(!res.ok){
+        clearSuiSession();
+        /* A session created just for this attempt (the anonymous
+           sign-in below) must not survive a refusal: sign it back out
+           so the visitor is left exactly as they were. */
+        if(!wasSignedIn&&fbAuth) fbAuth.signOut().catch(function(){});
+        showSuiPickerErr(res.msg);
+        throw {code:"sui/linked-elsewhere",message:res.msg};
+      }
+      recordSuiProfile(address,dn,joined);
+      saveSuiSession({
+        address:address,
+        walletName:wallet.name||"Sui Wallet",
+        uid:user.uid,
+        nonce:suiPendingChallenge? suiPendingChallenge.nonce : "",
+        issuedAt:suiPendingChallenge? suiPendingChallenge.issuedAt : ""
       });
-    };
-    if(fbUser){ return finishWith(fbUser); }
-    return fbAuth.signInAnonymously().then(function(cred){
-      var user=cred.user;
-      var dn=(prof&&prof.displayName)||shortSuiAddr(address);
-      return user.updateProfile({displayName:dn}).catch(function(){}).then(function(){ finishWith(user); });
+      suiPendingChallenge=null;
+      /* The link is part of the account record too, so the wallet shows
+         as linked on any device the account signs in on. */
+      saveAccountProfile({walletAddress:address});
+      closeAuth(); hideSuiPicker(); renderAuth(); renderProfile();
+      toast(wasSignedIn?"Wallet linked to your account.":"Wallet connected.");
+      resumePendingAfterSignIn();
+    });
+  };
+  /* The ownership pre-check reads suiLinks, and the rules only let a
+     signed-in account read it — so the session has to exist BEFORE the
+     check runs. This used to check first and sign in afterwards: a
+     signed-out wallet sign-in was denied the read and reported a bogus
+     "check your connection" error even on a perfect connection. Order
+     now: session first (the signed-in account, or a fresh anonymous
+     one), then the pre-check, then the profile, then the claim. If the
+     pre-check refuses and the session was created just for this
+     attempt, it is signed back out again. */
+  var sessionReady=wasSignedIn?Promise.resolve(fbUser)
+    : fbAuth.signInAnonymously().then(function(cred){ return cred.user; });
+  return sessionReady.then(function(user){
+    return checkWalletLink(address).then(function(chk){
+      if(!chk.ok){
+        if(!wasSignedIn&&fbAuth) fbAuth.signOut().catch(function(){});
+        showSuiPickerErr(chk.msg);
+        throw {code:"sui/linked-elsewhere",message:chk.msg};
+      }
+      return fetchSuiProfile(address).then(function(remoteProf){
+        var prof=remoteProf||localProf;
+        if(wasSignedIn) return finishWith(user,prof);
+        var dn=(prof&&prof.displayName)||shortSuiAddr(address);
+        return user.updateProfile({displayName:dn}).catch(function(){}).then(function(){ return finishWith(user,prof); });
+      });
     });
   }).catch(function(err){
     showSuiPickerErr(authErrorText(err));
