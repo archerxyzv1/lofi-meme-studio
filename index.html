@@ -473,7 +473,13 @@ input[type=range]{cursor:pointer}
 .sui-wallet-opt img{width:24px;height:24px;flex:none;display:block}
 .sui-wallet-opt b{flex:1}
 .sui-wallet-opt .chev{color:var(--muted);font-weight:900}
+/* The hidden attribute must always win: component rules set display
+   (buttons are inline-flex, meme grids are grid), which silently overrode
+   hidden and left controls and panels on screen that should not show —
+   e.g. Copy / Unlink wallet buttons before any wallet was linked. */
+[hidden]{display:none!important}
 .pf-page{background:var(--surface);border:var(--bd);box-shadow:var(--sh);padding:22px}
+.pf-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .pf-back{margin:2px 0 16px}
 .pf-head{display:flex;align-items:center;gap:14px}
 .pf-ava{width:64px;height:64px;flex:none;border:var(--bd);background:var(--yellow);color:var(--ink);font-family:"Archivo Black",sans-serif;font-size:26px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--sh-xs)}
@@ -919,6 +925,10 @@ input[type=range]{cursor:pointer}
         <div class="stat"><b id="pfStatVotes">0</b><span>Votes received</span></div>
         <div class="stat"><b id="pfStatLiked">0</b><span>Liked</span></div>
       </div>
+      <div class="pf-actions">
+        <button class="btn ghost" type="button" id="pfEditToggle" aria-expanded="false" aria-controls="pfSettings">Edit profile</button>
+      </div>
+      <div id="pfSettings" hidden>
       <h3 class="pf-sec">Account settings</h3>
       <div class="pf-edit">
         <div class="pf-group">
@@ -945,6 +955,7 @@ input[type=range]{cursor:pointer}
           </div>
           <p class="pf-note" style="margin-top:10px">One wallet can be linked to one account only.</p>
         </div>
+      </div>
       </div>
       <div class="pf-tabs" role="tablist">
         <button class="pf-tab on" type="button" id="pfTabMine" role="tab">My memes</button>
@@ -2478,6 +2489,10 @@ function profileIsOpen(){ return document.documentElement.dataset.view==="profil
 function openProfile(){
   if(!fbUser){ openAuth(); return; }
   if(fbDb){ if(!myLoaded) loadMyMemes(); if(!galLoaded) loadGallery(); }
+  /* The profile always opens in clean view mode: settings collapsed,
+     first tab active — never with every form and panel left open. */
+  setPfSettings(false);
+  pfActiveTab="mine";
   document.documentElement.dataset.view="profile";
   try{ history.replaceState(null,"","#/profile"); }catch(e){}
   renderProfile();
@@ -2490,6 +2505,33 @@ function closeProfile(){
   window.scrollTo(0,0);
 }
 document.getElementById('profileBack').addEventListener('click',closeProfile);
+/* ---------- Profile settings: collapsed by default ----------
+   A profile page is a view first. The name / bio / picture / wallet forms
+   stay tucked away behind "Edit profile" and fold back up as soon as a
+   change is saved, so saving never leaves the same open form on screen. */
+var pfSettingsOpen=false;
+function setPfSettings(open){
+  pfSettingsOpen=!!open;
+  var box=document.getElementById('pfSettings'); if(box) box.hidden=!pfSettingsOpen;
+  var tg=document.getElementById('pfEditToggle');
+  if(tg){ tg.setAttribute('aria-expanded',pfSettingsOpen?'true':'false'); tg.textContent=pfSettingsOpen?'Close settings':'Edit profile'; }
+}
+document.getElementById('pfEditToggle').addEventListener('click',function(){ setPfSettings(!pfSettingsOpen); });
+/* ---------- Profile tabs: exactly one panel shows at a time ---------- */
+var pfActiveTab="mine";
+function pfShowTab(t){
+  pfActiveTab=t;
+  var panels={mine:['pfTabMine','pfMineStatus','pfMine'],minted:['pfTabMinted','pfMintedStatus','pfMinted'],liked:['pfTabLiked','pfLikedStatus','pfLiked']};
+  Object.keys(panels).forEach(function(k){
+    var on=(k===t), ids=panels[k];
+    var tab=document.getElementById(ids[0]); if(tab) tab.classList.toggle('on',on);
+    var st=document.getElementById(ids[1]); if(st) st.hidden=!on;
+    var gr=document.getElementById(ids[2]); if(gr) gr.hidden=!on;
+  });
+}
+[['pfTabMine','mine'],['pfTabMinted','minted'],['pfTabLiked','liked']].forEach(function(pair){
+  document.getElementById(pair[0]).addEventListener('click',function(){ pfShowTab(pair[1]); });
+});
 /* ---------- Account record: accounts/{uid} ----------
    The account is the email sign-in (Google or email/password). Everything
    that belongs to the person is saved on the account record in Firestore —
@@ -2559,12 +2601,12 @@ function setProfilePic(m){
   var pic={memeId:m.id,image:m.image,minted:!!m.minted};
   try{ localStorage.setItem(PF_PIC_KEY,JSON.stringify({uid:fbUser.uid,memeId:pic.memeId,image:pic.image,minted:pic.minted})); }catch(e){}
   saveAccountProfile({pic:pic});
-  renderAuth(); renderProfile(); toast('Profile picture updated.');
+  renderAuth(); renderProfile(); setPfSettings(false); toast('Profile picture updated.');
 }
 function clearProfilePic(){
   try{ localStorage.removeItem(PF_PIC_KEY); }catch(e){}
   saveAccountProfile({pic:null});
-  renderAuth(); renderProfile(); toast('Profile picture reset.');
+  renderAuth(); renderProfile(); setPfSettings(false); toast('Profile picture reset.');
 }
 function renderProfileEdit(){
   if(!fbUser) return;
@@ -2609,7 +2651,7 @@ document.getElementById('pfSaveName').addEventListener('click',function(){
   fbUser.updateProfile({displayName:v}).then(function(){
     var addr=linkedSuiAddress();
     if(addr){ var sp=suiProfileFor(addr); recordSuiProfile(addr,v,sp?sp.joinedAt:null); }
-    renderAuth(); renderProfile(); toast('Display name saved.');
+    renderAuth(); renderProfile(); setPfSettings(false); toast('Display name saved.');
   }).catch(function(err){ toast(authErrorText(err)); });
 });
 document.getElementById('pfPicRemove').addEventListener('click',function(){ clearProfilePic(); });
@@ -2617,7 +2659,7 @@ document.getElementById('pfSaveBio').addEventListener('click',function(){
   if(!fbUser) return;
   var v=document.getElementById('pfBioInput').value.trim();
   saveAccountProfile({bio:v}).then(function(ok){
-    renderProfile();
+    renderProfile(); setPfSettings(false);
     toast(ok?'Bio saved to your account.':'Bio saved on this device.');
   });
 });
@@ -2646,7 +2688,7 @@ function unlinkWallet(){
     clearSuiSession();
     var finish=function(){
       saveAccountProfile({walletAddress:""});
-      renderAuth(); renderProfile(); toast('Wallet unlinked.');
+      renderAuth(); renderProfile(); setPfSettings(false); toast('Wallet unlinked.');
     };
     if(fbDb){
       fbDb.collection('suiLinks').doc(addr).get().then(function(s){
@@ -2701,6 +2743,12 @@ function renderProfile(){
   else if(!galLoaded&&!liked.length){ ls.textContent="Loading liked memes…"; }
   else if(!liked.length){ ls.textContent=""; var em2=document.createElement('div'); em2.className="empty g-empty"; em2.textContent="You have not liked any memes yet. Tap the heart on a gallery meme to like it."; lg.appendChild(em2); }
   else { ls.textContent=liked.length+(liked.length===1?" meme liked":" memes liked"); liked.forEach(function(m){ lg.appendChild(memeCard(m,-1)); }); }
+  var tg=document.getElementById('pfMinted'), ts=document.getElementById('pfMintedStatus');
+  tg.innerHTML="";
+  var minted=mine.filter(function(m){ return !!m.minted; });
+  if(!minted.length){ ts.textContent=""; var em3=document.createElement('div'); em3.className="empty g-empty"; em3.textContent="No minted memes yet. Publish a meme, then mint it as an NFT from its gallery card."; tg.appendChild(em3); }
+  else { ts.textContent=minted.length+(minted.length===1?" meme minted as an NFT":" memes minted as NFTs"); minted.forEach(function(m){ tg.appendChild(memeCard(m,-1)); }); }
+  pfShowTab(pfActiveTab);
   renderProfileEdit();
 }
 
