@@ -26,6 +26,12 @@
 html{scroll-behavior:smooth;overflow-x:hidden}
 html,body{margin:0;padding:0}
 body{font-family:"Archivo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+/* Sticky footer: the page is a column at least one screen tall and the
+   visible view grows to fill the space, so the footer rests at the bottom
+   of the screen on short pages (e.g. a profile with no memes yet) instead
+   of floating up right under the content. */
+body{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+#view-landing,#view-studio,#view-profile{flex:1 0 auto}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-color:var(--bg);background-image:linear-gradient(rgba(17,17,17,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,17,.07) 1px,transparent 1px);background-size:24px 24px}
 button,input,select,textarea{font:inherit}
 button{min-height:44px;cursor:pointer}
@@ -466,7 +472,10 @@ input[type=range]{cursor:pointer}
 .sui-picker-title{font-weight:900;font-size:15px;margin:14px 0 10px}
 .sui-picker-empty{font-weight:700;font-size:14px;line-height:1.55;margin:0 0 14px}
 .sui-back{margin-bottom:4px}
-.sui-slush{width:100%;margin-bottom:6px}
+.sui-wallet-apps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.sui-wallet-app{display:flex;align-items:center;justify-content:center;background:#fff;color:var(--ink);border:var(--bd2);border-radius:3px;padding:11px 10px;font-weight:800;font-size:14px;text-decoration:none;box-shadow:var(--sh-sm);text-align:center;transition:transform .1s,box-shadow .1s}
+.sui-wallet-app:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.sui-wallet-app:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .sui-wallet-opt{display:flex;align-items:center;gap:12px;width:100%;background:#fff;color:var(--ink);border:var(--bd2);border-radius:3px;padding:10px 14px;min-height:52px;font-weight:800;font-size:15px;box-shadow:var(--sh-sm);cursor:pointer;margin-bottom:10px;text-align:left}
 .sui-wallet-opt:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
 .sui-wallet-opt:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
@@ -1033,8 +1042,13 @@ input[type=range]{cursor:pointer}
       <div id="suiWalletList"></div>
       <div id="suiNoWallet" hidden>
         <p class="sui-picker-empty" id="suiPickerEmpty">No Sui wallet found on this device.</p>
-        <a class="btn sui-slush" href="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/" target="_blank" rel="noopener">Open in Slush</a>
-        <p class="sui-note">No wallet yet? <a href="https://slush.app" target="_blank" rel="noopener">Get Slush</a></p>
+        <p class="sui-note" style="text-align:left">Any Sui wallet works here — this picker lists every wallet it finds, the same as Connect wallet in the studio. On a phone, a wallet only appears when this page is open inside that wallet app's own browser: open this page in your wallet app, then tap Link wallet again. On a computer, install a Sui wallet extension, then reopen this dialog.</p>
+        <div class="sui-wallet-apps">
+          <a class="sui-wallet-app" href="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/" target="_blank" rel="noopener">Open in Slush</a>
+          <a class="sui-wallet-app" href="https://suiet.app" target="_blank" rel="noopener">Get Suiet</a>
+          <a class="sui-wallet-app" href="https://www.martianwallet.xyz" target="_blank" rel="noopener">Get Martian</a>
+          <a class="sui-wallet-app" href="https://nightly.app" target="_blank" rel="noopener">Get Nightly</a>
+        </div>
       </div>
       <p class="auth-err" id="suiPickerErr" hidden></p>
       <div class="cf-btns" style="justify-content:flex-start;margin-top:6px">
@@ -2986,8 +3000,9 @@ function suiWatchWallets(){
   }catch(e){}
 }
 /* Single place that decides what the open picker shows, so it can never sit
-   empty: detected wallets, or the Slush deep link + Get Slush fallback, or
-   (when the libraries failed to load) a clear error above that fallback. */
+   empty: detected wallets (any Sui wallet, via the Wallet Standard), or
+   the no-wallet help with links to open the page in a wallet app or get
+   one, or (when the libraries failed to load) a clear error above that. */
 function refreshSuiPicker(){
   var wm=document.getElementById('walletModal');
   if(!wm||wm.hidden) return;
@@ -3846,7 +3861,7 @@ function executeMintTx(tx){
           });
       });
   }
-  return Promise.reject(new Error("This wallet cannot send transactions. Try Slush."));
+  return Promise.reject(new Error("This wallet cannot send transactions. Try a different wallet."));
 }
 function findMintedObjectId(res){
   try{
