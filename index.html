@@ -1054,6 +1054,7 @@ input[type=range]{cursor:pointer}
       <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
       <button class="btn" type="button" id="pubGo">Publish</button>
       <button class="btn dark" type="button" id="pubMintGo">Publish &amp; Mint as NFT</button>
+      <button class="btn ghost" type="button" id="pubDownload" hidden>Download PNG</button>
     </div>
   </div>
 </div>
@@ -2229,24 +2230,48 @@ function initEditor(){
 
 <!-- ============================================================================
 FIRESTORE RULES FOR THE memes COLLECTION (Phase 3)
-The project rules currently deny the memes collection, so publishing, voting
-and the public gallery stay blocked until this block is added. In the Firebase
-console: Firestore Database, Rules, paste this match block inside
-match /databases/{database}/documents { ... }, next to the existing blocks,
-then Publish.
+This block is live in the project rules. In the Firebase console:
+Firestore Database, Rules, it sits inside
+match /databases/{database}/documents { ... }, next to the other blocks.
+
+2026-11-27 FIX — why publishing failed for everyone: Firestore's
+matches() must match the WHOLE string, so the create rule's image check
+'^data:image/jpeg;base64,' could only ever match the bare prefix and
+denied every real publish (any actual data URL continues past the
+comma). The pattern below ends with .* — that is the corrected version
+to keep live in the console.
 
 match /memes/{memeId} {
   // Public read of memes that are not hidden; owners can also read their own.
   allow read: if resource.data.hidden == false
     || (request.auth != null && resource.data.creatorUid == request.auth.uid);
 
-  // Create: signed in only, the creator must be the signed-in user, and the
-  // counters must start clean.
+  // Create: signed in only, the creator must be the signed-in user, the
+  // counters must start clean, and the title / name / image are validated:
+  // the image must be a JPEG data URL (the app publishes a compressed
+  // 540px JPEG) of at most 900,000 chars, the title is the app's 80-char
+  // publish field, and the Sui address is empty or a real 0x+64hex
+  // address. The trailing .* in the image pattern is load-bearing:
+  // matches() anchors to the whole string (see the fix note above).
   allow create: if request.auth != null
     && request.resource.data.creatorUid == request.auth.uid
+    && request.resource.data.title is string
+    && request.resource.data.title.size() >= 1
+    && request.resource.data.title.size() <= 80
+    && request.resource.data.creatorName is string
+    && request.resource.data.creatorName.size() >= 1
+    && request.resource.data.creatorName.size() <= 100
+    && request.resource.data.creatorPhoto is string
+    && request.resource.data.image is string
+    && request.resource.data.image.matches('^data:image/jpeg;base64,.*')
+    && request.resource.data.image.size() <= 900000
+    && request.resource.data.createdAt is timestamp
+    && (request.resource.data.creatorSuiAddress == ''
+      || request.resource.data.creatorSuiAddress.matches('^0x[0-9a-fA-F]{64}$'))
     && request.resource.data.votes == 0
     && request.resource.data.voterUids.size() == 0
     && request.resource.data.reports == 0
+    && request.resource.data.reporterUids.size() == 0
     && request.resource.data.hidden == false;
 
   // Vote: a signed-in user may change only votes and voterUids, and the count
@@ -3604,8 +3629,10 @@ function shareMeme(m){
 
 /* ---------- Publish from the studio ---------- */
 var pubModal=document.getElementById('pubModal'), pubErr=document.getElementById('pubErr'), pubGo=document.getElementById('pubGo');
+var pubDownload=document.getElementById('pubDownload');
+pubDownload.addEventListener('click',function(){ document.getElementById('downloadBtn').click(); });
 function openPublish(){
-  pubErr.hidden=true;
+  pubErr.hidden=true; pubDownload.hidden=true;
   var t=layers.filter(function(l){ return l.type==='text'; })[0];
   document.getElementById('pubTitle').value=t?t.text:"";
   pubModal.hidden=false; document.body.style.overflow="hidden";
@@ -3673,7 +3700,17 @@ function doPublish(wantMint){
     }
   }).catch(function(err){
     setPubBusy(false);
-    pubErr.textContent=dbErrorText(err); pubErr.hidden=false;
+    if(err&&err.code==="permission-denied"){
+      /* A refusal is not a passing glitch: the gallery's server rules
+         turned the save away, and retrying the same save will be turned
+         away again — so say that plainly instead of "try again later",
+         and offer the PNG download: the meme itself is never lost. */
+      pubErr.textContent="The gallery refused this save (permission denied), so trying again will not fix it. Your meme is safe on the canvas — download the PNG to keep it.";
+      pubDownload.hidden=false;
+    } else {
+      pubErr.textContent=dbErrorText(err);
+    }
+    pubErr.hidden=false;
   });
 }
 pubGo.addEventListener('click',function(){ doPublish(false); });
