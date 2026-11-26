@@ -2681,9 +2681,12 @@ document.getElementById('pfWalletConnect').addEventListener('click',function(){
 document.getElementById('pfWalletDisconnect').addEventListener('click',function(){ unlinkWallet(); });
 /* Unlinking removes the address from this account (the suiLinks claim and
    the account record) and disconnects the wallet on this device. NFTs and
-   memes stay exactly where they are; the wallet can be linked again. */
+   memes stay exactly where they are; the wallet can be linked again.
+   A wallet-only session (anonymous sign-in) has no other identity, so
+   unlinking its wallet also signs the session out. */
 function unlinkWallet(){
   var addr=linkedSuiAddress(); if(!addr||!fbUser) return;
+  var walletOnlySession=!!fbUser.isAnonymous;
   askConfirm('Unlink this wallet from your account? Your NFTs stay in the wallet, and you can link it again any time.',function(){
     var w=suiWallet;
     if(w&&w.features&&w.features["standard:disconnect"]){
@@ -2692,7 +2695,12 @@ function unlinkWallet(){
     clearSuiSession();
     var finish=function(){
       saveAccountProfile({walletAddress:""});
-      renderAuth(); renderProfile(); setPfSettings(false); toast('Wallet unlinked.');
+      if(walletOnlySession){
+        try{ localStorage.removeItem(ACCT_CACHE_KEY); }catch(e){}
+        signOutAll('Wallet unlinked. Signed out.');
+      } else {
+        renderAuth(); renderProfile(); setPfSettings(false); toast('Wallet unlinked.');
+      }
     };
     if(fbDb){
       fbDb.collection('suiLinks').doc(addr).get().then(function(s){
@@ -3306,13 +3314,13 @@ function trySuiRestore(){
   suiWallet=wallet; suiAccount=found;
   suiSubscribeChange(wallet);
 }
-function signOutAll(){
+function signOutAll(toastMsg){
   var w=suiWallet;
   clearSuiSession();
   if(w&&w.features&&w.features["standard:disconnect"]){
     try{ var r=w.features["standard:disconnect"].disconnect(); if(r&&r.catch) r.catch(function(){}); }catch(e){}
   }
-  if(fbAuth) fbAuth.signOut().then(function(){ toast("Signed out of this site."); }).catch(function(){});
+  if(fbAuth) fbAuth.signOut().then(function(){ toast(toastMsg||"Signed out of this site."); }).catch(function(){});
 }
 document.addEventListener('keydown',function(e){
   if(e.key!=="Escape") return;
