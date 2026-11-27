@@ -158,6 +158,8 @@ h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transfo
 .tool-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .tool-btn.icon{width:42px;padding:8px 0}
 .tool-btn:disabled{opacity:.35;cursor:default;transform:none;box-shadow:var(--sh-xs)}
+.tool-btn.community-gallery-btn{background:var(--ice);color:#fff}
+.tool-btn.community-gallery-btn:hover{box-shadow:4px 4px 0 var(--ink)}
 .zoombox{display:flex;align-items:center;gap:4px;background:#fff;border:var(--bd2);border-radius:3px;padding:3px}
 .zoombox button{border:0;background:transparent;border-radius:2px;min-height:32px;min-width:34px;font-weight:800;font-size:14px;color:var(--ink);padding:4px 6px;display:inline-flex;align-items:center;justify-content:center}
 .zoombox .zv{min-width:52px;text-align:center;font-size:13px}
@@ -816,6 +818,7 @@ input[type=range]{cursor:pointer}
         <button class="tool-btn" id="newBtn" title="Start a new blank meme">New</button>
         <button class="tool-btn icon" id="clearBtn" title="Clear canvas" aria-label="Clear canvas"><svg class="ic"><use href="#i-trash"/></svg></button>
         <button class="tool-btn" id="toGalleryBtn"><svg class="ic"><use href="#i-image"/></svg>Gallery</button>
+        <button class="tool-btn community-gallery-btn" id="communityGalleryBtn" type="button"><svg class="ic"><use href="#i-layers"/></svg>Community Gallery</button>
         <button class="btn primary" id="downloadBtn"><svg class="ic"><use href="#i-download"/></svg>PNG</button>
         <button class="btn" id="publishBtn" type="button"><svg class="ic"><use href="#i-upload"/></svg>Publish to gallery</button>
         <button class="btn dark" id="shareBtn" type="button"><svg class="ic"><use href="#i-x"/></svg>Post</button>
@@ -1050,11 +1053,13 @@ input[type=range]{cursor:pointer}
     <div class="field"><label for="pubTitle">Title</label><input type="text" id="pubTitle" maxlength="80" placeholder="Give your meme a title"></div>
     <p class="pf-note">Publishing is free. Minting as an NFT afterwards is optional.</p>
     <p class="auth-err" id="pubErr" hidden></p>
+    <p class="mint-step" id="pubSuccess" hidden>Published to the community gallery.</p>
     <div class="cf-btns">
       <button class="btn ghost" type="button" id="pubCancel">Cancel</button>
       <button class="btn" type="button" id="pubGo">Publish</button>
       <button class="btn dark" type="button" id="pubMintGo">Publish &amp; Mint as NFT</button>
       <button class="btn ghost" type="button" id="pubDownload" hidden>Download PNG</button>
+      <button class="btn primary" type="button" id="pubViewInGalleryBtn" hidden>View in Gallery</button>
     </div>
   </div>
 </div>
@@ -1963,6 +1968,10 @@ document.getElementById('toGalleryBtn').onclick=async function(){
     var es=document.getElementById('emptySession'); if(es) es.style.display='none';
     toast('Added to gallery.');
   }
+  if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
+  else location.hash='#/gallery';
+};
+document.getElementById('communityGalleryBtn').onclick=function(){
   if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
   else location.hash='#/gallery';
 };
@@ -3630,9 +3639,22 @@ function shareMeme(m){
 /* ---------- Publish from the studio ---------- */
 var pubModal=document.getElementById('pubModal'), pubErr=document.getElementById('pubErr'), pubGo=document.getElementById('pubGo');
 var pubDownload=document.getElementById('pubDownload');
+var pubViewInGalleryBtn=document.getElementById('pubViewInGalleryBtn'), pubSuccess=document.getElementById('pubSuccess'), pubCancelBtn=document.getElementById('pubCancel');
 pubDownload.addEventListener('click',function(){ document.getElementById('downloadBtn').click(); });
+pubViewInGalleryBtn.addEventListener('click',function(){
+  closePublish();
+  try{ setGalTab('mine'); }catch(e){}
+  if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
+  else if(typeof goMyMemes==='function') goMyMemes();
+  else location.hash='#/gallery';
+});
 function openPublish(){
   pubErr.hidden=true; pubDownload.hidden=true;
+  if(pubSuccess) pubSuccess.hidden=true;
+  if(pubViewInGalleryBtn) pubViewInGalleryBtn.hidden=true;
+  pubGo.hidden=false;
+  var _pm=document.getElementById('pubMintGo'); if(_pm) _pm.hidden=false;
+  if(pubCancelBtn){ pubCancelBtn.hidden=false; pubCancelBtn.textContent='Cancel'; }
   var t=layers.filter(function(l){ return l.type==='text'; })[0];
   document.getElementById('pubTitle').value=t?t.text:"";
   pubModal.hidden=false; document.body.style.overflow="hidden";
@@ -3663,7 +3685,7 @@ function setPubBusy(busy){
 function doPublish(wantMint){
   if(!fbUser||!fbDb) return;
   var title=document.getElementById('pubTitle').value.trim()||"Untitled meme";
-  pubErr.hidden=true; setPubBusy(true);
+  pubErr.hidden=true; if(pubSuccess) pubSuccess.hidden=true; if(pubViewInGalleryBtn) pubViewInGalleryBtn.hidden=true; setPubBusy(true);
   var dataUrl="";
   renderPNG(540).then(function(cv){
     var scale=Math.min(1,540/Math.max(cv.width,cv.height)), out=cv;
@@ -3685,8 +3707,17 @@ function doPublish(wantMint){
     });
   }).then(function(ref){
     setPubBusy(false);
-    closePublish(); toast('Published to the community gallery.');
     loadGallery(); myLoaded=false; loadMyMemes();
+    if(!wantMint){
+      try{ setGalTab('mine'); }catch(e){}
+      if(pubSuccess) pubSuccess.hidden=false;
+      if(pubViewInGalleryBtn) pubViewInGalleryBtn.hidden=false;
+      pubGo.hidden=true; pubMintGo.hidden=true;
+      if(pubCancelBtn) pubCancelBtn.textContent='Close';
+      toast('Published to the community gallery.');
+      return;
+    }
+    closePublish(); toast('Published to the community gallery.');
     if(wantMint&&ref){
       var newMeme={
         id:ref.id, image:dataUrl, title:title,
