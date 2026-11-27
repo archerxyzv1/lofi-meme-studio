@@ -1,7 +1,10 @@
 {
   "rewrites": [
     { "source": "/studio", "destination": "/index.html" },
+    { "source": "/studio/", "destination": "/index.html" },
     { "source": "/profile", "destination": "/index.html" },
-    { "source": "/gallery", "destination": "/index.html" }
+    { "source": "/profile/", "destination": "/index.html" },
+    { "source": "/gallery", "destination": "/index.html" },
+    { "source": "/gallery/", "destination": "/index.html" }
   ]
 }
