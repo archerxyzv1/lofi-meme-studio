@@ -324,31 +324,23 @@ section[id]{scroll-margin-top:88px}
 .lp-fcol a{display:block;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:5px 0;opacity:.92}
 .lp-fcol a:hover{opacity:1;text-decoration:underline}
 .lp-foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:28px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.18)}
-/* Footer credit bar: builder credit lockup + social chips */
+/* Footer bar shell */
 .lp-creditbar{background:#000;color:#C7D8DF;border-top:4px solid var(--yellow)}
 .lp-creditbar .lp-fbar-in{max-width:1200px;margin:0 auto;padding:30px 16px 20px;display:flex;flex-direction:column;gap:20px}
-.lp-fbar-main{display:flex;align-items:center;justify-content:space-between;gap:16px 28px;flex-wrap:wrap}
-.lp-credit{display:flex;align-items:center;gap:9px}
-.lp-credit-photo{width:34px;height:34px;flex:none;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #fff;box-shadow:3px 3px 0 var(--yellow);display:block}
-.lp-credit-name{font-family:"Archivo Black",sans-serif;font-size:19px;line-height:1;text-transform:uppercase;letter-spacing:.01em;color:#fff;white-space:nowrap}
-.lp-credit-name em{font-style:normal;color:var(--yellow)}
-.lp-socials{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.lp-chip{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;flex:none;padding:0;border-radius:50%;background:#fff;color:var(--ink);border:var(--bd2);box-shadow:3px 3px 0 var(--yellow);text-decoration:none;transition:transform .1s,box-shadow .1s}
-.lp-chip svg{width:17px;height:17px;flex:none;display:block}
-.lp-chip:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--yellow)}
-.lp-chip:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--yellow)}
 /* Official Lofi links pill row (Studio footer column, under Open Studio) */
 .lp-official{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.lp-fcol a.lp-pill{display:inline-flex;align-items:center;background:#fff;color:var(--ink);border:var(--bd2);border-radius:999px;padding:7px 14px;font-weight:800;font-size:13px;line-height:1.2;text-decoration:none;opacity:1;box-shadow:3px 3px 0 var(--yellow);transition:transform .1s,box-shadow .1s}
+.lp-fcol a.lp-pill{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--ink);border:var(--bd2);border-radius:999px;padding:7px 14px;font-weight:800;font-size:13px;line-height:1.2;text-decoration:none;opacity:1;box-shadow:3px 3px 0 var(--yellow);transition:transform .1s,box-shadow .1s}
+.lp-fcol a.lp-pill svg{width:14px;height:14px;flex:none;display:block}
 .lp-fcol a.lp-pill:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--yellow);text-decoration:none}
 .lp-fcol a.lp-pill:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--yellow)}
+/* Builder credit cluster: folded into the Studio links area, below the official pills */
+.lp-archer-credit{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lp-built-by{display:inline-flex;align-items:center;background:var(--yellow);color:var(--ink);border:var(--bd2);border-radius:2px;padding:5px 9px;font-family:"Archivo Black",sans-serif;font-size:11px;line-height:1.2;text-transform:uppercase;letter-spacing:.04em;box-shadow:3px 3px 0 rgba(255,255,255,.45);white-space:nowrap}
 .lp-fbar-meta{display:flex;justify-content:center;gap:4px 18px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.18);padding-top:12px;font-size:12.5px;font-weight:700;text-align:center}
 @media(max-width:720px){
  .lp-foot-top{justify-items:center;text-align:center}
  .lp-fbrand{justify-content:center}
- .lp-fbar-main{flex-direction:column;justify-content:center;text-align:center}
- .lp-credit{justify-content:center}
- .lp-socials{justify-content:center}
+ .lp-official,.lp-archer-credit{justify-content:center}
  .lp-fbar-meta{flex-direction:column;align-items:center;text-align:center}
 }
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--yellow);color:var(--ink);border:var(--bd2);padding:12px 18px;border-radius:3px;box-shadow:var(--sh-sm);font-weight:900;font-size:14px;text-transform:uppercase;transition:transform .25s,opacity .25s;z-index:99;max-width:92vw;text-align:center;opacity:0;visibility:hidden;pointer-events:none}
@@ -1020,18 +1012,13 @@ input[type=range]{cursor:pointer}
           <a class="lp-pill" href="https://x.com/lofitheyeti" target="_blank" rel="noopener">Lofi on X</a>
           <a class="lp-pill" href="https://hackathon.lofitheyeti.com" target="_blank" rel="noopener">Lofi's site</a>
         </div>
+        <div class="lp-archer-credit" id="archerCreditCluster">
+          <span class="lp-built-by">Built by Archer</span>
+          <a class="lp-pill" href="https://x.com/0xArcherxyz" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Archer on X</a>
+          <a class="lp-pill" href="https://t.me/x0archerxyz" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>Archer on Telegram</a>
+        </div>
       </div>
     </div>
-    <div class="lp-fbar-main">
-        <div class="lp-credit" id="creatorCredit">
-          <img class="lp-credit-photo" src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" width="34" height="34" loading="lazy" decoding="async">
-          <span class="lp-credit-name">Built by <em>Archer</em></span>
-        </div>
-        <nav class="lp-socials" aria-label="Archer's links">
-          <a class="lp-chip" href="https://x.com/0xArcherxyz" target="_blank" rel="noopener" aria-label="Archer on X" title="Archer on X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-          <a class="lp-chip" href="https://t.me/x0archerxyz" target="_blank" rel="noopener" aria-label="Archer on Telegram" title="Archer on Telegram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
-        </nav>
-      </div>
       <div class="lp-fbar-meta"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div>
   </div>
 </footer>
@@ -2234,7 +2221,15 @@ function initEditor(){
      (so a copied link is already clean), and intercept the click so the
      view switches in place with a pushed history entry — Back/Forward
      then move between views through popstate below. */
-  document.querySelectorAll('[data-route]').forEach(function(a){
+  /* LOFI_NAV_CLICK_FIX_V2 — the selector must be a[data-route], never the
+     bare [data-route]: lofiSetPath stamps data-route on <html> itself as
+     router state (the head router sets it before this code runs), so the
+     bare attribute selector also matched the document element and attached
+     a landing-bound click handler to <html>. Every click then fired twice:
+     the real link's handler on the target, then the <html> handler on
+     bubble, which instantly switched the view back to landing and made
+     every Studio/Profile/Gallery entry point look dead. */
+  document.querySelectorAll('a[data-route]').forEach(function(a){
     var r=a.getAttribute('data-route');
     try{ a.setAttribute('href',lofiPathFor(r)); }catch(e){}
     a.addEventListener('click',function(e){ e.preventDefault(); lofiApplyRoute(r,true); });
