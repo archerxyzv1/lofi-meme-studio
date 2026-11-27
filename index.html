@@ -338,6 +338,11 @@ section[id]{scroll-margin-top:88px}
 .lp-chip svg{width:17px;height:17px;flex:none;display:block}
 .lp-chip:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--yellow)}
 .lp-chip:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--yellow)}
+/* Official Lofi links pill row (Studio footer column, under Open Studio) */
+.lp-official{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lp-fcol a.lp-pill{display:inline-flex;align-items:center;background:#fff;color:var(--ink);border:var(--bd2);border-radius:999px;padding:7px 14px;font-weight:800;font-size:13px;line-height:1.2;text-decoration:none;opacity:1;box-shadow:3px 3px 0 var(--yellow);transition:transform .1s,box-shadow .1s}
+.lp-fcol a.lp-pill:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--yellow);text-decoration:none}
+.lp-fcol a.lp-pill:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--yellow)}
 .lp-fbar-meta{display:flex;justify-content:center;gap:4px 18px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.18);padding-top:12px;font-size:12.5px;font-weight:700;text-align:center}
 @media(max-width:720px){
  .lp-foot-top{justify-items:center;text-align:center}
@@ -1012,6 +1017,10 @@ input[type=range]{cursor:pointer}
       <div class="lp-fcol">
         <h3>Studio</h3>
         <a href="#/studio">Open Studio</a>
+        <div class="lp-official" aria-label="Official Lofi links">
+          <a class="lp-pill" href="https://x.com/lofitheyeti" target="_blank" rel="noopener">Lofi on X</a>
+          <a class="lp-pill" href="https://hackathon.lofitheyeti.com" target="_blank" rel="noopener">Lofi's site</a>
+        </div>
       </div>
     </div>
     <div class="lp-fbar-main">
