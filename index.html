@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-round-192.png"/>
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-round.png"/>
 <title>Lofi Meme Studio</title>
-<script>(function(){var h=window.location.hash;document.documentElement.dataset.view=(h==='#/studio')?'studio':(h==='#/profile')?'profile':'landing';})();</script>
+<script>/*LOFI_CLEAN_PATH_ROUTER_HEAD_V1*/(function(){try{var path=window.location.pathname||'';var h=window.location.hash||'';var legacy={'#/studio':'studio','#/profile':'profile','#/gallery':'gallery','#/':'landing'};var route='landing';var m=path.match(/\/(studio|profile|gallery)\/?$/);if(m)route=m[1];else if(legacy[h])route=legacy[h];document.documentElement.dataset.view=(route==='studio')?'studio':(route==='profile')?'profile':'landing';document.documentElement.dataset.route=route;if(legacy[h]){var base=path.replace(/\/(studio|profile|gallery)\/?$/,'');if(base.length>1&&base.charAt(base.length-1)==='/')base=base.slice(0,-1);if(base==='/')base='';var clean=(route==='landing')?((base||'')+'/'):((base||'')+'/'+route);try{window.history.replaceState(null,'',clean);}catch(e){}}}catch(e){document.documentElement.dataset.view='landing';}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Archivo+Black&family=Anton&family=Luckiest+Guy&family=Caveat:wght@700&family=Bungee&family=Oswald:wght@600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
@@ -229,7 +229,6 @@ h3{font-family:"Archivo",sans-serif;font-weight:900;line-height:1.1;text-transfo
 .sui .btn{background:var(--yellow);color:var(--ink);box-shadow:4px 4px 0 var(--accent)}
 .sui .btn:active{box-shadow:0 0 0 var(--accent)}
 .badge{display:inline-block;background:var(--accent);color:#fff;border:var(--bd2);font-weight:900;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border-radius:2px;padding:4px 10px;margin-bottom:8px;box-shadow:2px 2px 0 var(--ink)}
-footer{margin-top:32px;padding-top:16px;border-top:var(--bd);color:var(--ink);font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 /* ===== Studio layout fixes: compact scrollable library, balanced columns, canvas always fits ===== */
 .library{display:flex;flex-direction:column;position:sticky;top:12px;max-height:max(340px,calc(100vh - 130px))}
@@ -623,8 +622,8 @@ input[type=range]{cursor:pointer}
 </defs></svg>
 <header class="lp-header">
     <div class="lp-header-in">
-      <a class="lp-brand" href="#/"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" decoding="async"><span>Lofi <em>Meme</em> Studio</span></a>
-      <a class="btn lp-cta" href="#/studio">Open Studio</a>
+      <a class="lp-brand" href="/memestudio/" data-route="landing"><img src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" decoding="async"><span>Lofi <em>Meme</em> Studio</span></a>
+      <a class="btn lp-cta" href="/memestudio/studio" data-route="studio">Open Studio</a>
       <div class="authbox" data-auth-slot></div>
     </div>
   </header>
@@ -635,8 +634,8 @@ input[type=range]{cursor:pointer}
       <div>
         <h1>Make Lofi <span class="nowrap-unit">memes. <span class="fast-block">Fast.</span></span></h1>
         <div class="lp-hero-btns">
-          <a class="btn" href="#/studio">Start making</a>
-          <a class="btn ghost" href="#showcase">See featured designs</a>
+          <a class="btn" href="/memestudio/studio" data-route="studio">Start making</a>
+          <a class="btn ghost" href="/memestudio/" data-scroll="showcase">See featured designs</a>
         </div>
         <div class="lp-stats">
           <span class="lp-stat"><b id="lpStickers">…</b>Stickers</span>
@@ -704,7 +703,7 @@ input[type=range]{cursor:pointer}
   <section class="lp-sec" id="templates">
     <div class="lp-sec-head"><h2>Templates</h2><span class="lp-count" id="lpTplCount">…</span></div>
     <div class="show-grid" id="lpTpls"></div>
-    <div class="lp-more"><a class="btn ghost" href="#/studio">Open Studio</a></div>
+    <div class="lp-more"><a class="btn ghost" href="/memestudio/studio" data-route="studio">Open Studio</a></div>
   </section>
 
   <section class="lp-sec" id="how">
@@ -740,7 +739,7 @@ input[type=range]{cursor:pointer}
 
   <div class="intro">
     <div class="brandline">
-      <a href="#/" aria-label="Back to home"><img class="logo-face" src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"></a>
+      <a href="/memestudio/" data-route="landing" aria-label="Back to home"><img class="logo-face" src="assets/thumbs/lofi-original-happy.webp" alt="Lofi the Yeti face" loading="lazy" decoding="async"></a>
       <h1>Lofi <em>Meme</em> Studio</h1>
     </div>
     <div class="stats">
@@ -750,8 +749,8 @@ input[type=range]{cursor:pointer}
       <div class="stat"><b id="statTemplates">…</b><span>Templates</span></div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <a class="btn" href="#/" aria-label="Back to landing page">&larr; Back</a>
-      <a class="btn ghost" href="#/">Home</a>
+      <a class="btn" href="/memestudio/" data-route="landing" aria-label="Back to landing page">&larr; Back</a>
+      <a class="btn ghost" href="/memestudio/" data-route="landing">Home</a>
     </div>
   </div>
 
@@ -1008,15 +1007,15 @@ input[type=range]{cursor:pointer}
       </div>
       <div class="lp-fcol">
         <h3>Explore</h3>
-        <a href="#showcase">Showcase</a>
-        <a href="#details">Details</a>
-        <a href="#templates">Templates</a>
-        <a href="#how">How it works</a>
-        <a href="#gallery">Gallery</a>
+        <a href="/memestudio/" data-scroll="showcase">Showcase</a>
+        <a href="/memestudio/" data-scroll="details">Details</a>
+        <a href="/memestudio/" data-scroll="templates">Templates</a>
+        <a href="/memestudio/" data-scroll="how">How it works</a>
+        <a href="/memestudio/gallery" data-route="gallery">Gallery</a>
       </div>
       <div class="lp-fcol">
         <h3>Studio</h3>
-        <a href="#/studio">Open Studio</a>
+        <a href="/memestudio/studio" data-route="studio">Open Studio</a>
         <div class="lp-official" aria-label="Official Lofi links">
           <a class="lp-pill" href="https://x.com/lofitheyeti" target="_blank" rel="noopener">Lofi on X</a>
           <a class="lp-pill" href="https://hackathon.lofitheyeti.com" target="_blank" rel="noopener">Lofi's site</a>
@@ -1131,9 +1130,9 @@ input[type=range]{cursor:pointer}
       <p class="mint-kv"><b>Name:</b> <span id="mintResName"></span></p>
       <p class="mint-kv"><b>Object ID:</b> <span id="mintResObj"></span></p>
       <div class="mint-links">
-        <a id="mintResTx" href="#" target="_blank" rel="noopener">View transaction on Suiscan</a>
-        <a id="mintResImg" href="#" target="_blank" rel="noopener">View image on Walrus</a>
-        <a id="mintResWallet" href="#" target="_blank" rel="noopener">View in wallet</a>
+        <a id="mintResTx" target="_blank" rel="noopener">View transaction on Suiscan</a>
+        <a id="mintResImg" target="_blank" rel="noopener">View image on Walrus</a>
+        <a id="mintResWallet" target="_blank" rel="noopener">View in wallet</a>
       </div>
       <p class="pf-note" id="mintResNote" hidden></p>
       <div class="cf-btns">
@@ -2008,11 +2007,11 @@ document.getElementById('toGalleryBtn').onclick=async function(){
     toast('Added to gallery.');
   }
   if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
-  else location.hash='#/gallery';
+  else { document.documentElement.dataset.view='landing'; setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60); }
 };
 document.getElementById('communityGalleryBtn').onclick=function(){
   if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
-  else location.hash='#/gallery';
+  else { document.documentElement.dataset.view='landing'; setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60); }
 };
 
 /* ============ EXPORT PNG (1080px) ============ */
@@ -2112,7 +2111,7 @@ document.getElementById('shareBtn').addEventListener('click',async function(){
   if(!layers.length){ toast('Add a sticker first.'); return; }
   var cv=await renderPNG(1080);
   var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
-  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Just made this meme with Lofi Meme Studio. Fast, free, and right in your browser. Make yours: https://winterplay.online/memestudio/#/studio\n\n@lofitheyeti @0xArcherxyz');
+  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Just made this meme with Lofi Meme Studio. Fast, free, and right in your browser. Make yours: https://winterplay.online/memestudio/studio\n\n@lofitheyeti @0xArcherxyz');
   /* Download first, then hold the instruction toast on screen (~10s) and only
      open the X intent tab after a short delay, so the user reads it before
      the browser switches tabs. */
@@ -2160,56 +2159,99 @@ function initEditor(){
 <script>
 /* ============ LANDING PAGE (populated from the real libraries) & ROUTER ============ */
 (function(){
-  /* View switching is direct JS state, never dependent on the URL hash:
-     the studio opens on the click itself, in any host or iframe, even where
-     fragment navigation is blocked, stripped, or owned by the shell around
-     the page. The hash is still updated afterwards, as a courtesy for
-     shareable links and the back button, inside try/catch so a blocked
-     history/hash write can never stop the studio from opening. */
-  function setHash(h){ try{ history.replaceState(null,'',h); }catch(e){ try{ location.hash=h; }catch(e2){} } }
-  function showStudio(){
+  /* LOFI_CLEAN_PATH_ROUTER_V1 — History-API path routing, no hash URLs.
+     Base path is detected from the current address: "/memestudio" when the
+     app is served under winterplay.online/memestudio, "" when it is served
+     from a host root (lofi-meme-studio.vercel.app). Routes: landing = base
+     + "/", studio = base + "/studio", profile = base + "/profile",
+     gallery = base + "/gallery". View switching is direct JS state first;
+     the clean path is then pushed with history.pushState (replaceState for
+     the initial/legacy sync), inside try/catch so a blocked history write
+     can never stop a view from opening. Old hash links are converted to
+     the matching clean path on load and never generated again. */
+  function lofiBasePath(){
+    var pth=window.location.pathname||'/';
+    pth=pth.replace(/\/(studio|profile|gallery)\/?$/,'');
+    if(pth.length>1&&pth.charAt(pth.length-1)==='/') pth=pth.slice(0,-1);
+    if(pth==='/'||pth==='/index.html') pth='';
+    else if(pth.slice(-11)==='/index.html') pth=pth.slice(0,-11);
+    return pth;
+  }
+  function lofiPathFor(route){
+    var b=lofiBasePath();
+    return route==='landing' ? (b+'/') : (b+'/'+route);
+  }
+  function lofiSetPath(route,push){
+    document.documentElement.dataset.route=route;
+    var target=lofiPathFor(route);
+    try{
+      if(window.location.pathname===target) return;
+      if(push) history.pushState({lofiRoute:route},'',target);
+      else history.replaceState({lofiRoute:route},'',target);
+    }catch(e){}
+  }
+  function lofiRouteFromLocation(){
+    var m=(window.location.pathname||'').match(/\/(studio|profile|gallery)\/?$/);
+    if(m) return m[1];
+    var legacy={'#/studio':'studio','#/profile':'profile','#/gallery':'gallery','#/':'landing'};
+    return legacy[window.location.hash]||'landing';
+  }
+  function showStudio(push){
     document.documentElement.dataset.view='studio';
-    setHash('#/studio');
+    lofiSetPath('studio',push);
     ensureStudio();
     resetStudio();
     requestAnimationFrame(function(){ try{ applyZoom(); render(); }catch(e){} window.scrollTo(0,0); });
   }
-  function showLanding(){
+  function showLanding(push){
     document.documentElement.dataset.view='landing';
-    setHash('#/');
+    lofiSetPath('landing',push);
     window.scrollTo(0,0);
   }
   /* The community gallery is a section of the landing view: switch to the
-     landing view, mark the route as #/gallery, then scroll to the section. */
-  function showGalleryView(){
+     landing view, set the clean /gallery path, then scroll to the section. */
+  function showGalleryView(push){
     document.documentElement.dataset.view='landing';
-    setHash('#/gallery');
+    lofiSetPath('gallery',push);
     setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60);
   }
-  window.openCommunityGallery=showGalleryView;
-  function goStudio(){ showStudio(); }
-  document.querySelectorAll('a[href="#/studio"]').forEach(function(a){
-    a.addEventListener('click',function(e){ e.preventDefault(); showStudio(); });
-  });
-  document.querySelectorAll('a[href="#/"]').forEach(function(a){
-    a.addEventListener('click',function(e){ e.preventDefault(); showLanding(); });
-  });
-  /* Section links in the shared footer: from the studio or profile they return to the landing section */
-  document.querySelectorAll('.lp-fcol a[href^="#"]').forEach(function(a){
-    var h=a.getAttribute('href');
-    if(h==='#/'||h==='#/studio') return;
-    a.addEventListener('click',function(e){
-      if(document.documentElement.dataset.view==='landing') return;
-      e.preventDefault(); showLanding();
-      var t=document.querySelector(h);
-      if(t) setTimeout(function(){ t.scrollIntoView(); },40);
-    });
-  });
-  function showProfileView(){
+  function showProfileView(push){
     document.documentElement.dataset.view='profile';
+    lofiSetPath('profile',push);
     if(typeof renderProfile==='function'){ try{ renderProfile(); }catch(e){} }
     window.scrollTo(0,0);
   }
+  function lofiApplyRoute(route,push){
+    if(route==='studio') showStudio(push);
+    else if(route==='profile') showProfileView(push);
+    else if(route==='gallery') showGalleryView(push);
+    else showLanding(push);
+  }
+  window.lofiRoute={pathFor:lofiPathFor,setPath:lofiSetPath,fromLocation:lofiRouteFromLocation,showStudio:function(){showStudio(true);},showLanding:function(){showLanding(true);},showGallery:function(){showGalleryView(true);},showProfile:function(){showProfileView(true);}};
+  window.openCommunityGallery=function(){ showGalleryView(true); };
+  function goStudio(){ showStudio(true); }
+  /* Route links: rewrite each href to the clean path for the detected base
+     (so a copied link is already clean), and intercept the click so the
+     view switches in place with a pushed history entry — Back/Forward
+     then move between views through popstate below. */
+  document.querySelectorAll('[data-route]').forEach(function(a){
+    var r=a.getAttribute('data-route');
+    try{ a.setAttribute('href',lofiPathFor(r)); }catch(e){}
+    a.addEventListener('click',function(e){ e.preventDefault(); lofiApplyRoute(r,true); });
+  });
+  /* Section links (header, footer Explore column): scroll to the landing
+     section without ever putting a fragment in the address bar. */
+  document.querySelectorAll('[data-scroll]').forEach(function(a){
+    var id=a.getAttribute('data-scroll');
+    try{ a.setAttribute('href',lofiPathFor('landing')); }catch(e){}
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      var onLanding=document.documentElement.dataset.view==='landing';
+      if(!onLanding) showLanding(true);
+      var t=document.getElementById(id);
+      if(t) setTimeout(function(){ t.scrollIntoView(); },onLanding?0:40);
+    });
+  });
   /* Details: real counts from the libraries, no image grids on the landing page */
   document.getElementById('lpStickers').textContent=STICKERS.length;
   document.getElementById('lpOriginals').textContent=ORIGINALS.length;
@@ -2259,20 +2301,13 @@ function initEditor(){
   });
 
   function syncView(){
-    /* Back/forward and shared #/studio / #/profile / #/gallery links still land in the right view. */
-    if(location.hash==='#/studio'){ showStudio(); return; }
-    if(location.hash==='#/profile'){ showProfileView(); return; }
-    if(location.hash==='#/gallery'){ showGalleryView(); return; }
-    var v=document.documentElement.dataset.view;
-    if((v==='studio'||v==='profile') && (location.hash==='#/'||location.hash===''||location.hash.charAt(1)!=='/')){
-      document.documentElement.dataset.view='landing';
-      if(location.hash==='#/'||location.hash==='') window.scrollTo(0,0);
-    }
+    /* Back/Forward (popstate) and shared clean links land in the right
+       view; a leftover legacy hash route is honoured once and converted
+       to its clean path by lofiSetPath inside each show function. */
+    lofiApplyRoute(lofiRouteFromLocation(),false);
   }
-  window.addEventListener('hashchange',syncView);
-  if(location.hash==='#/studio'){ showStudio(); }
-  if(location.hash==='#/profile'){ showProfileView(); }
-  if(location.hash==='#/gallery'){ showGalleryView(); }
+  window.addEventListener('popstate',syncView);
+  syncView();
 })();
 </script>
 
@@ -2556,12 +2591,12 @@ document.addEventListener('click',function(e){
 });
 function goMyMemes(){
   document.documentElement.dataset.view="landing";
-  try{ history.replaceState(null,"","#/"); }catch(e){}
+  if(window.lofiRoute) window.lofiRoute.setPath("gallery",true);
   setGalTab("mine");
   setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60);
 }
 
-/* ---------- Profile page (a full #/profile view, real data: own memes + own votes from Firestore) ---------- */
+/* ---------- Profile page (a full /profile view, real data: own memes + own votes from Firestore) ---------- */
 function profileIsOpen(){ return document.documentElement.dataset.view==="profile"; }
 function openProfile(){
   if(!fbUser){ openAuth(); return; }
@@ -2571,14 +2606,14 @@ function openProfile(){
   setPfSettings(false);
   pfActiveTab="mine";
   document.documentElement.dataset.view="profile";
-  try{ history.replaceState(null,"","#/profile"); }catch(e){}
+  if(window.lofiRoute) window.lofiRoute.setPath("profile",true);
   renderProfile();
   window.scrollTo(0,0);
 }
 function closeProfile(){
   if(!profileIsOpen()) return;
   document.documentElement.dataset.view="landing";
-  try{ history.replaceState(null,"","#/"); }catch(e){}
+  if(window.lofiRoute) window.lofiRoute.setPath("landing",true);
   window.scrollTo(0,0);
 }
 document.getElementById('profileBack').addEventListener('click',closeProfile);
@@ -3666,7 +3701,7 @@ function shareMeme(m){
     c.getContext('2d').drawImage(img,0,0);
     var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=c.toDataURL('image/png'); a.click();
     toast('PNG downloaded — attach it to your X post.',10000);
-    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Just made this meme with Lofi Meme Studio. Fast, free, and right in your browser. Make yours: https://winterplay.online/memestudio/#/studio\n\n@lofitheyeti @0xArcherxyz');
+    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Just made this meme with Lofi Meme Studio. Fast, free, and right in your browser. Make yours: https://winterplay.online/memestudio/studio\n\n@lofitheyeti @0xArcherxyz');
     setTimeout(function(){
       var win=null; try{ win=window.open(postUrl,'_blank','noopener'); }catch(e){}
       if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
@@ -3686,7 +3721,7 @@ pubViewInGalleryBtn.addEventListener('click',function(){
   try{ setGalTab('mine'); }catch(e){}
   if(typeof window.openCommunityGallery==='function') window.openCommunityGallery();
   else if(typeof goMyMemes==='function') goMyMemes();
-  else location.hash='#/gallery';
+  else { document.documentElement.dataset.view='landing'; setTimeout(function(){ var g=document.getElementById('gallery'); if(g) g.scrollIntoView(); },60); }
 });
 function openPublish(){
   pubErr.hidden=true; pubDownload.hidden=true;
