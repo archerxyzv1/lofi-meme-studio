@@ -2112,7 +2112,7 @@ document.getElementById('shareBtn').addEventListener('click',async function(){
   if(!layers.length){ toast('Add a sticker first.'); return; }
   var cv=await renderPNG(1080);
   var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
-  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://winterplay.online/memestudio/#/studio');
+  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Just made this meme with Lofi Meme Studio. Fast, free, and right in your browser. Make yours: https://winterplay.online/memestudio/#/studio\n\n@lofitheyeti @0xArcherxyz');
   /* Download first, then hold the instruction toast on screen (~10s) and only
      open the X intent tab after a short delay, so the user reads it before
      the browser switches tabs. */
@@ -3666,7 +3666,7 @@ function shareMeme(m){
     c.getContext('2d').drawImage(img,0,0);
     var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=c.toDataURL('image/png'); a.click();
     toast('PNG downloaded — attach it to your X post.',10000);
-    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://winterplay.online/memestudio/#/studio');
+    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Just made this meme with Lofi Meme Studio. Fast, free, and right in your browser. Make yours: https://winterplay.online/memestudio/#/studio\n\n@lofitheyeti @0xArcherxyz');
     setTimeout(function(){
       var win=null; try{ win=window.open(postUrl,'_blank','noopener'); }catch(e){}
       if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
