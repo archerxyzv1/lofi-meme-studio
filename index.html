@@ -1062,7 +1062,7 @@ input[type=range]{cursor:pointer}
       <button class="btn ghost" type="button" id="emailSignUp" style="flex:1">Create account</button>
     </div>
     <p class="auth-err" id="authErr" hidden></p>
-    <p class="auth-note" id="authPreviewNote" hidden>Sign-in works on the live site (lofi-meme-studio.vercel.app). This preview address is not approved for sign-in, so sign-in is blocked here.</p>
+    <p class="auth-note" id="authPreviewNote" hidden>Sign-in works on the live site (winterplay.online/memestudio). This preview address is not approved for sign-in, so sign-in is blocked here.</p>
   </div>
 </div>
 
@@ -2112,7 +2112,7 @@ document.getElementById('shareBtn').addEventListener('click',async function(){
   if(!layers.length){ toast('Add a sticker first.'); return; }
   var cv=await renderPNG(1080);
   var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=cv.toDataURL('image/png'); a.click();
-  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://lofi-meme-studio.vercel.app/#/studio');
+  var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://winterplay.online/memestudio/#/studio');
   /* Download first, then hold the instruction toast on screen (~10s) and only
      open the X intent tab after a short delay, so the user reads it before
      the browser switches tabs. */
@@ -2455,14 +2455,15 @@ match /accounts/{uid} {
    working and every failure shows a clear message instead of failing silently. */
 var FB_CONFIG={
   apiKey:"AIzaSyBQ5isDVE9nWFXO-3es3OmxVL047HmnE28",
-  authDomain:"lofi-games.firebaseapp.com",
+  authDomain:"winterplay.online",
   projectId:"lofi-games",
   storageBucket:"lofi-games.firebasestorage.app",
   messagingSenderId:"885237508877",
   appId:"1:885237508877:web:ac09a74ce6a82d8e5c1e44"
 };
-var LIVE_HOST="lofi-meme-studio.vercel.app";
-var IS_PREVIEW=(location.hostname!==LIVE_HOST);
+var LIVE_HOST="winterplay.online";
+var LIVE_HOSTS=["winterplay.online","lofi-meme-studio.vercel.app"];
+var IS_PREVIEW=(LIVE_HOSTS.indexOf(location.hostname)===-1);
 var fbAuth=null, fbDb=null, fbUser=null;
 try{
   if(window.firebase&&firebase.initializeApp){
@@ -2892,7 +2893,7 @@ document.getElementById('emailSignUp').addEventListener('click',function(){
    possession at sign-in time. No server/custom-token minting in v1 (that
    needs a backend + Admin secret). */
 var SUI_SESSION_KEY="lofi_meme_sui_session_v1";
-var SUI_SLUSH_BROWSE="https://my.slush.app/browse/https://lofi-meme-studio.vercel.app/";
+var SUI_SLUSH_BROWSE="https://my.slush.app/browse/https://winterplay.online/memestudio/";
 var suiLibsReady=false, suiLibsFailed=false, suiRestoreTried=false;
 var suiWallet=null, suiAddress="", suiAccount=null, suiUnsubscribeChange=null, suiWalletName="";
 var suiPendingChallenge=null; /* { text, nonce, issuedAt, expiresAt } - memory only, never localStorage */
@@ -3665,7 +3666,7 @@ function shareMeme(m){
     c.getContext('2d').drawImage(img,0,0);
     var a=document.createElement('a'); a.download='lofi-meme.png'; a.href=c.toDataURL('image/png'); a.click();
     toast('PNG downloaded — attach it to your X post.',10000);
-    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://lofi-meme-studio.vercel.app/#/studio');
+    var postUrl='https://x.com/intent/post?text='+encodeURIComponent('Made this meme with Lofi Meme Studio. Make yours: https://winterplay.online/memestudio/#/studio');
     setTimeout(function(){
       var win=null; try{ win=window.open(postUrl,'_blank','noopener'); }catch(e){}
       if(!win){ var l2=document.createElement('a'); l2.href=postUrl; l2.target='_blank'; l2.rel='noopener'; document.body.appendChild(l2); l2.click(); l2.remove(); }
