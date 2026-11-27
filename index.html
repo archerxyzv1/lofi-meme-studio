@@ -4,7 +4,9 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="color-scheme" content="light"/>
-<link rel="icon" href="data:,"/>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png"/>
 <title>Lofi Meme Studio</title>
 <script>(function(){var h=window.location.hash;document.documentElement.dataset.view=(h==='#/studio')?'studio':(h==='#/profile')?'profile':'landing';})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -325,6 +327,8 @@ section[id]{scroll-margin-top:88px}
 .lp-fcol a:hover{opacity:1;text-decoration:underline}
 .lp-fbar{background:#000;color:#C7D8DF}
 .lp-fbar-in{max-width:1200px;margin:0 auto;padding:13px 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:700}
+.lp-fbar a{color:#fff;text-decoration:underline;text-underline-offset:2px}
+.lp-fbar a:hover{color:var(--yellow)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--yellow);color:var(--ink);border:var(--bd2);padding:12px 18px;border-radius:3px;box-shadow:var(--sh-sm);font-weight:900;font-size:14px;text-transform:uppercase;transition:transform .25s,opacity .25s;z-index:99;max-width:92vw;text-align:center;opacity:0;visibility:hidden;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
 
@@ -540,9 +544,7 @@ input[type=range]{cursor:pointer}
 /* ===== Phase 4: mint as NFT (Sui testnet + Walrus), NFT badges, profile edit ===== */
 .nft-badge{position:absolute;top:10px;right:10px;z-index:3;background:var(--ink);color:#fff;border:var(--bd2);box-shadow:var(--sh-xs);padding:5px 9px;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 .auth-user{position:relative}
-.nft-chip-av{position:absolute;left:27px;bottom:-7px;z-index:2;background:var(--ink);color:#fff;border:2px solid #fff;font-size:8.5px;font-weight:900;letter-spacing:.05em;padding:1px 4px;text-transform:uppercase;pointer-events:none;line-height:1.3}
 .pf-ava{position:relative}
-.nft-chip-pf{position:absolute;right:0;bottom:0;background:var(--ink);color:#fff;font-size:9px;font-weight:900;padding:2px 6px;letter-spacing:.06em;text-transform:uppercase}
 .pf-edit{max-width:560px}
 .pf-group{border:var(--bd2);background:#fff;padding:14px;margin-top:14px}
 .pf-group>h4{font-family:"Archivo",sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px}
@@ -555,7 +557,7 @@ input[type=range]{cursor:pointer}
 .pf-pic:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 .pf-pic img{width:100%;height:100%;object-fit:cover;display:block}
 .pf-pic.on{outline:3px solid var(--accent);outline-offset:2px}
-.nft-chip-sm{position:absolute;right:0;bottom:0;background:var(--ink);color:#fff;font-size:9px;font-weight:900;padding:2px 5px;letter-spacing:.05em;text-transform:uppercase}
+.pf-pic-nft-note{font-size:13px;font-weight:700;margin:0 0 10px;line-height:1.55}
 .mint-preview{width:100%;display:block;border:var(--bd2);margin:0 0 12px;max-height:280px;object-fit:contain;background:#DFF5FB}
 .mint-net{display:inline-block;background:var(--ink);color:#fff;border:var(--bd2);font-weight:900;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;margin:0 0 12px;box-shadow:2px 2px 0 var(--ink)}
 .mint-cost{font-weight:700;font-size:13.5px;line-height:1.55;background:var(--ice-light);border:var(--bd2);padding:10px 12px;margin:12px 0 0}
@@ -948,6 +950,7 @@ input[type=range]{cursor:pointer}
           <h4>Profile picture</h4>
           <p class="pf-note">Pick one of your published memes. It is saved to your account and shows everywhere you sign in.</p>
           <div class="pf-pic-grid" id="pfPicGrid"></div>
+          <p class="pf-pic-nft-note" id="pfPicNftNote" hidden>This picture is an NFT.</p>
           <button class="btn ghost" type="button" id="pfPicRemove">Use default picture</button>
         </div>
         <div class="pf-group">
@@ -995,7 +998,7 @@ input[type=range]{cursor:pointer}
       <a href="#/studio">Open Studio</a>
     </div>
   </div>
-  <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
+  <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span id="creatorCredit">Built by Archer · <a href="https://x.com/0xArcherxyz" target="_blank" rel="noopener">@0xArcherxyz</a> · <a href="https://t.me/x0archerxyz" target="_blank" rel="noopener">Telegram</a> · <a href="https://winterplay.online" target="_blank" rel="noopener">winterplay.online</a></span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
 </div>
 
 <div class="lb" id="confirmModal" hidden role="dialog" aria-modal="true" aria-label="Confirm">
@@ -2504,7 +2507,6 @@ function renderAuth(){
       document.querySelectorAll('.auth-menu').forEach(function(x){ if(x!==menu) x.hidden=true; });
       menu.hidden=!menu.hidden; av.setAttribute('aria-expanded',menu.hidden?'false':'true'); });
     wrap.appendChild(av);
-    if(profilePicMinted()){ var achip=document.createElement('span'); achip.className="nft-chip-av"; achip.textContent="NFT"; wrap.appendChild(achip); }
     wrap.appendChild(menu);
     slot.appendChild(wrap);
   });
@@ -2617,7 +2619,8 @@ function saveAccountProfile(patch){
 /* ---------- Profile picture: one of your own published memes ----------
    The choice is saved on the account record (above), so the same picture
    shows on every device: header avatar, account menu and the profile
-   page. If the chosen meme is minted, an NFT badge sits on it. */
+   page. No badge is drawn on the picture itself; if the chosen meme is
+   minted, the Profile picture settings box says so in plain text. */
 var PF_PIC_KEY="lofi_meme_profile_pic_v1";
 function loadProfilePic(){
   if(acctProfile&&acctProfile.pic&&acctProfile.pic.image) return acctProfile.pic;
@@ -2675,10 +2678,11 @@ function renderProfileEdit(){
     var b=document.createElement('button'); b.type="button"; b.className="pf-pic"+(pic&&pic.memeId===m.id?" on":"");
     b.setAttribute('aria-label','Set "'+(m.title||"Untitled meme")+'" as your profile picture');
     var im=document.createElement('img'); im.src=m.image; im.alt=""; im.loading="lazy"; b.appendChild(im);
-    if(m.minted){ var chip=document.createElement('span'); chip.className="nft-chip-sm"; chip.textContent="NFT"; b.appendChild(chip); }
     b.addEventListener('click',function(){ setProfilePic(m); });
     grid.appendChild(b);
   });
+  var nn=document.getElementById('pfPicNftNote');
+  if(nn) nn.hidden=!profilePicMinted();
   var rm=document.getElementById('pfPicRemove');
   if(rm) rm.style.display=pic?"":"none";
 }
@@ -2752,7 +2756,6 @@ function renderProfile(){
   var purl=profilePhotoURL();
   if(purl){ var im=document.createElement('img'); im.src=purl; im.alt=""; im.referrerPolicy="no-referrer"; ava.appendChild(im); }
   else ava.textContent=name.charAt(0).toUpperCase();
-  if(profilePicMinted()){ var pchip=document.createElement('span'); pchip.className="nft-chip-pf"; pchip.textContent="NFT"; ava.appendChild(pchip); }
   document.getElementById('pfName').textContent=name;
   document.getElementById('pfEmail').textContent=fbUser.email||"";
   var joined="";
