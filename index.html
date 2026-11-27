@@ -325,10 +325,27 @@ section[id]{scroll-margin-top:88px}
 .lp-fcol h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--yellow);margin-bottom:12px;font-family:"Archivo"}
 .lp-fcol a{display:block;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:5px 0;opacity:.92}
 .lp-fcol a:hover{opacity:1;text-decoration:underline}
-.lp-fbar{background:#000;color:#C7D8DF}
-.lp-fbar-in{max-width:1200px;margin:0 auto;padding:13px 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:700}
-.lp-fbar a{color:#fff;text-decoration:underline;text-underline-offset:2px}
-.lp-fbar a:hover{color:var(--yellow)}
+/* Footer bottom bar: builder credit lockup + social chips */
+.lp-creditbar{background:#000;color:#C7D8DF;border-top:4px solid var(--yellow)}
+.lp-creditbar .lp-fbar-in{max-width:1200px;margin:0 auto;padding:24px 16px 20px;display:flex;flex-direction:column;gap:18px}
+.lp-fbar-main{display:flex;align-items:center;justify-content:space-between;gap:16px 28px;flex-wrap:wrap}
+.lp-credit{display:flex;flex-direction:column;gap:8px}
+.lp-credit-kicker{font-size:10.5px;font-weight:900;letter-spacing:.34em;text-transform:uppercase;color:var(--yellow);line-height:1}
+.lp-credit-name{align-self:flex-start;font-family:"Archivo Black",sans-serif;font-size:21px;line-height:1;text-transform:uppercase;letter-spacing:.01em;color:var(--ink);background:var(--yellow);border:2px solid #fff;padding:8px 14px 7px;box-shadow:4px 4px 0 var(--accent)}
+.lp-socials{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lp-chip{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:44px;min-width:44px;padding:0 10px;background:#fff;color:var(--ink);border:var(--bd2);box-shadow:3px 3px 0 var(--yellow);text-decoration:none;font-weight:900;font-size:13.5px;line-height:1;transition:transform .1s,box-shadow .1s}
+.lp-chip svg{width:19px;height:19px;flex:none;display:block}
+.lp-chip:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--yellow)}
+.lp-chip:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--yellow)}
+.lp-chip-site{padding:0 15px}
+.lp-fbar-meta{display:flex;justify-content:space-between;gap:6px 18px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.18);padding-top:14px;font-size:12.5px;font-weight:700}
+@media(max-width:720px){
+ .lp-fbar-main{flex-direction:column;justify-content:center;text-align:center}
+ .lp-credit{align-items:center}
+ .lp-credit-name{align-self:center}
+ .lp-socials{justify-content:center}
+ .lp-fbar-meta{flex-direction:column;align-items:center;text-align:center}
+}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--yellow);color:var(--ink);border:var(--bd2);padding:12px 18px;border-radius:3px;box-shadow:var(--sh-sm);font-weight:900;font-size:14px;text-transform:uppercase;transition:transform .25s,opacity .25s;z-index:99;max-width:92vw;text-align:center;opacity:0;visibility:hidden;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
 
@@ -378,7 +395,6 @@ section[id]{scroll-margin-top:88px}
 @media(max-width:480px){
  .show-grid{grid-template-columns:1fr}
  .lp-footer-in{grid-template-columns:1fr;gap:20px;padding:28px 16px 20px}
- .lp-fbar-in{flex-direction:column;gap:2px}
  .gallery{grid-template-columns:1fr}
  .stats{width:100%}.stat{flex:1;min-width:0;text-align:center}
  .intro .btn{width:100%}
@@ -391,7 +407,6 @@ section[id]{scroll-margin-top:88px}
 h1,h2{letter-spacing:-.01em}
 .lp-header{border-top:6px solid var(--yellow)}
 .lp-footer{border-top:6px solid var(--yellow)}
-.lp-fbar{border-top:2px solid rgba(255,255,255,.28)}
 .lp-sec{padding-top:44px;padding-bottom:10px}
 .section{margin-top:36px}
 .lp-sec-head{margin-bottom:20px}
@@ -998,7 +1013,22 @@ input[type=range]{cursor:pointer}
       <a href="#/studio">Open Studio</a>
     </div>
   </div>
-  <div class="lp-fbar"><div class="lp-fbar-in"><span>© 2026 Lofi Meme Studio</span><span id="creatorCredit">Built by Archer · <a href="https://x.com/0xArcherxyz" target="_blank" rel="noopener">@0xArcherxyz</a> · <a href="https://t.me/x0archerxyz" target="_blank" rel="noopener">Telegram</a> · <a href="https://winterplay.online" target="_blank" rel="noopener">winterplay.online</a></span><span>Made for Lofi the Yeti and the Lofi community.</span></div></div>
+  <div class="lp-fbar lp-creditbar">
+    <div class="lp-fbar-in">
+      <div class="lp-fbar-main">
+        <div class="lp-credit" id="creatorCredit">
+          <span class="lp-credit-kicker">Built by</span>
+          <span class="lp-credit-name">Archer</span>
+        </div>
+        <nav class="lp-socials" aria-label="Archer's links">
+          <a class="lp-chip" href="https://x.com/0xArcherxyz" target="_blank" rel="noopener" aria-label="Archer on X" title="Archer on X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a class="lp-chip" href="https://t.me/x0archerxyz" target="_blank" rel="noopener" aria-label="Archer on Telegram" title="Archer on Telegram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+          <a class="lp-chip lp-chip-site" href="https://winterplay.online" target="_blank" rel="noopener" aria-label="winterplay.online" title="winterplay.online"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z"/></svg><span>winterplay.online</span></a>
+        </nav>
+      </div>
+      <div class="lp-fbar-meta"><span>© 2026 Lofi Meme Studio</span><span>Made for Lofi the Yeti and the Lofi community.</span></div>
+    </div>
+  </div>
 </div>
 
 <div class="lb" id="confirmModal" hidden role="dialog" aria-modal="true" aria-label="Confirm">
